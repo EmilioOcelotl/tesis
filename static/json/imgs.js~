@@ -1,0 +1,17 @@
+export default {
+    "imgs":[
+	{
+	    "img": "col2.jpeg",
+	    "pie": "Este es un pie de página",
+	    "url": "una url",
+	    "nota": "Esto es una nota"
+	    
+	},
+	{
+	    "img": "otraimagen.jpg",
+	    "pie": "Este es otro pie de página",
+	    "url": "otra url",
+	    "nota": "Esta es otra nota 
+	}
+    ] 
+}
