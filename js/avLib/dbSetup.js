@@ -266,8 +266,14 @@ function DbReader(){
 	
 	for(let i = 0; i < data.imgs.length; i++){
 
-	    const width = Number(data.imgs[pagsImgCount].w);
-	    const height = Number(data.imgs[pagsImgCount].h);
+//	    const width = Number(data.imgs[pagsImgCount].w);
+//	    const height = Number(data.imgs[pagsImgCount].h);
+
+	    const width = 10.8;
+	    const height = (Number(data.imgs[pagsImgCount].h)*width) / Number(data.imgs[pagsImgCount].w); 
+	    
+	    // Se puede redimensionar el tamaño aquí? 
+	    
 	    doc.insertPage(pgInsert-1);	
 	    doc.internal.pageSize.width = width;
 	    doc.internal.pageSize.height = height;

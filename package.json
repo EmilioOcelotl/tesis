@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "limpiar": "rm -r node_modules dist && rm static/sql/document.db && cp /home/emi/.local/share/trilium-data/document.db /home/emi/proyectos/improved-octo-computing-machine/tests/render2/static/sql/",
+    "limpiar": "rm -r node_modules dist && rm static/sql/document.db && cp /home/emi/.local/share/trilium-data/document.db /home/emi/proyectos/tesis/static/sql/",
     "start": "parcel ./index.html",
     "build": "parcel build ./index.html --public-url ./ --dist-dir docs",
     "test": "echo \"Error: no test specified\" && exit 1"
