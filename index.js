@@ -7,6 +7,8 @@ import { ImprovedNoise } from './static/jsm/math/ImprovedNoise.js';
 import { EditorParser } from './js/avLib/editorParser'
 // import { twCamera } from './js/avLib/controlSetup.js' 
 import * as TWEEN from 'tween'; 
+import { FontLoader } from './static/jsm/loaders/FontLoader.js';
+
 
 let a = new AudioSetup(); 
 let th = new VideoSetup(); 
@@ -25,14 +27,14 @@ function renderAV(){
     console.log("render AV"); 
 }
 
-document.getElementById("container").onclick = cameraChange;
+document.getElementById("container").onclick = change;
 
 //const pdfButton = document.getElementById('pdf');
 //pdfButton.addEventListener('click', printPDF );
 
 // extras intervención oci
 
-const meshes = [],materials = [],xgrid = 10, ygrid = 10;
+const meshes = [],materials = [],xgrid = 3, ygrid = 1;
 let material, mesh;
 let an; 
 
@@ -64,7 +66,9 @@ let sphere;
 let raycaster;
 let INTERSECTED;
 const pointer = new THREE.Vector2();
-
+ 
+let menuC1str = ['regresar','imprimir', 'visualizar']; 
+const group = new THREE.Group();
 
 init(); // los elementos particulares de este init podrían ir en otro lado. En todo caso podría delimitar la escena que antes se detonaba con esta función.     
 function init(){
@@ -86,14 +90,14 @@ function init(){
     
     un = new UnrealBloom(th.scene, th.camera, th.renderer2); 
     // retro = new Feedback(th.scene, th.renderer2, 1080);
-    const geometry44 = new THREE.SphereGeometry( 50, 128, 128 ); 
+    const geometry44 = new THREE.SphereGeometry( 70, 100, 100 ); 
     const material44 = new THREE.MeshStandardMaterial( { color: 0xffffff, map:hy.vit, roughness: 0.6 } ); 
     sphere44 = new THREE.Mesh( geometry44, material44 );
 
     sphere44.userdata = {id:'iniciar'};
     console.log(sphere44.userdata.id); 
     th.scene.add( sphere44 );
-    sphere44.position.z = -20; 
+    // sphere44.position.z = -20; 
     
     var cursorX;
     var cursorY;
@@ -102,11 +106,55 @@ function init(){
 	cursorY = e.pageY;
     }
 
-    osc(4, ()=>cursorX*0.0001, 1 ).color(1.75, 0, 1.97).rotate(1, 0.3, 0.5).modulateScrollX(o0, 1.1).out(o0);
+    osc(7, ()=>cursorX*0.001, 1 ).color(1.75, 0.5, 1.97).rotate(1, 0.1, 0.5).modulateScrollX(o0, 1.001).out(o0);
 
     container = document.getElementById( 'container' );
     container.appendChild(th.renderer2.domElement);
+ 
+    cubeCount = 0;
 
+    let ox, oy, geometryTex;
+
+    const ux = 1 / xgrid;
+    const uy = 1 / ygrid;
+
+    const xsize = 1000 / xgrid;
+    const ysize = 1000 / ygrid;
+    
+    for(let i = 0; i < menuC1str.length; i++){
+	
+	const geometry = new THREE.BoxGeometry( 2, 6, 2); 
+
+	change_uvs( geometry, ux, uy, i, 0);
+
+	materials[i] = new THREE.MeshStandardMaterial({color:0xffffff,map:hy.vit, roughness:0.6});
+	//const material = new THREE.MeshStandardMaterial( {color: 0x00ff00} );
+	material2 = materials[i]; 
+	cubos[i] = new THREE.Mesh( geometry, material2 );    
+
+	/*
+	var posX, posY, posZ;
+	var theta1 = Math.random() * (Math.PI*2);
+	var theta2 = Math.random() * (Math.PI*2); 
+	posX = Math.cos(theta1) * Math.cos(theta2)*1;
+	posY = Math.sin(theta1)*1;
+	posZ = Math.cos(theta1) * Math.sin(theta2)*1;
+	pX[i] = posX;
+	pY[i] = posY;
+	pZ[i] = posZ;
+	*/
+	
+	cubos[i].position.x = ((i+1) *4)-8; 
+	//cubos[i].position.y = pY[i] * 2;
+	//cubos[i].position.z = pZ[i] * 2;
+	//th.scene.add(cubos[i]);
+	cubos[i].userdata = {id: menuC1str[i]}; 
+	// group.add(cubos[i]);
+	th.scene.add(cubos[i]); 
+	
+    }
+
+    // texto(); 
     // twC = new twCamera(th.camera); 
     animate(); 
     
@@ -216,10 +264,12 @@ function animate(){
 
     // let interStr = ''; 
     // find intersections
-    
+
+    var time2 = Date.now() * 0.0005;
+
     raycaster.setFromCamera( pointer, th.camera );
 
-    const intersects = raycaster.intersectObjects( th.scene.children, false );
+    const intersects = raycaster.intersectObjects( th.scene.children, true );
 
     if ( intersects.length > 0 ) {
 	
@@ -228,18 +278,18 @@ function animate(){
 	    // console.log(intersects[ 0 ].object.userdata); 
 
 	    if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-
+	    
 	    INTERSECTED = intersects[ 0 ].object;
 	    INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
 	    INTERSECTED.material.emissive.setHex( 0xffffff );
+	    /// primer nivel 
+	    document.getElementById("container").style.cursor = "pointer";
 
 	    interStr = INTERSECTED.userdata.id;
+
+	    // console.log(interStr);
+	    document.getElementById("instrucciones").innerHTML = interStr;
 	    
-	    if(interStr == 'iniciar'){
-		document.getElementById("container").style.cursor = "pointer";
-	    }
-	    // Aquí debería ir la animación
-	   
 	}
 	
     } else {
@@ -248,14 +298,14 @@ function animate(){
 	
 	INTERSECTED = null;
 	document.getElementById("container").style.cursor = "default";
-	interStr = ''; 
+	interStr = '';
+	document.getElementById("instrucciones").innerHTML = "";
+
 	
     }
 
-     //if(tweenBool){
-	 TWEEN.update();
-    //}
-    
+    TWEEN.update();
+   
     hy.vit.needsUpdate = true; 
     const delta = clock.getDelta();
     requestAnimationFrame( animate );
@@ -325,36 +375,6 @@ function animate2() {
 
 }
 
-function stein (cantidad){
-
-    let cant = cantidad; 
-    let vertices = [];
-    
-    for(var i = 0; i < cantidad; i++){
-	// console.log(uMap); 
-	for(let j = 0; j < cantidad; j++){
-	    let uMap = THREE.MathUtils.mapLinear(i, 0, cantidad, Math.PI*2, -Math.PI*2);
-	    let vMap = THREE.MathUtils.mapLinear(j, 0, cantidad, Math.PI*4, -Math.PI*4);
-	    let x = uMap * Math.cos(vMap);
-	    let y = uMap * Math.sin(vMap);
-	    let z = vMap * Math.cos(uMap);
-
-	    vertices.push(x, y, z); 
-	    
-	}
-    }
-
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-
-    let material = new THREE.PointsMaterial( { size: 0.125/2, sizeAttenuation: true, alphaTest: 0.5, transparent: true } );
-
-    const particles = new THREE.Points( geometry, material );
-    // th.scene.add(particles); 
-    particles.rotation.z = Math.PI*2;
-    
-}
-
 function change_uvs( geometry, unitx, unity, offsetx, offsety ) {
 
     const uvs = geometry.attributes.uv.array;
@@ -368,28 +388,57 @@ function change_uvs( geometry, unitx, unity, offsetx, offsety ) {
     
 }
 
-function cameraChange(){
+function change(){
 
+    if(interStr == 'imprimir'){
+	printPDF(); 
+    }
+    
     if(interStr == 'iniciar'){
-	console.log(db.result2);
-	document.getElementById("info").innerHTML = db.postdb; // cuando tween termine 
-
-	
+	// console.log(db.result2);
 	const coords = {x: th.camera.position.x,
 			y: th.camera.position.y,
 			z: th.camera.position.z} // Start at (0, 0)
-	
-	// console.log(coords); 
-	
+	// console.log(coords);
 	tween = new TWEEN.Tween(coords, false) // Create a new tween that modifies 'coords'.
-	    .to({x: 0, y: 0, z: 0}, 2000) // Move to (300, 200) in 1 second.
+	    .to({x: 0, y: 0, z: 10}, 2000) // Move to (300, 200) in 1 second.
 	    .easing(TWEEN.Easing.Quadratic.InOut) // Use an easing function to make the animation smooth.
 	    .onUpdate(() => {
 		th.camera.position.z=coords.z;
 		// console.log(coords); 
+	    })  
+	    .onStart(() => {
+	// 	th.camera.remove(sphere44); 
+		// Pienso que onComplete está bien para eliminar objetos no utilizados
+		// Podría reproducir algún sonido 
+		document.getElementById("info").innerHTML = ""; // cuando tween termine 
 	    })
+	//trambién hay onComplete
 	    .start() // Start the tween immediately.
-	
-	// tweenBool = true;
+    }
+
+        
+    if(interStr == 'regresar'){
+	// console.log(db.result2);
+	const coords = {x: th.camera.position.x,
+			y: th.camera.position.y,
+			z: th.camera.position.z} // Start at (0, 0)
+	// console.log(coords); 
+	tween = new TWEEN.Tween(coords, false) // Create a new tween that modifies 'coords'.
+	    .to({x: 0, y: 0, z: 200}, 2000) // Move to (300, 200) in 1 second.
+	    .easing(TWEEN.Easing.Quadratic.InOut) // Use an easing function to make the animation smooth.
+	    .onUpdate(() => {
+		th.camera.position.z=coords.z;
+		// console.log(coords); 
+	    })  
+	    .onStart(() => {
+	// 	th.camera.remove(sphere44); 
+		// Pienso que onComplete está bien para eliminar objetos no utilizados
+		// Podría reproducir algún sonido 
+		document.getElementById("info").innerHTML = 'portada'; // cuando tween termine 
+	    })
+	//trambién hay onComplete
+	    .start() // Start the tween immediately.
     }
 }
+

@@ -4,18 +4,41 @@ body {
     overflow-y: hidden;
     font-family: Source Code Pro;
     font-size: 14px; 
-    color: #fff;
-    line-height: 14px;
+    color: #f7f8f9;
+    line-height: 10px;
 
 }
 
+
 #info {
-    position: relative;
+
+    position: absolute; 
     top: 0px;
     width: 100vw;
+    vertical-align: center; 
     padding: 40px;
+    text-align: center; 
     box-sizing: border-box;
-    text-align: center;
+    vertical-align: bottom; 
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    pointer-events: none;
+    z-index: 1; /* TODO Solve this in HTML */
+}
+
+
+
+#instrucciones {
+
+    position: absolute; 
+    bottom: 75px;
+    width: 100vw;
+    padding: 40px;
+    text-align: center; 
+    box-sizing: border-box;
+    vertical-align: bottom; 
     -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;

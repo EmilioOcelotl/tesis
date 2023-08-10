@@ -26,8 +26,9 @@ function VideoSetup(){
 	// container.appendChild( renderer.domElement ); // esto realmente tiene que ir en index pero lo dejo para acordarme 
 	// por acá tendría que ir la retro
 	//self.controls = new OrbitControls( self.camera, self.renderer2.domElement );
-	//self.controls.maxDistance = 300;
+	//self.controls.maxDistance = 30;
 
+	/*
 	self.controls = new FlyControls( self.camera, self.renderer2.domElement );
 	
 	self.controls.movementSpeed = 1 ;
@@ -35,6 +36,7 @@ function VideoSetup(){
 	self.controls.rollSpeed = Math.PI / 24;
 	self.controls.autoForward = false;
 	self.controls.dragToLook = false;
+	*/
 	
 	// Antes aquí había un switch, quién sabe si sea necesario para el futuro, antes era importante para el control de la cámara pero creo que se quedó el orbit controls
 
