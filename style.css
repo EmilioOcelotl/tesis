@@ -1,43 +1,27 @@
 body {
     margin: 0;
     background-color: black;
-    overflow-y: hidden; 
+    overflow-y: hidden;
+    font-family: Source Code Pro;
+    font-size: 14px; 
+    color: #fff;
+    line-height: 14px;
+
 }
 
-#blocker {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.5);
-}
-
-#instructions {
-    width: 100%;
-    height: 100%;
-    
-    display: -webkit-box;
-    display: -moz-box;
-    display: box;
-    
-    -webkit-box-orient: horizontal;
-    -moz-box-orient: horizontal;
-    box-orient: horizontal;
-    
-    -webkit-box-pack: center;
-    -moz-box-pack: center;
-    box-pack: center;
-    
-    -webkit-box-align: center;
-    -moz-box-align: center;
-    box-align: center;
-    
-    color: #ffffff;
+#info {
+    position: relative;
+    top: 0px;
+    width: 100vw;
+    padding: 40px;
+    box-sizing: border-box;
     text-align: center;
-    font-family: Arial;
-    font-size: 14px;
-    line-height: 24px;
-    
-    cursor: pointer;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    pointer-events: none;
+    z-index: 1; /* TODO Solve this in HTML */
 }
 
 #container {
@@ -47,29 +31,3 @@ body {
     bottom: 0px;
 }
 
-#overlay {
-    position: absolute;
-    font-size: 16px;
-    z-index: 2;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    background: rgba(0,0,0,0);
-}
-
-#overlay button {
-    background: transparent;
-    border: 0;
-    border: 1px solid rgb(255, 255, 255);
-    border-radius: 4px;
-    color: #ffffff;
-    padding: 12px 18px;
-    cursor: pointer;
-}
-
-  

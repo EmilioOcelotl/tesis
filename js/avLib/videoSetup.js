@@ -11,13 +11,12 @@ import {RenderPass} from '../../static/jsm/postprocessing/RenderPass.js';
 import {UnrealBloomPass} from '../../static/jsm/postprocessing/UnrealBloomPass.js';
 import { FlyControls } from '../../static/jsm/controls/FlyControls.js';
 
-
 function VideoSetup(){
 
     var self = this;
 
     self.initVideo = function(){
-
+	
 	self.scene = new THREE.Scene();
 	self.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 6000 );
 	// self.camera.position.set(0, 0, -40);

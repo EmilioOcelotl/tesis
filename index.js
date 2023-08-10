@@ -5,23 +5,30 @@ import { HydraTex } from './js/avLib/hydraSetup' // en deep se perdió esta refe
 import { AudioSetup, Analyser } from './js/avLib/audioSetup'
 import { ImprovedNoise } from './static/jsm/math/ImprovedNoise.js';
 import { EditorParser } from './js/avLib/editorParser'
+// import { twCamera } from './js/avLib/controlSetup.js' 
+import * as TWEEN from 'tween'; 
 
 let a = new AudioSetup(); 
 let th = new VideoSetup(); 
 const hy = new HydraTex();
 const db = new DbReader();
-db.read("./sql/document.db"); 
+db.read("./sql/document.db");
+// let twC; 
+let tween;
+let tweenBool = false; 
+//const avButton = avButton.addEventListener('click', renderAV);
 
-const avButton = document.getElementById('av');
-avButton.addEventListener('click', renderAV);
+let interStr = ''; 
 
 function renderAV(){
     // la versión render av no debería desplegar code Mirror 
     console.log("render AV"); 
 }
 
-const pdfButton = document.getElementById('pdf');
-pdfButton.addEventListener('click', printPDF );
+document.getElementById("container").onclick = cameraChange;
+
+//const pdfButton = document.getElementById('pdf');
+//pdfButton.addEventListener('click', printPDF );
 
 // extras intervención oci
 
@@ -44,8 +51,8 @@ function printPDF(){
 
 const clock = new THREE.Clock();
 
-const fixButton = document.getElementById('edit');
-fixButton.addEventListener('click', init);
+//const fixButton = document.getElementById('edit');
+//fixButton.addEventListener('click', init);
 
 let cubos = [];
 let geometry; 
@@ -53,25 +60,78 @@ let geometry;
 //const material2 = new THREE.MeshBasicMaterial( { color: 0xffffff, map: hy.vit } );
 let pX = [], pY = [], pZ = []; 
 
+let sphere; 
+let raycaster;
+let INTERSECTED;
+const pointer = new THREE.Vector2();
+
+
+init(); // los elementos particulares de este init podrían ir en otro lado. En todo caso podría delimitar la escena que antes se detonaba con esta función.     
 function init(){
+    
+    raycaster = new THREE.Raycaster();
+    document.addEventListener( 'mousemove', onPointerMove );
+
+    // document.body.style.cursor = 'none';
+    th.initVideo();
+    th.camera.position.z = 200; 
+
+    const light = new THREE.PointLight(  0xffffff, 1 );
+    light.position.set( 0, 500, 500 );
+    th.scene.add( light );
+
+    th.renderer2.outputColorSpace = THREE.LinearSRGBColorSpace;
+    th.renderer2.toneMapping = THREE.ReinhardToneMapping;
+    th.renderer2.toneMappingExposure = Math.pow( 0.6, 1.5 )
+    
+    un = new UnrealBloom(th.scene, th.camera, th.renderer2); 
+    // retro = new Feedback(th.scene, th.renderer2, 1080);
+    const geometry44 = new THREE.SphereGeometry( 50, 128, 128 ); 
+    const material44 = new THREE.MeshStandardMaterial( { color: 0xffffff, map:hy.vit, roughness: 0.6 } ); 
+    sphere44 = new THREE.Mesh( geometry44, material44 );
+
+    sphere44.userdata = {id:'iniciar'};
+    console.log(sphere44.userdata.id); 
+    th.scene.add( sphere44 );
+    sphere44.position.z = -20; 
+    
+    var cursorX;
+    var cursorY;
+    document.onmousemove = function(e){
+	cursorX = e.pageX;
+	cursorY = e.pageY;
+    }
+
+    osc(4, ()=>cursorX*0.0001, 1 ).color(1.75, 0, 1.97).rotate(1, 0.3, 0.5).modulateScrollX(o0, 1.1).out(o0);
+
+    container = document.getElementById( 'container' );
+    container.appendChild(th.renderer2.domElement);
+
+    // twC = new twCamera(th.camera); 
+    animate(); 
+    
+}
+
+function onPointerMove( event ) {
+    
+    pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+    pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+    
+}
+
+function initCubes(){
 
     document.body.style.cursor = 'none'; 
 
-    const overlay = document.getElementById( 'overlay' );
-    overlay.remove();
+    const par = new EditorParser();     
     
-    const blocker = document.getElementById( 'blocker' );
-    const instructions = document.getElementById( 'instructions' );
-    instructions.remove(); 
-    blocker.remove();
-
-    const par = new EditorParser(); 
+    //const overlay = document.getElementById( 'overlay' );
+    //overlay.remove();
     
-    th.initVideo();
-
-    const light = new THREE.PointLight(  0xffffff, 1 );
-    light.position.set( 0, 0, 0 );
-    th.scene.add( light ); 
+    //const blocker = document.getElementById( 'blocker' );
+    //const instructions = document.getElementById( 'instructions' );
+    //instructions.remove(); 
+    //blocker.remove();
 
     th.renderer2.outputColorSpace = THREE.LinearSRGBColorSpace;
     th.renderer2.toneMapping = THREE.ReinhardToneMapping;
@@ -87,7 +147,7 @@ function init(){
 	cursorY = e.pageY;
     }
 
-    osc(4, ()=>cursorX*0.0001, 1 ).color(0.85, 1, 0.6).rotate(1, 0.3, 0.5).modulateScrollX(o0, 1.001).out(o0);
+    osc(4, ()=>cursorX*0.0001, 0 ).color(0.6, 0.6, 0.6).rotate(1, 0.3, 0.5).modulateScrollX(o0, 1.001).out(o0);
 
     let ox, oy, geometryTex;
 
@@ -112,8 +172,8 @@ function init(){
     for(let i = 0; i < xgrid; i++){
 	for (let j = 0; j < ygrid; j++){
 	    
-	    //geometry = new THREE.SphereGeometry(4, 3, 4 );
-	    geometry = new THREE.BoxGeometry(8, 4, 2); 
+	    // geometry = new THREE.SphereGeometry(4, 3, 4 );
+	    const geometry = new THREE.BoxGeometry(8, 4, 2); 
 	    change_uvs( geometry, ux, uy, i, j );
 
 	    materials[ cubeCount] = new THREE.MeshStandardMaterial( { color: 0xffffff, map: hy.vit, roughness: 0.8, metalness:0.1 } );
@@ -139,17 +199,77 @@ function init(){
 	    cubos[cubeCount].rotation.z = Math.random() * 360; 
 	    th.scene.add( cubos[cubeCount] );
 	    cubeCount++; 
-}
+	}
+    }
 	
-	container = document.getElementById( 'container' );
-	container.appendChild(th.renderer2.domElement);
+    container = document.getElementById( 'container' );
+    container.appendChild(th.renderer2.domElement);
     
-	animate();
-	stein(20); 
+    animate();
+    stein(20); 
+    
+}
+
+function animate(){
+
+    th.camera.updateMatrixWorld();
+
+    // let interStr = ''; 
+    // find intersections
+    
+    raycaster.setFromCamera( pointer, th.camera );
+
+    const intersects = raycaster.intersectObjects( th.scene.children, false );
+
+    if ( intersects.length > 0 ) {
+	
+	if ( INTERSECTED != intersects[ 0 ].object ) { // si INTERSECTED es tal objeto entonces realiza tal cosa
+
+	    // console.log(intersects[ 0 ].object.userdata); 
+
+	    if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+
+	    INTERSECTED = intersects[ 0 ].object;
+	    INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+	    INTERSECTED.material.emissive.setHex( 0xffffff );
+
+	    interStr = INTERSECTED.userdata.id;
+	    
+	    if(interStr == 'iniciar'){
+		document.getElementById("container").style.cursor = "pointer";
+	    }
+	    // Aquí debería ir la animación
+	   
+	}
+	
+    } else {
+	
+	if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+	
+	INTERSECTED = null;
+	document.getElementById("container").style.cursor = "default";
+	interStr = ''; 
+	
+    }
+
+     //if(tweenBool){
+	 TWEEN.update();
+    //}
+    
+    hy.vit.needsUpdate = true; 
+    const delta = clock.getDelta();
+    requestAnimationFrame( animate );
+
+    sphere44.rotation.x += 0.0001  
+    sphere44.rotation.y += 0.0002; 
+    sphere44.rotation.z -= 0.0001; 
+
+    th.renderer2.render( th.scene, th.camera );
+    un.render2(delta);
 
 }
 
-function animate() {
+function animate2() {
 
     requestAnimationFrame( animate );
     
@@ -166,13 +286,13 @@ function animate() {
 
     var time2 = Date.now() * 0.0005;
 
-    th.camera.position.x = Math.sin( time2 * 0.5 ) * ( 75 + Math.sin( time2 * 0.125 )* 1) * 0.4; 
-    th.camera.position.y = Math.cos( time2 * 0.5 ) * 0.4; 
-    th.camera.position.z = Math.cos( time2 * 0.5 ) * - 0.4
+    th.camera.position.x = Math.sin( time2 * 0.5 ) * ( 75 + Math.sin( time2 * 0.125 )* 1) * 0.6; 
+    th.camera.position.y = Math.cos( time2 * 0.5 ) * 0.6; 
+    th.camera.position.z = Math.cos( time2 * 0.5 ) * - 0.6;
 
-    retro.cube.rotation.x += 0.0001  
-    retro.cube.rotation.x += 0.0002; 
-    retro.cube.rotation.x -= 0.0001; 
+    retro.cube.rotation.x += 0.001  
+    retro.cube.rotation.y += 0.002; 
+    retro.cube.rotation.z -= 0.001; 
     
     th.camera.lookAt(0, 0, 0);   
     
@@ -181,35 +301,24 @@ function animate() {
     let perlin = new ImprovedNoise();
 
     if(cubos.length == xgrid*ygrid){
-	let cc = 0; 
-    
+	let cc = 0;     
 	for(let i = 0; i < xgrid; i++){
 	    for (let j = 0; j < ygrid; j++){
-
-	
 		let d = perlin.noise(pX[cc]*0.25*(time2 ),
 				     pY[cc]*0.25*(time2 ),
 				     pZ[cc]*0.25*(time2 ) ) *2
-
-		
-		cubos[cc].position.x = (pX[cc]*1)*(1+d) *((an.dataArray[cc]/12));
-		cubos[cc].position.y = (pY[cc])* (1+d)  *((an.dataArray[cc]/12));
-		cubos[cc].position.z = (pZ[cc]*1)* (1+d)  *((an.dataArray[cc]/12));
-
-
-		
+		cubos[cc].position.x = (pX[cc]*1)*(1+d) *((an.dataArray[cc]/8));
+		cubos[cc].position.y = (pY[cc])* (1+d)  *((an.dataArray[cc]/8));
+		cubos[cc].position.z = (pZ[cc]*1)* (1+d)  *((an.dataArray[cc]/8));
 		cubos[cc].scale.x = 0.5* (d+1)*1;
 		cubos[cc].scale.y = 2* (d+1)*1;
 		cubos[cc].scale.z = 0.5* (d+1)*1;
-		
-		cubos[cc].rotation.x += 0.0006 * (1+d);
-		cubos[cc].rotation.y += 0.0007 * (1+d);
-		cubos[cc].rotation.z -= 0.0008 * (d+1);
-	
+		cubos[cc].rotation.x += 0.00006 * (1+d);
+		cubos[cc].rotation.y += 0.00007 * (1+d);
+		cubos[cc].rotation.z -= 0.00008 * (d+1);
 		cc++; 
 	    }
 	}
-	
     }
     th.renderer2.render( th.scene, th.camera );
     un.render2(delta);
@@ -257,4 +366,30 @@ function change_uvs( geometry, unitx, unity, offsetx, offsety ) {
 	
     }
     
+}
+
+function cameraChange(){
+
+    if(interStr == 'iniciar'){
+	console.log(db.result2);
+	document.getElementById("info").innerHTML = db.postdb; // cuando tween termine 
+
+	
+	const coords = {x: th.camera.position.x,
+			y: th.camera.position.y,
+			z: th.camera.position.z} // Start at (0, 0)
+	
+	// console.log(coords); 
+	
+	tween = new TWEEN.Tween(coords, false) // Create a new tween that modifies 'coords'.
+	    .to({x: 0, y: 0, z: 0}, 2000) // Move to (300, 200) in 1 second.
+	    .easing(TWEEN.Easing.Quadratic.InOut) // Use an easing function to make the animation smooth.
+	    .onUpdate(() => {
+		th.camera.position.z=coords.z;
+		// console.log(coords); 
+	    })
+	    .start() // Start the tween immediately.
+	
+	// tweenBool = true;
+    }
 }

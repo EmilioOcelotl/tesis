@@ -2,9 +2,44 @@
 // También tendría que estar lo de gamepad
 // Y lo de codeMirror 
 
-import { MultiTxt } from "./textSetup"
-
+// import { MultiTxt } from "./textSetup"
 const OSC = require('osc-js'); // pal osc 
+import * as TWEEN from "tween"; 
+
+function twCamera(camera){
+
+    self = this;
+    self.camera = camera; 
+
+    self.change = function(toX, toY, toZ, time){
+
+	self.from = {
+	    x: self.camera.position.x,
+	    y: self.camera.position.y,
+	    z: self.camera.position.z 
+	}
+	
+	self.to = {
+	    x: toX,
+	    y: toY,
+	    z: toZ
+	}
+
+	self.tween = new TWEEN.Tween(self.from)
+	    .to(self.to, time)
+	    .easing( TWEEN.Easing.Linear.None)
+	    .onupdate(function(){
+		self.camera.position.set(self.from.x, self.from.y, self.from.z);
+		self.camera.looAt(new THREE.Vector3(0, 0, 0))
+	    })
+	    .start();
+
+    }
+	self.update = function(){
+	    self.tween.update(); 
+	}
+    
+}
 
 function TxtOsc(scene){
     
@@ -51,4 +86,4 @@ function keyDown(){
     
 }
 
-export { TxtOsc, GamePad }
+export { TxtOsc, GamePad, twCamera }

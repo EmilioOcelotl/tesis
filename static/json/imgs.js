@@ -88,7 +88,44 @@ export default {
 	    "w": "19.2",
 	    "h": "10.8"
 	},
+	
+	{
+	    "img": "img/felicidades.jpg",
+	    "pie": "Anti",
+	    "url": "",
+	    "nota": "Three.js y SuperCollider. Cusco",
+	    "w": "12.85",
+	    "h": "8.08"
+	},
 
+	{
+	    "img": "img/anti2.jpg",
+	    "pie": "Anti2",
+	    "url": "",
+	    "nota": "Three.js y SuperCollider. Cusco",
+	    "w": "19.2",
+	    "h": "10.8"
+	},
+
+	
+	{
+	    "img": "img/anti1.jpg",
+	    "pie": "Anti2",
+	    "url": "",
+	    "nota": "Three.js y SuperCollider. Cusco",
+	    "w": "19.2",
+	    "h": "10.8"
+	},
+
+	{
+	    "img": "img/circulos.jpg",
+	    "pie": "Primeros intentos",
+	    "url": "",
+	    "nota": "Estudio audiovisual. Hydra, Three.js y Web Audio API",
+	    "w": "15.3",
+	    "h": "10.71"
+	},
+	
 	
 	{
 	    "img": "img/cusco.jpg",
@@ -98,6 +135,16 @@ export default {
 	    "w": "51.84",
 	    "h": "34.56"
 	},
+
+	{
+	    "img": "img/error2.jpg",
+	    "pie": "Primeros intentos",
+	    "url": "",
+	    "nota": "Estudio audiovisual. Hydra, Three.js y Web Audio API",
+	    "w": "14.7",
+	    "h": "10.8"
+	},
+	
 	
 	{
 	    "img": "img/thhydra.jpg",
@@ -136,6 +183,14 @@ export default {
 	    "h": "19.2"
 	},
 
+	{
+	    "img": "img/map.jpg",
+	    "pie": "errores",
+	    "url": "https://three.ocelotl.cc/",
+	    "nota": "Errores en la lectura e impresión de este documento",
+	    "w": "6.55",
+	    "h": "7.44"
+	},
 	
 	{
 	    "img": "img/tesisGlitch2.jpg",
@@ -144,6 +199,15 @@ export default {
 	    "nota": "Errores en la lectura e impresión de este documento",
 	    "w": "10.8",
 	    "h": "19.2"
+	},
+
+	{
+	    "img": "img/tres2023.jpg",
+	    "pie": "errores",
+	    "url": "https://three.ocelotl.cc/",
+	    "nota": "Errores en la lectura e impresión de este documento",
+	    "w": "18.95",
+	    "h": "9.6"
 	}
 
 	/*

@@ -23,7 +23,8 @@
     "parcel-reporter-static-files-copy": "^1.5.0",
     "sql.js": "^1.8.0",
     "three": "^0.150.1",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "tween": "^0.9.0"
   },
   "devDependencies": {
     "buffer": "^5.7.1",
