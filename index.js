@@ -34,7 +34,7 @@ document.getElementById("container").onclick = change;
 
 // extras intervención oci
 
-const meshes = [],materials = [],xgrid = 3, ygrid = 1;
+const meshes = [],materials = [],xgrid = 1, ygrid = 4;
 let material, mesh;
 let an; 
 
@@ -67,7 +67,7 @@ let raycaster;
 let INTERSECTED;
 const pointer = new THREE.Vector2();
  
-let menuC1str = ['regresar','imprimir', 'visualizar']; 
+let menuC1str = ['regresar', '+ info', 'visualizar', 'imprimir']; 
 const group = new THREE.Group();
 
 init(); // los elementos particulares de este init podrían ir en otro lado. En todo caso podría delimitar la escena que antes se detonaba con esta función.     
@@ -81,7 +81,7 @@ function init(){
     th.camera.position.z = 200; 
 
     const light = new THREE.PointLight(  0xffffff, 1 );
-    light.position.set( 0, 500, 500 );
+    light.position.set( 0, 0, 500 );
     th.scene.add( light );
 
     th.renderer2.outputColorSpace = THREE.LinearSRGBColorSpace;
@@ -106,7 +106,7 @@ function init(){
 	cursorY = e.pageY;
     }
 
-    osc(7, ()=>cursorX*0.001, 1 ).color(1.75, 0.5, 1.97).rotate(1, 0.1, 0.5).modulateScrollX(o0, 1.001).out(o0);
+    osc(2, ()=>cursorX*0.001, 1 ).color(1.75, 0.5, 1.97).rotate(1, 0.1, 0.5).modulateScrollX(o0, 1.001).out(o0);
 
     container = document.getElementById( 'container' );
     container.appendChild(th.renderer2.domElement);
@@ -123,11 +123,11 @@ function init(){
     
     for(let i = 0; i < menuC1str.length; i++){
 	
-	const geometry = new THREE.BoxGeometry( 2, 6, 2); 
+	const geometry = new THREE.BoxGeometry( 7, 2, 2); 
 
-	change_uvs( geometry, ux, uy, i, 0);
+	change_uvs( geometry, ux, uy, 0, i);
 
-	materials[i] = new THREE.MeshStandardMaterial({color:0xffffff,map:hy.vit, roughness:0.6});
+	materials[i] = new THREE.MeshStandardMaterial({color:0xffffff,map:hy.vit, roughness:0.7});
 	//const material = new THREE.MeshStandardMaterial( {color: 0x00ff00} );
 	material2 = materials[i]; 
 	cubos[i] = new THREE.Mesh( geometry, material2 );    
@@ -144,7 +144,7 @@ function init(){
 	pZ[i] = posZ;
 	*/
 	
-	cubos[i].position.x = ((i+1) *4)-8; 
+	cubos[i].position.y = ((i+1) *2.5)-6; 
 	//cubos[i].position.y = pY[i] * 2;
 	//cubos[i].position.z = pZ[i] * 2;
 	//th.scene.add(cubos[i]);
