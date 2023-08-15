@@ -2,7 +2,7 @@ export default {
 
     "title":[
 	{
-	    "img": "img/nime.jpg",
+	    "img": "img/menu.jpg",
 	    "nota": "stil de la presentación en nime2023"
 	}
     ],
@@ -173,6 +173,17 @@ export default {
 	    "w": "19.2",
 	    "h": "10.8"
 	},
+
+		
+	{
+	    "img": "img/algorave.jpg",
+	    "pie": "Primeros intentos",
+	    "url": "https://three.ocelotl.cc/",
+	    "nota": "Deep Structures. Presentado en NIME por Marianne Teixido y Emilio Ocelotl ",
+	    "w": "19.2",
+	    "h": "10.8"
+	},
+
 
 	{
 	    "img": "img/tesisGlitch.jpg",

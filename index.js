@@ -9,7 +9,6 @@ import { EditorParser } from './js/avLib/editorParser'
 import * as TWEEN from 'tween'; 
 import { FontLoader } from './static/jsm/loaders/FontLoader.js';
 
-
 let a = new AudioSetup(); 
 let th = new VideoSetup(); 
 const hy = new HydraTex();
@@ -90,7 +89,7 @@ function init(){
     
     un = new UnrealBloom(th.scene, th.camera, th.renderer2); 
     // retro = new Feedback(th.scene, th.renderer2, 1080);
-    const geometry44 = new THREE.SphereGeometry( 70, 100, 100 ); 
+    const geometry44 = new THREE.BoxGeometry( 100, 100, 100 ); 
     const material44 = new THREE.MeshStandardMaterial( { color: 0xffffff, map:hy.vit, roughness: 0.6 } ); 
     sphere44 = new THREE.Mesh( geometry44, material44 );
 
@@ -123,10 +122,9 @@ function init(){
     
     for(let i = 0; i < menuC1str.length; i++){
 	
-	const geometry = new THREE.BoxGeometry( 7, 2, 2); 
+	const geometry = new THREE.BoxGeometry( 7, 2, 0.1); 
 
 	change_uvs( geometry, ux, uy, 0, i);
-
 	materials[i] = new THREE.MeshStandardMaterial({color:0xffffff,map:hy.vit, roughness:0.7});
 	//const material = new THREE.MeshStandardMaterial( {color: 0x00ff00} );
 	material2 = materials[i]; 
@@ -144,7 +142,7 @@ function init(){
 	pZ[i] = posZ;
 	*/
 	
-	cubos[i].position.y = ((i+1) *2.5)-6; 
+	cubos[i].position.y = ((i+1) *2)-5.5; 
 	//cubos[i].position.y = pY[i] * 2;
 	//cubos[i].position.z = pZ[i] * 2;
 	//th.scene.add(cubos[i]);
@@ -254,7 +252,7 @@ function initCubes(){
     container.appendChild(th.renderer2.domElement);
     
     animate();
-    stein(20); 
+    // stein(20); 
     
 }
 
@@ -310,10 +308,12 @@ function animate(){
     const delta = clock.getDelta();
     requestAnimationFrame( animate );
 
+    /*
     sphere44.rotation.x += 0.0001  
     sphere44.rotation.y += 0.0002; 
     sphere44.rotation.z -= 0.0001; 
-
+    */
+    
     th.renderer2.render( th.scene, th.camera );
     un.render2(delta);
 

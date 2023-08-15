@@ -3,7 +3,7 @@ body {
     background-color: black;
     overflow-y: hidden;
     font-family: Source Code Pro;
-    font-size: 14px; 
+    font-size: 18px; 
     color: #f7f8f9;
     line-height: 10px;
 
@@ -33,7 +33,7 @@ body {
 #instrucciones {
 
     position: absolute; 
-    bottom: 30px;
+    bottom: 100px;
     width: 100vw;
     padding: 40px;
     text-align: center; 

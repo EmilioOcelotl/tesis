@@ -164,27 +164,33 @@ function DbReader(){
     
     this.print = function(text){
 
+	let finalWidth = 11;
+	let finalHeight = 17; 
 	// portada, indices, abstract, etc 
 	// Considerar guardar los capítulos como entidades indenpendientes. 
 	var pageWidth = 10.5,  margin = 1.5, maxLineWidth = pageWidth - margin * 2,   lineHeight = 1, pag = 0;	
-	const doc = new jsPDF({unit: "in", lineHeight: lineHeight, format:[10.8, 19.2]});
+	const doc = new jsPDF({unit: "in", lineHeight: lineHeight, format:[finalWidth, finalHeight]});
 	// fuente
 	// doc.setFont('zapfdingbats', 'normal');
 	// doc.setFontType('normal');	
 	doc.setFontSize(20);
 	// doc.setFontStyle("normal");
 	doc.setDrawColor(255, 0, 0);
-	doc.rect(0, 0, 10.8, 19.2, "F");
-	doc.setTextColor(255);
-	// La portada podría también estar en la base de datos. 
-	doc.addImage(data.title[0].img, "JPEG", 0, 0, 19.2, 10.8);
-	doc.addImage(data.title[0].img, "JPEG", -8.4, 9.6, 19.2, 10.8);
-	doc.link(0, 0, 10.8, 19.2, {url: 'https://ocelotl.cc'});
-	const portada = doc.splitTextToSize("Universidad Nacional Autónoma de México\n\nPrograma de Maestría y Doctorado en Música\n\nFacultad de Música\nInstituto de Ciencias Aplicadas y Tecnología\nInstituto de Investigaciones Antropológicas\n\n\n\n\n\n\n\n\n\n\n\n\n\nTres Estudios Abiertos\nBuscar un mejor título y subtítulo\n\n\n\n\n\n\n\n\n\n\n\n\n\nQue para optar por el grado de\nDoctor en Música\n(Tecnología Musical)\n\nPresenta\nEmilio Ocelotl Reyes\nTutor Principal: Hugo Solís\nComité Tutor:Iracema de Andrade, Fernando Monreal\n\n", maxLineWidth);
-	doc.text(portada, 1.5, 3.5, {align: "left"}); 
+	doc.rect(0, 0, finalWidth, finalHeight, "F");
+	doc.setTextColor(250);
+	// La portada podría también estar en la base de datos.
+	
+	doc.addImage(data.title[0].img, "JPEG", finalWidth/2, 0, finalWidth, finalHeight/2);
+	doc.addImage(data.title[0].img, "JPEG", -finalWidth/2, finalHeight/2, finalWidth, finalHeight/2);
+	doc.link(0, 0, finalWidth, finalHeight, {url: 'https://ocelotl.cc'});
+	const portada = doc.splitTextToSize("\n\n\n\nUniversidad Nacional Autónoma de México\n\nPrograma de Maestría y Doctorado en Música\n\nFacultad de Música\nInstituto de Ciencias Aplicadas y Tecnología\nInstituto de Investigaciones Antropológicas\n\n\n\n\n\n\n\nTres Estudios Abiertos\nBuscar un mejor título y subtítulo\n\n\n\n\n\n\n\n\n\nQue para optar por el grado de\nDoctor en Música\n(Tecnología Musical)\n\n\n\n\n\nPresenta\nEmilio Ocelotl Reyes\nTutor Principal: Hugo Solís\nComité Tutor:Iracema de Andrade, Fernando Monreal\n\n", maxLineWidth);
+	doc.text(portada, 5.4, 2.5, {align: "center"}); 
 	// Agregar la portada 
 	doc.addPage();
 
+	doc.addPage(); // página en blanco 
+	
+	doc.setTextColor(50); 
 	/*
 	// agregar una página vacía, será esta la causa de que no funcione 
 	doc.setFillColor(255, 255, 255);
@@ -196,7 +202,7 @@ function DbReader(){
 	//doc.setFillColor(0, 0, 0);
 	//doc.rect(0, 0, 10.8, 19.2, "F");
 
-	doc.setFontSize(18);
+	doc.setFontSize(16);
 
 	const titulosregex = /\·(.*)/g;
 	let titulos = [];
@@ -211,15 +217,15 @@ function DbReader(){
 	
 	const titulosprint = titulos.join("\n\n");
 	const indice = doc.splitTextToSize("Indice General\n\n\n\n"+titulosprint);
-	doc.setFillColor(0, 0, 0);
-	doc.rect(0, 0, 10.8, 19.2, "F");
+	//doc.setFillColor(0, 0, 0);
+	//doc.rect(0, 0, 10.8, 19.2, "F");
 	console.log(titulosprint); 
 	doc.text(indice, 1.5, 2.5);
 	// Agregar índice
 	doc.addPage();
 	
-	doc.setFillColor(0, 0, 0);
-	doc.rect(0, 0, 10.8, 19.2, "F");
+	//doc.setFillColor(0, 0, 0);
+	//doc.rect(0, 0, 10.8, 19.2, "F");
 	const indiceFiguras = doc.splitTextToSize("Índice de Figuras");
 	doc.text(indiceFiguras, 1.5, 2.5);
 	// Agregar índice figuras 
@@ -238,16 +244,17 @@ function DbReader(){
 	    //console.log(pag); 
 	    // doc.setDrawColor(255, 0, 0);
 	    //let rando = Math.floor(Math.random() * 5); 	    
-	    doc.rect(0, 0, 10.8, 19.2, "F");
+	    // doc.rect(0, 0, 10.8, 19.2, "F");
 	    const txtFinal = doc.splitTextToSize(text[i], maxLineWidth); // Hay que investigar el asunto de los números de página 
 	    doc.text(txtFinal, 1.5, 2.5);
-	    doc.text((pag+1).toString(), 1.5, 17); 
+	    doc.text((pag+1).toString(), 1.5, 14); 
 	    // doc.addPage();
 	    // Podría alternar los colores de página y de texto
-	    doc.addPage([10.8, 19.2], "p");
+	    doc.addPage([11, 17], "p");
 
 	    //____________________________________-
-	    // Creo que el problema es que la página del texto y de la imagen suceden en la misma iteración. Creo que se podría realizar con INSERT PAGE
+	    // Creo que el problema es que la página del texto y de la imagen suceden en la misma iteración. Se pudo resolver con INSERT PAGE
+	    // Ahora hace falta que el número de páginas pueda coincidir con las imágenes insertadas. 
 	    if(pag%(pagsInt+3) == 0){
 		// console.log("imagen");
 		if(pagsImgCount2 != 0 && pagsImgCount2 < data.imgs.length+1){
@@ -257,7 +264,6 @@ function DbReader(){
 		pagsImgCount2++; 
 	    }
 	    pag++;
-	    //console.log(pag); 
 	}
 
 	// una iteración secundaria inserta las imágenes 
@@ -269,7 +275,7 @@ function DbReader(){
 //	    const width = Number(data.imgs[pagsImgCount].w);
 //	    const height = Number(data.imgs[pagsImgCount].h);
 
-	    const width = 10.8;
+	    const width = 10.8; // valor de tamaño constante 
 	    const height = (Number(data.imgs[pagsImgCount].h)*width) / Number(data.imgs[pagsImgCount].w); 
 	    
 	    // Se puede redimensionar el tamaño aquí? 
@@ -286,11 +292,8 @@ function DbReader(){
 	    pagsImgCount++;
 	}
 
-
-	//________________--
 	// Podría existir una iteración adicional para notas al pie 
-	
-	
+		
 	// También hace falta algo que reconozca la página en la que se encuentra la iteración y que luego imprima en un espacio reservado la cuestión. Podría suceder lo mismo con el cabezal y el pie de página. 
 	// Investigar cuántas líneas y cuántos caracteres por línea puede tener un documento.
 	// Algo similar para las notas, pero esas tienen que ir a fuerza al final de cada capítulo 
@@ -309,5 +312,7 @@ function DbReader(){
 }
 
 // Compilar la tesis de atrás para adelante 
+// Al final parece complicado concatenar pdfs. El panorama donde diversos documentos se imprimen podría ser la opción más sencilla, sobre todo para imprimir los anexos de la tesis
+// pdf-lib parece una librería adecuada, no está actualizada pero podría ayudar a concatenar los distintos documentos que se pueden imprimir. 
 
 export { DbReader } 

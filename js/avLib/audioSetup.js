@@ -182,8 +182,17 @@ function Analyser(aCtx){
         
 }
 
+// La clase Granular es una mezcla de las funcionalidades de Warp2 para SuperCollider y de la clase grain https://github.com/zya/granular/blob/gh-pages/js/main.js
+
+function Granular(){
+    self = this;
+
+    // la clase grain tiene 
+    
+}
+
 // Pensar que todo lo que suena podría ir a una mezcla general o a una especie de null ( pensando en términos de TD ) y luego esa salida se puede aprovechar para otro procesamiento o para enviar a analizador 
 
 // me imagino un analizador mucho más sofisticado 
 
-export { AudioSetup, Sine, Noise, Analyser }
+export { AudioSetup, Sine, Noise, Analyser, Granular }
