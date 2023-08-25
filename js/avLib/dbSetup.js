@@ -31,7 +31,6 @@ function DbReader(){
 	while (stmt.step()) pretxtdb.push(stmt.get()); // recorre y mientras stmt.step() arroje verdadero, entonces imprime los valores de stmt
 	stmt.free(); // liberar o cerrar hay que checar bien eso
 	// convertir de uint8Array a un string leíble ( en caso de que sea un uint8array ), si no lo es, deja intacto el texto
-	// console.log(pretxtdb); 
 
 	for(let i = 0; i < pretxtdb.length; i++){
 	    if(ArrayBuffer.isView(pretxtdb[i][0])){
@@ -39,7 +38,7 @@ function DbReader(){
 		pretxtdb[i] = string;
 	    }
 	}
-	//console.log(pretxtdb); 
+
 	// limpiar la base de datos para quitar los elementos vacíos 
 	for(let i = 0; i < pretxtdb.length; i++){
 	    if(pretxtdb[i].length != 0){
@@ -51,9 +50,9 @@ function DbReader(){
 	    }
 	}
 	// var regexCode = /<\/\/code/ig;
-	// console.log(this.txtdb.slice(0, this.txtdb.length-5));
 	// Encontrar una forma más eficiente de eliminar los últimos indices. En otras ocasiones han cambiado. 
-	this.postdb = this.txtdb.slice(0, this.txtdb.length-5); 
+	this.postdb = this.txtdb.slice(0, this.txtdb.length-5); // Estos índices ya cambiaron 
+	// console.log(this.postdb[105]); 
     }
 
     // Aquí pasamos el texto ya trabajado a una serie de modulos analizados etc 
@@ -78,6 +77,8 @@ function DbReader(){
 	    }
 	}
 
+	// Las notas de código pueden funcionar como las imágenes, podría apartarlas e introducirlas después. Esto podría resolverse después. Mientras tanto los archivos de código pueden ir al final. 
+	
 	this.result2 = [], this.links = []; 
 	// Respetar los saltos de línea, dobles saltos para títulos, quitar caracteres extraños o sustituirlos por espacios
 	// Regular expressions ar e the key to powerful, flexible, and efficient text processing (Friedl, 2006)
@@ -202,7 +203,7 @@ function DbReader(){
 	//doc.setFillColor(0, 0, 0);
 	//doc.rect(0, 0, 10.8, 19.2, "F");
 
-	doc.setFontSize(16);
+	doc.setFontSize(17);
 
 	const titulosregex = /\·(.*)/g;
 	let titulos = [];
@@ -296,7 +297,8 @@ function DbReader(){
 		
 	// También hace falta algo que reconozca la página en la que se encuentra la iteración y que luego imprima en un espacio reservado la cuestión. Podría suceder lo mismo con el cabezal y el pie de página. 
 	// Investigar cuántas líneas y cuántos caracteres por línea puede tener un documento.
-	// Algo similar para las notas, pero esas tienen que ir a fuerza al final de cada capítulo 
+	// Algo similar para las notas, pero esas tienen que ir a fuerza al final de cada capítulo
+	
 	const f = new Date(); 
 	let dateS = f.getDate() + "-"+ f.getMonth()+ "-" +f.getFullYear()+"-"+f.getHours()+"-"+f.getMinutes()+"-"+f.getSeconds();
 	// doc.text(JSON.stringify(txtdb[1]), 10, 10);

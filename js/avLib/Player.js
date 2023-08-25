@@ -51,6 +51,8 @@ function Player (aCtx, audioFile){ // aquí hace falta poner la secuencia, audio
 
     self.load();
 
+    // ¿eso es innecesario? No aparece en algún otro lado
+    
     self.startSeq = function(){
 	self.counter = 0;
 	self.futureTickTime = self.audioCtx.currentTime;
@@ -83,7 +85,6 @@ function Player (aCtx, audioFile){ // aquí hace falta poner la secuencia, audio
 	}
 
     }
-
     
     self.scheduler = function() {
 	if (self.futureTickTime < self.audioCtx.currentTime + 0.1) {
@@ -99,7 +100,7 @@ function Player (aCtx, audioFile){ // aquí hace falta poner la secuencia, audio
     }
 
     self.stop = function(){
-	        clearTimeout(self.timerID);
+	clearTimeout(self.timerID);
     }
 
     // console.log(self.buffer); 

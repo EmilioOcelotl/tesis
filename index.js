@@ -8,12 +8,16 @@ import { EditorParser } from './js/avLib/editorParser'
 // import { twCamera } from './js/avLib/controlSetup.js' 
 import * as TWEEN from 'tween'; 
 import { FontLoader } from './static/jsm/loaders/FontLoader.js';
+import { Player } from './js/avLib/Player.js'; 
+
+const audioFile1 = document.getElementById('audio_file1')
 
 let a = new AudioSetup(); 
 let th = new VideoSetup(); 
 const hy = new HydraTex();
 const db = new DbReader();
 db.read("./sql/document.db");
+
 // let twC; 
 let tween;
 let tweenBool = false; 
@@ -71,7 +75,9 @@ const group = new THREE.Group();
 
 init(); // los elementos particulares de este init podrían ir en otro lado. En todo caso podría delimitar la escena que antes se detonaba con esta función.     
 function init(){
-    
+
+    a.initAudio();
+    // console.log(a.audioCtx); 
     raycaster = new THREE.Raycaster();
     document.addEventListener( 'mousemove', onPointerMove );
 
@@ -123,9 +129,8 @@ function init(){
     for(let i = 0; i < menuC1str.length; i++){
 	
 	const geometry = new THREE.BoxGeometry( 7, 2, 0.1); 
-
 	change_uvs( geometry, ux, uy, 0, i);
-	materials[i] = new THREE.MeshStandardMaterial({color:0xffffff,map:hy.vit, roughness:0.7});
+	materials[i] = new THREE.MeshStandardMaterial({color:0xffffff,map:hy.vitcodemirroroo, roughness:0.7});
 	//const material = new THREE.MeshStandardMaterial( {color: 0x00ff00} );
 	material2 = materials[i]; 
 	cubos[i] = new THREE.Mesh( geometry, material2 );    
@@ -264,13 +269,10 @@ function animate(){
     // find intersections
 
     var time2 = Date.now() * 0.0005;
-
     raycaster.setFromCamera( pointer, th.camera );
-
     const intersects = raycaster.intersectObjects( th.scene.children, true );
 
     if ( intersects.length > 0 ) {
-	
 	if ( INTERSECTED != intersects[ 0 ].object ) { // si INTERSECTED es tal objeto entonces realiza tal cosa
 
 	    // console.log(intersects[ 0 ].object.userdata); 
@@ -282,12 +284,9 @@ function animate(){
 	    INTERSECTED.material.emissive.setHex( 0xffffff );
 	    /// primer nivel 
 	    document.getElementById("container").style.cursor = "pointer";
-
 	    interStr = INTERSECTED.userdata.id;
-
 	    // console.log(interStr);
 	    document.getElementById("instrucciones").innerHTML = interStr;
-	    
 	}
 	
     } else {
@@ -298,8 +297,6 @@ function animate(){
 	document.getElementById("container").style.cursor = "default";
 	interStr = '';
 	document.getElementById("instrucciones").innerHTML = "";
-
-	
     }
 
     TWEEN.update();
@@ -322,20 +319,14 @@ function animate(){
 function animate2() {
 
     requestAnimationFrame( animate );
-    
     th.renderer2.toneMappingExposure = Math.pow( (an.dataArray[0]/128.0)*0.75, 1.5 );
     //console.log((an.dataArray[0]*1000)+100); 
  an.getData();
-    
     retro.render2();
-    
     const delta = clock.getDelta();
-
     th.controls.movementSpeed = 0.33;
     th.controls.update( delta );
-
     var time2 = Date.now() * 0.0005;
-
     th.camera.position.x = Math.sin( time2 * 0.5 ) * ( 75 + Math.sin( time2 * 0.125 )* 1) * 0.6; 
     th.camera.position.y = Math.cos( time2 * 0.5 ) * 0.6; 
     th.camera.position.z = Math.cos( time2 * 0.5 ) * - 0.6;
@@ -395,6 +386,10 @@ function change(){
     }
     
     if(interStr == 'iniciar'){
+	
+	const smpl = new Player(a.audioCtx, audioFile1);
+	smpl.sequence([1, 0, 0, 1, 0]); 
+	
 	// console.log(db.result2);
 	const coords = {x: th.camera.position.x,
 			y: th.camera.position.y,
@@ -416,7 +411,6 @@ function change(){
 	//trambién hay onComplete
 	    .start() // Start the tween immediately.
     }
-
         
     if(interStr == 'regresar'){
 	// console.log(db.result2);
@@ -441,4 +435,3 @@ function change(){
 	    .start() // Start the tween immediately.
     }
 }
-

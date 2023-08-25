@@ -6,12 +6,9 @@ body {
     font-size: 18px; 
     color: #f7f8f9;
     line-height: 10px;
-
 }
 
-
 #info {
-
     position: absolute; 
     top: 0px;
     width: 100vw;
@@ -24,14 +21,10 @@ body {
     -webkit-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    pointer-events: none;
     z-index: 1; /* TODO Solve this in HTML */
 }
 
-
-
 #instrucciones {
-
     position: absolute; 
     bottom: 100px;
     width: 100vw;

@@ -182,17 +182,49 @@ function Analyser(aCtx){
         
 }
 
+// Me pregunto si primero podría hacer un análisis del audio para chopear no de acuerdo a un beat específico sino a los ataques del sonido
+// Este análisis podría regresarme una especie de arreglo con fracciones de la muestra
+
 // La clase Granular es una mezcla de las funcionalidades de Warp2 para SuperCollider y de la clase grain https://github.com/zya/granular/blob/gh-pages/js/main.js
 
-function Granular(){
-    self = this;
+// valdría la pena encontrar alguna forma de cargar archivos alojados de manera local o por ejemplo abrir el micrófono y hacer grabaciones. En ambos casos necesitaría alguna especie de módulo que cargue o captura el archivo de audio. 
 
-    // la clase grain tiene 
+// Primero hacer un player aquí y mover a otro lado la máquina de secuencias 
+
+function Player2(aCtx){ // audiocontext y el archivo a cargar
+    self = this;
+    // se pueden pasar sin ser objetos independientes? Recuerdo que para algo se necesitaban 
+    self.audioFile = audioFile;
+    self.audioCtx = aCxt;
+    self.buffer = 0;
+
+    // para cargar un archivo 
     
+    self.load = function(audioFile){
+
+	self.reader = new FileReader();
+
+	self.reader.onload = function (env) {
+	    self.audioCtx.decodeAudioData(ev.target.result).then(function (buffer) {
+		self.buffer = buffer; 
+		console.log("loaded"); 
+	    })
+	}
+	
+	self.reader.readAsArrayBuffer(audioFile.files[0]);
+	
+    }
+
+    // para reproducir la muestra provisionalmente 
+
+    self.play = function(time){ // el time viene de del reloj externo 
+    
+    
+    }
 }
 
 // Pensar que todo lo que suena podría ir a una mezcla general o a una especie de null ( pensando en términos de TD ) y luego esa salida se puede aprovechar para otro procesamiento o para enviar a analizador 
 
 // me imagino un analizador mucho más sofisticado 
 
-export { AudioSetup, Sine, Noise, Analyser, Granular }
+export { AudioSetup, Sine, Noise, Analyser, Player2 }
