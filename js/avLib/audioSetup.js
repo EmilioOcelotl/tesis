@@ -1,6 +1,8 @@
 
 // En este documento podríamos agregar entradas y salidas si quisieramos usar el mic de alguna manera 
 
+import { map_range } from './utils.js';
+
 function AudioSetup(){
     
     var self = this;
@@ -8,8 +10,7 @@ function AudioSetup(){
     self.randomNoiseNode = 0; 
     self.initAudio = 0; 
 
-    // self.microphone = 0;
-    
+    // self.microphone = 0;    
     // inicializar audio 
 
     self.initAudio = function (){
@@ -191,40 +192,84 @@ function Analyser(aCtx){
 
 // Primero hacer un player aquí y mover a otro lado la máquina de secuencias 
 
+function LoadFile(aCtx, audioFile){
+
+    self = this; 
+    self.buffer = 0;
+    self.audioCtx = aCtx; 
+    
+    self.reader = new FileReader();
+    
+    self.reader.onload = function (ev) {
+	self.audioCtx.decodeAudioData(ev.target.result).then(function (buffer) {
+	    self.buffer = buffer; 
+	    console.log("loaded");
+	    // Por defecto podría tener una configuración inicial cuando termine de cargar.
+	    
+	    
+	})
+    }	
+    
+    self.reader.readAsArrayBuffer(audioFile.files[0]);
+
+}
+
+
 function Player2(aCtx){ // audiocontext y el archivo a cargar
+
     self = this;
     // se pueden pasar sin ser objetos independientes? Recuerdo que para algo se necesitaban 
-    self.audioFile = audioFile;
-    self.audioCtx = aCxt;
+    self.audioCtx = aCtx;
     self.buffer = 0;
-
-    // para cargar un archivo 
     
-    self.load = function(audioFile){
-
-	self.reader = new FileReader();
-
-	self.reader.onload = function (env) {
-	    self.audioCtx.decodeAudioData(ev.target.result).then(function (buffer) {
-		self.buffer = buffer; 
-		console.log("loaded"); 
-	    })
-	}
-	
-	self.reader.readAsArrayBuffer(audioFile.files[0]);
-	
-    }
-
     // para reproducir la muestra provisionalmente 
 
-    self.play = function(time){ // el time viene de del reloj externo 
-    
-    
+    /*
+      
+      Parámetros de Warp1 en SuperCollider: numChannels, bufnum, pointer, freqScale, windowSize, envbufnum, overlaps, windowRandRadio
+      la definición del tamaño se determina con windowSize y el inicio con pointer. 
+      Parámetros tentativos: pointer, freqScale, windowSize, overlaps, windowRandRatio
+
+      El proceso de carga se puee juntar, para asociar la carga del archivo y la codificación en el mismo lugar 
+      Pointer: Tiene que ser un número entre 0 y 1 y se tiene que mapear a la duración de la muestra
+      freqScale: 1 es el archivo tal cual, 2 el doble, encontrar soluciones para reversa
+      windowSize: un numero que tiene que ser menor a 1
+      overlaps: No me queda claro cómo es la distribución de las ventanas cuanddo se enciman
+      windowRandRatio: La distribución anterior podría ser continua o randomizada, este parámetro lo puede lograr. 
+      
+    */
+   
+    // self.set = function(buffer, pointer, freqScale, windowSize, overlaps, windowRandRatio){
+
+    self.set = function(buffer, pointer, freqScale, windowSize, overlaps, windowRandRatio){
+
+	// Estos valores tienen que estar al inicio 
+	
+	self.buffer = buffer; // Primero definir el buffer
+	self.pointer = map_range(pointer, 0, 1, 0, self.buffer.duration); // punto e inicio 
+	self.freqScale = freqScale; // Problema con valores negativos
+	self.windowSize = windowSize; // punto final en el codigo tendria que ser pointer punto de inicio y pointer + wS como final
+	self.overlaps = overlaps; // cantidad de ventanas. Seguramente esto funciona en una tasa de ventanas/s, en SC es posible usar numeros de punto flotante
+	self.windowRandRatio = windowRandRatio; // 
+	
+	// console.log(self.pointer); 	
+	
     }
+   
+    // Iniciar y detener 
+    // Tal vez necesitemos audioWorklets
+    
+    self.start = function(){
+	// Si no hay buffer, por favor, carga uno
+    }
+
+    self.stop = function(){
+    }
+    
 }
 
 // Pensar que todo lo que suena podría ir a una mezcla general o a una especie de null ( pensando en términos de TD ) y luego esa salida se puede aprovechar para otro procesamiento o para enviar a analizador 
 
 // me imagino un analizador mucho más sofisticado 
 
-export { AudioSetup, Sine, Noise, Analyser, Player2 }
+export { AudioSetup, Sine, Noise, Analyser, Player2, LoadFile }

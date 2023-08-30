@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { DbReader } from "./js/avLib/dbSetup"
 import { VideoSetup, GLTFLd, Feedback, UnrealBloom } from "./js/avLib/videoSetup"
 import { HydraTex } from './js/avLib/hydraSetup' // en deep se perdió esta referencia. HydraTex podría ser sustituído en el futuro por un generador de shaders
-import { AudioSetup, Analyser } from './js/avLib/audioSetup'
+import { AudioSetup, Analyser, Player2, LoadFile } from './js/avLib/audioSetup'
 import { ImprovedNoise } from './static/jsm/math/ImprovedNoise.js';
 import { EditorParser } from './js/avLib/editorParser'
 // import { twCamera } from './js/avLib/controlSetup.js' 
@@ -10,7 +10,7 @@ import * as TWEEN from 'tween';
 import { FontLoader } from './static/jsm/loaders/FontLoader.js';
 import { Player } from './js/avLib/Player.js'; 
 
-const audioFile1 = document.getElementById('audio_file1')
+const audioFile1 = document.getElementById('audio_file1') // onload que lo decodifique 
 
 let a = new AudioSetup(); 
 let th = new VideoSetup(); 
@@ -73,14 +73,23 @@ const pointer = new THREE.Vector2();
 let menuC1str = ['regresar', '+ info', 'visualizar', 'imprimir']; 
 const group = new THREE.Group();
 
+let pl2; 
+
 init(); // los elementos particulares de este init podrían ir en otro lado. En todo caso podría delimitar la escena que antes se detonaba con esta función.     
 function init(){
 
     a.initAudio();
+
+    /*
+    audioFile1.addEventListener("change", (event) => {
+	const archivo = new LoadFile(a.audioCtx, audioFile1);
+	});
+    */
+
     // console.log(a.audioCtx); 
     raycaster = new THREE.Raycaster();
     document.addEventListener( 'mousemove', onPointerMove );
-
+    
     // document.body.style.cursor = 'none';
     th.initVideo();
     th.camera.position.z = 200; 
@@ -130,7 +139,7 @@ function init(){
 	
 	const geometry = new THREE.BoxGeometry( 7, 2, 0.1); 
 	change_uvs( geometry, ux, uy, 0, i);
-	materials[i] = new THREE.MeshStandardMaterial({color:0xffffff,map:hy.vitcodemirroroo, roughness:0.7});
+	materials[i] = new THREE.MeshStandardMaterial({color:0xffffff,map:hy.vit, roughness:0.7});
 	//const material = new THREE.MeshStandardMaterial( {color: 0x00ff00} );
 	material2 = materials[i]; 
 	cubos[i] = new THREE.Mesh( geometry, material2 );    
@@ -316,56 +325,6 @@ function animate(){
 
 }
 
-function animate2() {
-
-    requestAnimationFrame( animate );
-    th.renderer2.toneMappingExposure = Math.pow( (an.dataArray[0]/128.0)*0.75, 1.5 );
-    //console.log((an.dataArray[0]*1000)+100); 
- an.getData();
-    retro.render2();
-    const delta = clock.getDelta();
-    th.controls.movementSpeed = 0.33;
-    th.controls.update( delta );
-    var time2 = Date.now() * 0.0005;
-    th.camera.position.x = Math.sin( time2 * 0.5 ) * ( 75 + Math.sin( time2 * 0.125 )* 1) * 0.6; 
-    th.camera.position.y = Math.cos( time2 * 0.5 ) * 0.6; 
-    th.camera.position.z = Math.cos( time2 * 0.5 ) * - 0.6;
-
-    retro.cube.rotation.x += 0.001  
-    retro.cube.rotation.y += 0.002; 
-    retro.cube.rotation.z -= 0.001; 
-    
-    th.camera.lookAt(0, 0, 0);   
-    
-    hy.vit.needsUpdate = true; 
-    
-    let perlin = new ImprovedNoise();
-
-    if(cubos.length == xgrid*ygrid){
-	let cc = 0;     
-	for(let i = 0; i < xgrid; i++){
-	    for (let j = 0; j < ygrid; j++){
-		let d = perlin.noise(pX[cc]*0.25*(time2 ),
-				     pY[cc]*0.25*(time2 ),
-				     pZ[cc]*0.25*(time2 ) ) *2
-		cubos[cc].position.x = (pX[cc]*1)*(1+d) *((an.dataArray[cc]/8));
-		cubos[cc].position.y = (pY[cc])* (1+d)  *((an.dataArray[cc]/8));
-		cubos[cc].position.z = (pZ[cc]*1)* (1+d)  *((an.dataArray[cc]/8));
-		cubos[cc].scale.x = 0.5* (d+1)*1;
-		cubos[cc].scale.y = 2* (d+1)*1;
-		cubos[cc].scale.z = 0.5* (d+1)*1;
-		cubos[cc].rotation.x += 0.00006 * (1+d);
-		cubos[cc].rotation.y += 0.00007 * (1+d);
-		cubos[cc].rotation.z -= 0.00008 * (d+1);
-		cc++; 
-	    }
-	}
-    }
-    th.renderer2.render( th.scene, th.camera );
-    un.render2(delta);
-
-}
-
 function change_uvs( geometry, unitx, unity, offsetx, offsety ) {
 
     const uvs = geometry.attributes.uv.array;
@@ -379,22 +338,32 @@ function change_uvs( geometry, unitx, unity, offsetx, offsety ) {
     
 }
 
-function change(){
+// ¿Esto también podría ir a otra parte?
 
+function change(){
+    
     if(interStr == 'imprimir'){
 	printPDF(); 
     }
     
     if(interStr == 'iniciar'){
+
+	// cargar un archivo, poner un loader o algo así
+	// pasar el reloj al smpl sin que se pierda la secuencia y el audioctx 
+	//const smpl = new Player(a.audioCtx, audioFile1); // tercer parámetro de reloj y que internamente decida o de plano enviar todo al control	
+	// smpl.sequence([1, 0, 0, 1, 0]); // es el reloj
+
+	console.log(audioFile1); 
+	let algo = new LoadFile(a.audioCtx, audioFile1);
+
+	// let pl2 = new Player2(a.audioCtx);
 	
-	const smpl = new Player(a.audioCtx, audioFile1);
-	smpl.sequence([1, 0, 0, 1, 0]); 
+	//pl2.play();
 	
-	// console.log(db.result2);
 	const coords = {x: th.camera.position.x,
 			y: th.camera.position.y,
 			z: th.camera.position.z} // Start at (0, 0)
-	// console.log(coords);
+
 	tween = new TWEEN.Tween(coords, false) // Create a new tween that modifies 'coords'.
 	    .to({x: 0, y: 0, z: 10}, 2000) // Move to (300, 200) in 1 second.
 	    .easing(TWEEN.Easing.Quadratic.InOut) // Use an easing function to make the animation smooth.
@@ -408,22 +377,30 @@ function change(){
 		// Podría reproducir algún sonido 
 		document.getElementById("info").innerHTML = ""; // cuando tween termine 
 	    })
+	    .onComplete(() => {
+		console.log(algo.buffer);
+		let cosa = new Player2(a.audioCtx);
+		cosa.set(algo.buffer, 1, 1, 0.2, 2, 0); 
+		//pl2.set(algo.buffer); // a lo mejor está bien que este proceso esté independiente de la creación y destrucción de nodos 
+		//console.log(algo.buffer);
+		//console.log(pl2.buffer); 
+		//pl2.start(0.1); // solución sencilla, espera dos segundos
+	    })
 	//trambién hay onComplete
-	    .start() // Start the tween immediately.
+	    .start() // Start the tween immediately. No poner alguna propiedad, supongo que sustituye el tiempo de inicio y llegada. 
     }
         
     if(interStr == 'regresar'){
-	// console.log(db.result2);
+	
 	const coords = {x: th.camera.position.x,
 			y: th.camera.position.y,
-			z: th.camera.position.z} // Start at (0, 0)
-	// console.log(coords); 
+			z: th.camera.position.z} // Start at (0, 0) 
+
 	tween = new TWEEN.Tween(coords, false) // Create a new tween that modifies 'coords'.
 	    .to({x: 0, y: 0, z: 200}, 2000) // Move to (300, 200) in 1 second.
 	    .easing(TWEEN.Easing.Quadratic.InOut) // Use an easing function to make the animation smooth.
 	    .onUpdate(() => {
 		th.camera.position.z=coords.z;
-		// console.log(coords); 
 	    })  
 	    .onStart(() => {
 	// 	th.camera.remove(sphere44); 
