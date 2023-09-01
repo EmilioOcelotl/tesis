@@ -1,6 +1,0 @@
-// Granulador como clase
-
-class Gran {
-    constructor(aCtx){
-	this.audioCtx = aCtx; 
-    }

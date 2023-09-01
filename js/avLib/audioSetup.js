@@ -196,16 +196,21 @@ function LoadFile(aCtx, audioFile){
 
     self = this; 
     self.buffer = 0;
+    self.revBuffer = 0; // más adelante podría ser el buffer en reversa 
     self.audioCtx = aCtx; 
+
+    console.log(audioFile); 
     
     self.reader = new FileReader();
     
     self.reader.onload = function (ev) {
 	self.audioCtx.decodeAudioData(ev.target.result).then(function (buffer) {
+	    //_________________________________
+	    // Pregunta: Será redundante tener una versión invertida del buffer para usarlo en caso de decida poner en reversa la grabación?
+	    //_________________________________
 	    self.buffer = buffer; 
 	    console.log("loaded");
 	    // Por defecto podría tener una configuración inicial cuando termine de cargar.
-	    
 	    
 	})
     }	
@@ -214,6 +219,7 @@ function LoadFile(aCtx, audioFile){
 
 }
 
+// Cambiar el nombre y luego moverlo como clase 
 
 function Player2(aCtx){ // audiocontext y el archivo a cargar
 
@@ -221,35 +227,50 @@ function Player2(aCtx){ // audiocontext y el archivo a cargar
     // se pueden pasar sin ser objetos independientes? Recuerdo que para algo se necesitaban 
     self.audioCtx = aCtx;
     self.buffer = 0;
+
+    self.futureTickTime = self.audioCtx.currentTime,
+    self.counter = 1,
+    self.tempo = 120,
+    self.secondsPerBeat = 60 / self.tempo,
+    self.counterTimeValue = (self.secondsPerBeat / 4),
+    self.timerID = undefined,
+    self.isPlaying = false;
     
     // para reproducir la muestra provisionalmente 
 
     /*
       
       Parámetros de Warp1 en SuperCollider: numChannels, bufnum, pointer, freqScale, windowSize, envbufnum, overlaps, windowRandRadio
-      la definición del tamaño se determina con windowSize y el inicio con pointer. 
+      la definición del tamaño se determina con windowSize y el inicio con pointer.
+      Hace falta determinar una especie de envolvente
+      
       Parámetros tentativos: pointer, freqScale, windowSize, overlaps, windowRandRatio
 
-      El proceso de carga se puee juntar, para asociar la carga del archivo y la codificación en el mismo lugar 
+      Buffer: El proceso de carga se puee juntar, para asociar la carga del archivo y la codificación en el mismo lugar. Encontrar la forma de pasar la versión normal y la versión en reversa del buffer.  
       Pointer: Tiene que ser un número entre 0 y 1 y se tiene que mapear a la duración de la muestra
       freqScale: 1 es el archivo tal cual, 2 el doble, encontrar soluciones para reversa
+      detune : desafinación, pensar que podría quedarse en otro lado para mantener los parámetros originales 
       windowSize: un numero que tiene que ser menor a 1
       overlaps: No me queda claro cómo es la distribución de las ventanas cuanddo se enciman
       windowRandRatio: La distribución anterior podría ser continua o randomizada, este parámetro lo puede lograr. 
+
+      Valores posibles adicionales: paneo, y detune 
       
     */
    
     // self.set = function(buffer, pointer, freqScale, windowSize, overlaps, windowRandRatio){
 
-    self.set = function(buffer, pointer, freqScale, windowSize, overlaps, windowRandRatio){
+    self.set = function(buffer, pointer, freqScale, detune, windowSize, overlaps, windowRandRatio){
 
 	// Estos valores tienen que estar al inicio 
 	
 	self.buffer = buffer; // Primero definir el buffer
-	self.pointer = map_range(pointer, 0, 1, 0, self.buffer.duration); // punto e inicio 
+	self.pointer = map_range(pointer, 0, 1, 0, self.buffer.duration); // punto de inicio
+	console.log(self.pointer); 
 	self.freqScale = freqScale; // Problema con valores negativos
+	self.detune = detune; // se realiza en relación a los valores de freqScale y está dado en cents, donde 0 es el valor original
 	self.windowSize = windowSize; // punto final en el codigo tendria que ser pointer punto de inicio y pointer + wS como final
-	self.overlaps = overlaps; // cantidad de ventanas. Seguramente esto funciona en una tasa de ventanas/s, en SC es posible usar numeros de punto flotante
+	self.overlaps = overlaps; // cantidad de ventanas. Seguramente esto funciona en una tasa de ventanas/s, en SC es posible usar numeros de punto flotante. Esto necesariamente implicaría que tenemos conocimiento del tiempo. 
 	self.windowRandRatio = windowRandRatio; // 
 	
 	// console.log(self.pointer); 	
@@ -257,14 +278,82 @@ function Player2(aCtx){ // audiocontext y el archivo a cargar
     }
    
     // Iniciar y detener 
-    // Tal vez necesitemos audioWorklets
+    // No se va a poder con  audioWorklets
+
+    // Esta función generaría los granos 
     
-    self.start = function(){
-	// Si no hay buffer, por favor, carga uno
+    self.startGrain = function(time){ // no me queda claro como funciona time 
+	self.gainNode = self.audioCtx.createGain();
+	// En el futuro esto podría conectarse a una cadena de efectos para darle un poco de profundidad y brillo. 
+	self.gainNode.connect(self.audioCtx.destination);
+	// Pensando que el sonido puede estar muy alto
+	self.gainNode.gain.setValueAtTime(0.5, self.audioCtx.currentTime);
+	// Mientras tanto la reproducción podría ser en loop.
+	self.source = self.audioCtx.createBufferSource();
+	self.source.connect(self.gainNode);
+	self.source.buffer = self.buffer;
+	self.source.playbackRate.value = self.freqScale;
+	self.source.detune.value = self.detune; 
+	self.source.start(self.audioCtx.currentTime+time, self.pointer, self.windowSize); // de inmediato, los otros dos parámetros indican inicio y final de la reproducción de la muestra. Hay que ver qué sucede si el inicio y el final no dan un resultado deseado.
+	// source.start también podría tener algún tipo de compensación de windowRandRatio
+	// solo se reproduce una vez, como no está en loop desaparece cada verz que termina. Entonces tenemos que implementar algo parecido al reloj de player
     }
 
-    self.stop = function(){
+    // Para cambiar el volumen 
+    self.gain = function(gain){
+	self.gainNode.gain.setValueAtTime(gain, self.audioCtx.currentTime); 
     }
+
+    // Mientras van a dentro, en el futuro determinar cómo pueden ir afuera
+
+    self.scheduler = function() {
+	if (self.futureTickTime < self.audioCtx.currentTime + 0.1) {
+            self.schedule(self.futureTickTime - self.audioCtx.currentTime);
+            self.playTick();
+	}
+	
+	self.timerID = setTimeout(self.scheduler, 0);
+    }
+
+    self.playTick = function() {
+	console.log(self.counter);
+	self.secondsPerBeat = (60 / self.tempo)*0.5; // se pone locuaz cuando son valores muy altos pero funciona 
+	self.counterTimeValue = (self.secondsPerBeat / 1);
+	self.counter += 1;
+	self.futureTickTime += self.counterTimeValue;
+
+	// Esto ya no aplica porque no hay secuencia 
+
+	/*
+	if(self.counter == self.seq.length){
+	    self.counter = 0; 
+	    }
+	*/
+
+    }    
+
+    self.schedule = function(time){
+
+	// if ya no aplica no hay secuencia
+	
+	//if(self.seq[self.counter] == 1){ 
+	self.startGrain(time);
+	console.log("otro algo"); 
+	//}
+    }
+
+    self.start = function(){
+	// self.sheduler();
+	self.counter = 0;
+	self.futureTickTime = self.audioCtx.currentTime;
+	self.scheduler(); 
+    }
+    
+    self.stop = function(){
+	clearTimeout(self.timerID);
+    }
+
+
     
 }
 
@@ -272,4 +361,4 @@ function Player2(aCtx){ // audiocontext y el archivo a cargar
 
 // me imagino un analizador mucho más sofisticado 
 
-export { AudioSetup, Sine, Noise, Analyser, Player2, LoadFile }
+export { AudioSetup, Sine, Noise, Analyser, Player2, LoadFile } // corregir errores 

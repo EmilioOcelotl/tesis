@@ -13,10 +13,10 @@ body {
     top: 0px;
     width: 100vw;
     vertical-align: center; 
-    padding: 40px;
+    padding: 0px;
     text-align: center; 
     box-sizing: border-box;
-    vertical-align: bottom; 
+    vertical-align: center; 
     -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;

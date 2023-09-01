@@ -82,8 +82,4 @@ function GamePad(){
         
 }
 
-function keyDown(){
-    
-}
-
 export { TxtOsc, GamePad, twCamera }

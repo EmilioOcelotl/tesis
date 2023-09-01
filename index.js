@@ -380,7 +380,8 @@ function change(){
 	    .onComplete(() => {
 		console.log(algo.buffer);
 		let cosa = new Player2(a.audioCtx);
-		cosa.set(algo.buffer, 1, 1, 0.2, 2, 0); 
+		cosa.set(algo.buffer, 0.5, 1, 0, 0.2, 2, 0);
+		cosa.start(); 
 		//pl2.set(algo.buffer); // a lo mejor está bien que este proceso esté independiente de la creación y destrucción de nodos 
 		//console.log(algo.buffer);
 		//console.log(pl2.buffer); 
