@@ -9,6 +9,7 @@ import { EditorParser } from './js/avLib/editorParser'
 import * as TWEEN from 'tween'; 
 import { FontLoader } from './static/jsm/loaders/FontLoader.js';
 import { Player } from './js/avLib/Player.js'; 
+import { map_range } from './js/avLib/utils.js';
 
 const audioFile1 = document.getElementById('audio_file1') // onload que lo decodifique 
 
@@ -73,7 +74,10 @@ const pointer = new THREE.Vector2();
 let menuC1str = ['regresar', '+ info', 'visualizar', 'imprimir']; 
 const group = new THREE.Group();
 
-let pl2; 
+let pl2;
+
+var cursorX;
+var cursorY;
 
 init(); // los elementos particulares de este init podrían ir en otro lado. En todo caso podría delimitar la escena que antes se detonaba con esta función.     
 function init(){
@@ -112,9 +116,7 @@ function init(){
     console.log(sphere44.userdata.id); 
     th.scene.add( sphere44 );
     // sphere44.position.z = -20; 
-    
-    var cursorX;
-    var cursorY;
+
     document.onmousemove = function(e){
 	cursorX = e.pageX;
 	cursorY = e.pageY;
@@ -270,7 +272,7 @@ function initCubes(){
     
 }
 
-function animate(){
+function animate(){ 
 
     th.camera.updateMatrixWorld();
 
@@ -378,14 +380,15 @@ function change(){
 		document.getElementById("info").innerHTML = ""; // cuando tween termine 
 	    })
 	    .onComplete(() => {
-		console.log(algo.buffer);
+		// console.log(algo.buffer);
+
+		// parece que solamente puede funcionar un Player por vez
+
 		let cosa = new Player2(a.audioCtx);
-		cosa.set(algo.buffer, 0.5, 1, 0, 0.2, 2, 0);
-		cosa.start(); 
-		//pl2.set(algo.buffer); // a lo mejor está bien que este proceso esté independiente de la creación y destrucción de nodos 
-		//console.log(algo.buffer);
-		//console.log(pl2.buffer); 
-		//pl2.start(0.1); // solución sencilla, espera dos segundos
+		//buffer, pointer, freqScale, windowSize, overlaps, windowratio/
+		cosa.set(algo.buffer, Math.random(), 2, 2, 8, 0.3);
+		cosa.start();
+		
 	    })
 	//trambién hay onComplete
 	    .start() // Start the tween immediately. No poner alguna propiedad, supongo que sustituye el tiempo de inicio y llegada. 

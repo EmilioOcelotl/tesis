@@ -260,7 +260,7 @@ function Player2(aCtx){ // audiocontext y el archivo a cargar
    
     // self.set = function(buffer, pointer, freqScale, windowSize, overlaps, windowRandRatio){
 
-    self.set = function(buffer, pointer, freqScale, detune, windowSize, overlaps, windowRandRatio){
+    self.set = function(buffer, pointer, freqScale, windowSize, overlaps, windowRandRatio){
 
 	// Estos valores tienen que estar al inicio 
 	
@@ -268,7 +268,7 @@ function Player2(aCtx){ // audiocontext y el archivo a cargar
 	self.pointer = map_range(pointer, 0, 1, 0, self.buffer.duration); // punto de inicio
 	console.log(self.pointer); 
 	self.freqScale = freqScale; // Problema con valores negativos
-	self.detune = detune; // se realiza en relación a los valores de freqScale y está dado en cents, donde 0 es el valor original
+	// self.detune = detune; // se realiza en relación a los valores de freqScale y está dado en cents, donde 0 es el valor original
 	self.windowSize = windowSize; // punto final en el codigo tendria que ser pointer punto de inicio y pointer + wS como final
 	self.overlaps = overlaps; // cantidad de ventanas. Seguramente esto funciona en una tasa de ventanas/s, en SC es posible usar numeros de punto flotante. Esto necesariamente implicaría que tenemos conocimiento del tiempo. 
 	self.windowRandRatio = windowRandRatio; // 
@@ -282,7 +282,8 @@ function Player2(aCtx){ // audiocontext y el archivo a cargar
 
     // Esta función generaría los granos 
     
-    self.startGrain = function(time){ // no me queda claro como funciona time 
+    self.startGrain = function(time){ // no me queda claro como funciona time
+	
 	self.gainNode = self.audioCtx.createGain();
 	// En el futuro esto podría conectarse a una cadena de efectos para darle un poco de profundidad y brillo. 
 	self.gainNode.connect(self.audioCtx.destination);
@@ -293,8 +294,18 @@ function Player2(aCtx){ // audiocontext y el archivo a cargar
 	self.source.connect(self.gainNode);
 	self.source.buffer = self.buffer;
 	self.source.playbackRate.value = self.freqScale;
-	self.source.detune.value = self.detune; 
-	self.source.start(self.audioCtx.currentTime+time, self.pointer, self.windowSize); // de inmediato, los otros dos parámetros indican inicio y final de la reproducción de la muestra. Hay que ver qué sucede si el inicio y el final no dan un resultado deseado.
+	let algo = (Math.random() * self.windowRandRatio) - self.windowRandRatio/2;
+	self.source.detune.value = (algo*1000);
+
+	// decidir si puede mantenerse como un factor aparte o si podría depender de windowRandRatio
+	// console.log(self.detune + (algo*100));
+
+	//----------------------------------------------
+	// importante: si la duración es muy baja, la multiplicación puede alcanzar valores negativos y el programa se traba
+	// agregar una envolvente para que el sonido no se escuche tan crudo 
+	//----------------------------------------------
+	
+	self.source.start(self.audioCtx.currentTime+time, self.pointer+algo, self.windowSize+algo); // de inmediato, los otros dos parámetros indican inicio y final de la reproducción de la muestra. Hay que ver qué sucede si el inicio y el final no dan un resultado deseado.
 	// source.start también podría tener algún tipo de compensación de windowRandRatio
 	// solo se reproduce una vez, como no está en loop desaparece cada verz que termina. Entonces tenemos que implementar algo parecido al reloj de player
     }
@@ -316,8 +327,9 @@ function Player2(aCtx){ // audiocontext y el archivo a cargar
     }
 
     self.playTick = function() {
-	console.log(self.counter);
-	self.secondsPerBeat = (60 / self.tempo)*0.5; // se pone locuaz cuando son valores muy altos pero funciona 
+	// console.log(self.counter);
+	self.secondsPerBeat = (60 / self.tempo)*0.25; // se pone locuaz cuando son valores muy altos pero funciona
+	// self.secondsPerBeat = self.overlap; // a ver si funciona pasando oberlap 
 	self.counterTimeValue = (self.secondsPerBeat / 1);
 	self.counter += 1;
 	self.futureTickTime += self.counterTimeValue;
@@ -338,7 +350,7 @@ function Player2(aCtx){ // audiocontext y el archivo a cargar
 	
 	//if(self.seq[self.counter] == 1){ 
 	self.startGrain(time);
-	console.log("otro algo"); 
+	// console.log("otro algo"); 
 	//}
     }
 
