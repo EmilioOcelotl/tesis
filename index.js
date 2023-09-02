@@ -19,6 +19,9 @@ const hy = new HydraTex();
 const db = new DbReader();
 db.read("./sql/document.db");
 
+let cosa;
+let boolCosa; 
+
 // let twC; 
 let tween;
 let tweenBool = false; 
@@ -73,8 +76,6 @@ const pointer = new THREE.Vector2();
  
 let menuC1str = ['regresar', '+ info', 'visualizar', 'imprimir']; 
 const group = new THREE.Group();
-
-let pl2;
 
 var cursorX;
 var cursorY;
@@ -181,6 +182,163 @@ function onPointerMove( event ) {
     
 }
 
+function animate(){ 
+
+    th.camera.updateMatrixWorld();
+
+    if(boolCosa){
+	// la función map aquí no funciona jaja
+	// parece que no funciona dinámicamente, solo una vez, al inicio. 
+	cosa.pointer = cursorX / 10;
+	cosa.freqScale = 0.1 + (cursorY/200); 
+	// cosa.freqScale = map_range(cursorY, 0, 1080, 0.5, 4);
+    }
+    
+
+    //let interStr = ''; 
+    // find intersections
+
+    var time2 = Date.now() * 0.0005;
+    raycaster.setFromCamera( pointer, th.camera );
+    const intersects = raycaster.intersectObjects( th.scene.children, true );
+
+    if ( intersects.length > 0 ) {
+	if ( INTERSECTED != intersects[ 0 ].object ) { // si INTERSECTED es tal objeto entonces realiza tal cosa
+
+	    // console.log(intersects[ 0 ].object.userdata); 
+
+	    if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+	    
+	    INTERSECTED = intersects[ 0 ].object;
+	    INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+	    INTERSECTED.material.emissive.setHex( 0xffffff );
+	    /// primer nivel 
+	    document.getElementById("container").style.cursor = "pointer";
+	    interStr = INTERSECTED.userdata.id;
+	    // console.log(interStr);
+	    document.getElementById("instrucciones").innerHTML = interStr;
+	}
+	
+    } else {
+	
+	if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+	
+	INTERSECTED = null;
+	document.getElementById("container").style.cursor = "default";
+	interStr = '';
+	document.getElementById("instrucciones").innerHTML = "";
+    }
+
+    TWEEN.update();
+   
+    hy.vit.needsUpdate = true; 
+    const delta = clock.getDelta();
+    requestAnimationFrame( animate );
+
+    /*
+    sphere44.rotation.x += 0.0001  
+    sphere44.rotation.y += 0.0002; 
+    sphere44.rotation.z -= 0.0001; 
+    */
+    
+    th.renderer2.render( th.scene, th.camera );
+    un.render2(delta);}
+    
+
+function change_uvs( geometry, unitx, unity, offsetx, offsety ) {
+
+    const uvs = geometry.attributes.uv.array;
+
+    for ( let i = 0; i < uvs.length; i += 2 ) {
+
+	uvs[ i ] = ( uvs[ i ] + offsetx ) * unitx;
+	uvs[ i + 1 ] = ( uvs[ i + 1 ] + offsety ) * unity;
+	
+    }
+    
+}
+
+// ¿Esto también podría ir a otra parte?
+
+function change(){
+    
+    if(interStr == 'imprimir'){
+	printPDF(); 
+    }
+    
+    if(interStr == 'iniciar'){
+
+	// cargar un archivo, poner un loader o algo así
+	// pasar el reloj al smpl sin que se pierda la secuencia y el audioctx 
+	//const smpl = new Player(a.audioCtx, audioFile1); // tercer parámetro de reloj y que internamente decida o de plano enviar todo al control	
+	// smpl.sequence([1, 0, 0, 1, 0]); // es el reloj
+
+	console.log(audioFile1); 
+	let algo = new LoadFile(a.audioCtx, audioFile1);
+
+	// let pl2 = new Player2(a.audioCtx);
+	
+	//pl2.play();
+	
+	const coords = {x: th.camera.position.x,
+			y: th.camera.position.y,
+			z: th.camera.position.z} // Start at (0, 0)
+
+	tween = new TWEEN.Tween(coords, false) // Create a new tween that modifies 'coords'.
+	    .to({x: 0, y: 0, z: 10}, 2000) // Move to (300, 200) in 1 second.
+	    .easing(TWEEN.Easing.Quadratic.InOut) // Use an easing function to make the animation smooth.
+	    .onUpdate(() => {
+		th.camera.position.z=coords.z;
+		// console.log(coords); 
+	    })  
+	    .onStart(() => {
+	// 	th.camera.remove(sphere44); 
+		// Pienso que onComplete está bien para eliminar objetos no utilizados
+		// Podría reproducir algún sonido 
+		document.getElementById("info").innerHTML = ""; // cuando tween termine 
+	    })
+	    .onComplete(() => {
+		// console.log(algo.buffer);
+
+		// parece que solamente puede funcionar un Player por vez
+
+		boolCosa = true; 
+		cosa = new Player2(a.audioCtx);
+		//buffer, pointer, freqScale, windowSize, overlaps, windowratio/
+		cosa.set(algo.buffer, Math.random(), 2, 1.5, 0.125/2, 0.9);
+		cosa.start();
+		
+	    })
+	//trambién hay onComplete
+	    .start() // Start the tween immediately. No poner alguna propiedad, supongo que sustituye el tiempo de inicio y llegada. 
+    }
+        
+    if(interStr == 'regresar'){
+	
+	const coords = {x: th.camera.position.x,
+			y: th.camera.position.y,
+			z: th.camera.position.z} // Start at (0, 0) 
+
+	tween = new TWEEN.Tween(coords, false) // Create a new tween that modifies 'coords'.
+	    .to({x: 0, y: 0, z: 200}, 2000) // Move to (300, 200) in 1 second.
+	    .easing(TWEEN.Easing.Quadratic.InOut) // Use an easing function to make the animation smooth.
+	    .onUpdate(() => {
+		th.camera.position.z=coords.z;
+	    })  
+	    .onStart(() => {
+	// 	th.camera.remove(sphere44); 
+		// Pienso que onComplete está bien para eliminar objetos no utilizados
+		// Podría reproducir algún sonido 
+		document.getElementById("info").innerHTML = 'portada'; // cuando tween termine 
+	    })
+	//trambién hay onComplete
+	    .start() // Start the tween immediately.
+    }
+}
+
+// algún día retomar los cubos
+
+/*
 function initCubes(){
 
     document.body.style.cursor = 'none'; 
@@ -271,148 +429,4 @@ function initCubes(){
     // stein(20); 
     
 }
-
-function animate(){ 
-
-    th.camera.updateMatrixWorld();
-
-    // let interStr = ''; 
-    // find intersections
-
-    var time2 = Date.now() * 0.0005;
-    raycaster.setFromCamera( pointer, th.camera );
-    const intersects = raycaster.intersectObjects( th.scene.children, true );
-
-    if ( intersects.length > 0 ) {
-	if ( INTERSECTED != intersects[ 0 ].object ) { // si INTERSECTED es tal objeto entonces realiza tal cosa
-
-	    // console.log(intersects[ 0 ].object.userdata); 
-
-	    if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-	    
-	    INTERSECTED = intersects[ 0 ].object;
-	    INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-	    INTERSECTED.material.emissive.setHex( 0xffffff );
-	    /// primer nivel 
-	    document.getElementById("container").style.cursor = "pointer";
-	    interStr = INTERSECTED.userdata.id;
-	    // console.log(interStr);
-	    document.getElementById("instrucciones").innerHTML = interStr;
-	}
-	
-    } else {
-	
-	if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-	
-	INTERSECTED = null;
-	document.getElementById("container").style.cursor = "default";
-	interStr = '';
-	document.getElementById("instrucciones").innerHTML = "";
-    }
-
-    TWEEN.update();
-   
-    hy.vit.needsUpdate = true; 
-    const delta = clock.getDelta();
-    requestAnimationFrame( animate );
-
-    /*
-    sphere44.rotation.x += 0.0001  
-    sphere44.rotation.y += 0.0002; 
-    sphere44.rotation.z -= 0.0001; 
-    */
-    
-    th.renderer2.render( th.scene, th.camera );
-    un.render2(delta);
-
-}
-
-function change_uvs( geometry, unitx, unity, offsetx, offsety ) {
-
-    const uvs = geometry.attributes.uv.array;
-
-    for ( let i = 0; i < uvs.length; i += 2 ) {
-
-	uvs[ i ] = ( uvs[ i ] + offsetx ) * unitx;
-	uvs[ i + 1 ] = ( uvs[ i + 1 ] + offsety ) * unity;
-	
-    }
-    
-}
-
-// ¿Esto también podría ir a otra parte?
-
-function change(){
-    
-    if(interStr == 'imprimir'){
-	printPDF(); 
-    }
-    
-    if(interStr == 'iniciar'){
-
-	// cargar un archivo, poner un loader o algo así
-	// pasar el reloj al smpl sin que se pierda la secuencia y el audioctx 
-	//const smpl = new Player(a.audioCtx, audioFile1); // tercer parámetro de reloj y que internamente decida o de plano enviar todo al control	
-	// smpl.sequence([1, 0, 0, 1, 0]); // es el reloj
-
-	console.log(audioFile1); 
-	let algo = new LoadFile(a.audioCtx, audioFile1);
-
-	// let pl2 = new Player2(a.audioCtx);
-	
-	//pl2.play();
-	
-	const coords = {x: th.camera.position.x,
-			y: th.camera.position.y,
-			z: th.camera.position.z} // Start at (0, 0)
-
-	tween = new TWEEN.Tween(coords, false) // Create a new tween that modifies 'coords'.
-	    .to({x: 0, y: 0, z: 10}, 2000) // Move to (300, 200) in 1 second.
-	    .easing(TWEEN.Easing.Quadratic.InOut) // Use an easing function to make the animation smooth.
-	    .onUpdate(() => {
-		th.camera.position.z=coords.z;
-		// console.log(coords); 
-	    })  
-	    .onStart(() => {
-	// 	th.camera.remove(sphere44); 
-		// Pienso que onComplete está bien para eliminar objetos no utilizados
-		// Podría reproducir algún sonido 
-		document.getElementById("info").innerHTML = ""; // cuando tween termine 
-	    })
-	    .onComplete(() => {
-		// console.log(algo.buffer);
-
-		// parece que solamente puede funcionar un Player por vez
-
-		let cosa = new Player2(a.audioCtx);
-		//buffer, pointer, freqScale, windowSize, overlaps, windowratio/
-		cosa.set(algo.buffer, Math.random(), 2, 2, 8, 0.3);
-		cosa.start();
-		
-	    })
-	//trambién hay onComplete
-	    .start() // Start the tween immediately. No poner alguna propiedad, supongo que sustituye el tiempo de inicio y llegada. 
-    }
-        
-    if(interStr == 'regresar'){
-	
-	const coords = {x: th.camera.position.x,
-			y: th.camera.position.y,
-			z: th.camera.position.z} // Start at (0, 0) 
-
-	tween = new TWEEN.Tween(coords, false) // Create a new tween that modifies 'coords'.
-	    .to({x: 0, y: 0, z: 200}, 2000) // Move to (300, 200) in 1 second.
-	    .easing(TWEEN.Easing.Quadratic.InOut) // Use an easing function to make the animation smooth.
-	    .onUpdate(() => {
-		th.camera.position.z=coords.z;
-	    })  
-	    .onStart(() => {
-	// 	th.camera.remove(sphere44); 
-		// Pienso que onComplete está bien para eliminar objetos no utilizados
-		// Podría reproducir algún sonido 
-		document.getElementById("info").innerHTML = 'portada'; // cuando tween termine 
-	    })
-	//trambién hay onComplete
-	    .start() // Start the tween immediately.
-    }
-}
+*/ 

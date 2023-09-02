@@ -235,7 +235,8 @@ function Player2(aCtx){ // audiocontext y el archivo a cargar
     self.counterTimeValue = (self.secondsPerBeat / 4),
     self.timerID = undefined,
     self.isPlaying = false;
-    
+
+    self.overlap = 1; 
     // para reproducir la muestra provisionalmente 
 
     /*
@@ -283,18 +284,23 @@ function Player2(aCtx){ // audiocontext y el archivo a cargar
     // Esta función generaría los granos 
     
     self.startGrain = function(time){ // no me queda claro como funciona time
-	
+
+	let algo = (Math.random() * self.windowRandRatio); // este algo podría ser algo más intersante
 	self.gainNode = self.audioCtx.createGain();
-	// En el futuro esto podría conectarse a una cadena de efectos para darle un poco de profundidad y brillo. 
+	// En el futuro esto podría conectarse a una cadena de efectos para darle un poco de profundidad y brillo.
+	// Es posible usar este nodo de ganancia para darle una envolvente a cada grano, 
 	self.gainNode.connect(self.audioCtx.destination);
 	// Pensando que el sonido puede estar muy alto
+	// La ganancia podría ser una ponderación de la cantidad de overlaps que se suman
+	// calcular un tiempo de ataque que corresponda con la duración de la ventana
+	//self.gainNode.gain.linearRampToValueAtTime(0.5, time);
+	self.gainNode.gain.linearRampToValueAtTime(0, time+self.windowSize+algo); 
 	self.gainNode.gain.setValueAtTime(0.5, self.audioCtx.currentTime);
 	// Mientras tanto la reproducción podría ser en loop.
 	self.source = self.audioCtx.createBufferSource();
 	self.source.connect(self.gainNode);
 	self.source.buffer = self.buffer;
 	self.source.playbackRate.value = self.freqScale;
-	let algo = (Math.random() * self.windowRandRatio) - self.windowRandRatio/2;
 	self.source.detune.value = (algo*1000);
 
 	// decidir si puede mantenerse como un factor aparte o si podría depender de windowRandRatio
@@ -305,7 +311,8 @@ function Player2(aCtx){ // audiocontext y el archivo a cargar
 	// agregar una envolvente para que el sonido no se escuche tan crudo 
 	//----------------------------------------------
 	
-	self.source.start(self.audioCtx.currentTime+time, self.pointer+algo, self.windowSize+algo); // de inmediato, los otros dos parámetros indican inicio y final de la reproducción de la muestra. Hay que ver qué sucede si el inicio y el final no dan un resultado deseado.
+	self.source.start(self.audioCtx.currentTime+time, self.pointer+algo, self.windowSize+algo);
+	// de inmediato, los otros dos parámetros indican inicio y final de la reproducción de la muestra. Hay que ver qué sucede si el inicio y el final no dan un resultado deseado.
 	// source.start también podría tener algún tipo de compensación de windowRandRatio
 	// solo se reproduce una vez, como no está en loop desaparece cada verz que termina. Entonces tenemos que implementar algo parecido al reloj de player
     }
@@ -328,7 +335,7 @@ function Player2(aCtx){ // audiocontext y el archivo a cargar
 
     self.playTick = function() {
 	// console.log(self.counter);
-	self.secondsPerBeat = (60 / self.tempo)*0.25; // se pone locuaz cuando son valores muy altos pero funciona
+	self.secondsPerBeat = (60 / self.tempo)*self.overlaps; // se pone locuaz cuando son valores muy altos pero funciona
 	// self.secondsPerBeat = self.overlap; // a ver si funciona pasando oberlap 
 	self.counterTimeValue = (self.secondsPerBeat / 1);
 	self.counter += 1;
