@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tres Estudios Abiertos</title>
+  <link href='https://fonts.googleapis.com/css?family=Source Code Pro' rel='stylesheet'>
+  <link rel=stylesheet href="style.css">
+</head>
+<body>
+
+  <div>
+    <div id="container"></div>
+    <div class="first" id="editor"></div>
+  </div>
+     
+  <div id="info"> 
+    <!--
+    <img src="static/img/escudo.png" alt="escudo" width="5%">
+    <br>
+    <p>UNIVERSIDAD NACIONAL AUTÓNOMA DE MÉXICO</p>
+    <br>
+    <p>Programa de Maestría y Doctorado en Música</p>
+    <p>Facultad de Música</p>
+    <p>Instituto de Ciencias Aplicadas y Tecnología</p>
+    <p>Instituto de Investigaciones Antropológicas</p>
+    <br>
+    <br>
+    
+    <h3>Tres Estudios Abiertos</h3>
+    <p>Prácticas performáticas audiovisuales en el navegador con Javascript</p>
+    <p>Emilio Ocelotl</p>
+-->
+    <input id="audio_file1" type="file" accept="audio/*" title="Prueba Audio" />
+    <!--
+    <br>
+    <p>Que para optar por el grado de</p>
+    <p>Doctor en Música</p>
+    <p>(Tecnología Musical)</p>
+    <br>
+    <p>Presenta</p>
+    <p>Emilio Ocelotl Reyes</p>
+    <p>Tutor principal: Hugo Solís</p>
+    <p>Comité tutor: Iracema de Andrade y Fernando Monreal</p>
+    <br>
+    -->
+
+  </div>
+  
+  <div id="instrucciones">
+    <p></p>
+  </div>
+    
+  <script type="module" src="index.js"></script>
+  <canvas id="myCanvas" width="500px" height="500px"></canvas>
+  
+</body>
+</html>

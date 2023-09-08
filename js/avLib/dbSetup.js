@@ -40,6 +40,8 @@ function DbReader(){
 	}
 
 	// limpiar la base de datos para quitar los elementos vacíos 
+	// Revisar de vez en cuanddo para ver si algo no se está escapando. 
+	
 	for(let i = 0; i < pretxtdb.length; i++){
 	    if(pretxtdb[i].length != 0){
 		if(i < 50){
@@ -71,7 +73,7 @@ function DbReader(){
 	    const firstF = dbsort[i].slice(13);
 	    const code = dbsort[i].slice(6, 12);
 	    //console.log(code);
-	    // para filtrar las entradas que aparecen como código. La referencia a estas notas está en la página web y puede consultarse así como anexo
+	    // para filtrar las entradas que aparecen como código. La referencia a estas notas está en la página web y puede consultarse como anexo
 	    if( code != "//code"){
 		prueba.push(firstF);
 	    }

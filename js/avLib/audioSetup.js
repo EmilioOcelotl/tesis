@@ -192,14 +192,14 @@ function Analyser(aCtx){
 
 // Primero hacer un player aquí y mover a otro lado la máquina de secuencias 
 
-function LoadFile(aCtx, audioFile){
+function UploadFile(aCtx, audioFile){
 
     self = this; 
     self.buffer = 0;
     self.revBuffer = 0; // más adelante podría ser el buffer en reversa 
     self.audioCtx = aCtx; 
 
-    console.log(audioFile); 
+   //  console.log(audioFile); 
     
     self.reader = new FileReader();
     
@@ -219,6 +219,30 @@ function LoadFile(aCtx, audioFile){
 
 }
 
+function Load(aCtx, path){
+
+    self = this; 
+    self.audioCtx = aCtx; 
+    const request = new XMLHttpRequest();
+    request.open('GET', path, true);
+    request.responseType = 'arraybuffer';
+    self.buffer = 0; 
+    // console.log(this.request.response); 
+
+    request.onload = function() {
+	let audioData = request.response;
+	console.log(audioData); 
+	self.audioCtx.decodeAudioData(audioData, function(buffer) {
+            self.buffer = buffer;  
+	},
+				 function(e){"Error with decoding audio data" + e.error});
+	
+    }
+    
+    request.send();
+    
+}
+
 // Cambiar el nombre y luego moverlo como clase 
 
 function Player2(aCtx){ // audiocontext y el archivo a cargar
@@ -227,9 +251,10 @@ function Player2(aCtx){ // audiocontext y el archivo a cargar
     // se pueden pasar sin ser objetos independientes? Recuerdo que para algo se necesitaban 
     self.audioCtx = aCtx;
     self.buffer = 0;
-
+    self.rev = 0; 
+    
     self.futureTickTime = self.audioCtx.currentTime,
-    self.counter = 1,
+    // self.counter = 1,
     self.tempo = 120,
     self.secondsPerBeat = 60 / self.tempo,
     self.counterTimeValue = (self.secondsPerBeat / 4),
@@ -263,11 +288,26 @@ function Player2(aCtx){ // audiocontext y el archivo a cargar
 
     self.set = function(buffer, pointer, freqScale, windowSize, overlaps, windowRandRatio){
 
+	// Evaluar si es problemático pasar el buffer si estos parámetros se cambian dinámicamente.
+	// Lo que estoy haciendo es determinar estáticamente con set y dinámicamente con parámetros individuales 
+	// ¿Será prudente poner el buffer en reversa aquí? 
+
+	//______________________________________________
+	//Parece que es el mismo
+	//______________________________________________
+	
+	self.rev = buffer; // no estoy seguro si se sobreescribe buffer 
+
+	// Si está aquí como que se traba, revisar si puede estar en otro lao
+	
+	Array.prototype.reverse.call( self.rev.getChannelData(0) );
+        Array.prototype.reverse.call( self.rev.getChannelData(1) );
+
 	// Estos valores tienen que estar al inicio 
 	
 	self.buffer = buffer; // Primero definir el buffer
 	self.pointer = map_range(pointer, 0, 1, 0, self.buffer.duration); // punto de inicio
-	console.log(self.pointer); 
+	// console.log(self.pointer); 
 	self.freqScale = freqScale; // Problema con valores negativos
 	// self.detune = detune; // se realiza en relación a los valores de freqScale y está dado en cents, donde 0 es el valor original
 	self.windowSize = windowSize; // punto final en el codigo tendria que ser pointer punto de inicio y pointer + wS como final
@@ -293,14 +333,24 @@ function Player2(aCtx){ // audiocontext y el archivo a cargar
 	// Pensando que el sonido puede estar muy alto
 	// La ganancia podría ser una ponderación de la cantidad de overlaps que se suman
 	// calcular un tiempo de ataque que corresponda con la duración de la ventana
-	//self.gainNode.gain.linearRampToValueAtTime(0.5, time);
+	self.gainNode.gain.linearRampToValueAtTime(0.5, time + ((self.windowSize+algo)/8)); // Parece que la envolvente funciona 
 	self.gainNode.gain.linearRampToValueAtTime(0, time+self.windowSize+algo); 
 	self.gainNode.gain.setValueAtTime(0.5, self.audioCtx.currentTime);
 	// Mientras tanto la reproducción podría ser en loop.
 	self.source = self.audioCtx.createBufferSource();
 	self.source.connect(self.gainNode);
-	self.source.buffer = self.buffer;
-	self.source.playbackRate.value = self.freqScale;
+
+	if(self.freqScale < 0){
+	    self.source.buffer = self.rev;
+	    // console.log("negativo"); 
+	} else{
+	    self.source.buffer = self.buffer;
+	    // console.log("positivo"); 
+	}
+
+	// Esto realmente tendría que estar como en espejo
+	
+	self.source.playbackRate.value = Math.abs(self.freqScale);
 	self.source.detune.value = (algo*1000);
 
 	// decidir si puede mantenerse como un factor aparte o si podría depender de windowRandRatio
@@ -311,7 +361,7 @@ function Player2(aCtx){ // audiocontext y el archivo a cargar
 	// agregar una envolvente para que el sonido no se escuche tan crudo 
 	//----------------------------------------------
 	
-	self.source.start(self.audioCtx.currentTime+time, self.pointer+algo, self.windowSize+algo);
+	self.source.start(self.audioCtx.currentTime+time, self.pointer+algo, Math.abs(self.windowSize)+algo);
 	// de inmediato, los otros dos parámetros indican inicio y final de la reproducción de la muestra. Hay que ver qué sucede si el inicio y el final no dan un resultado deseado.
 	// source.start también podría tener algún tipo de compensación de windowRandRatio
 	// solo se reproduce una vez, como no está en loop desaparece cada verz que termina. Entonces tenemos que implementar algo parecido al reloj de player
@@ -338,7 +388,7 @@ function Player2(aCtx){ // audiocontext y el archivo a cargar
 	self.secondsPerBeat = (60 / self.tempo)*self.overlaps; // se pone locuaz cuando son valores muy altos pero funciona
 	// self.secondsPerBeat = self.overlap; // a ver si funciona pasando oberlap 
 	self.counterTimeValue = (self.secondsPerBeat / 1);
-	self.counter += 1;
+	// self.counter += 1; // Creo que ya no es necesario tener un contador 
 	self.futureTickTime += self.counterTimeValue;
 
 	// Esto ya no aplica porque no hay secuencia 
@@ -380,4 +430,4 @@ function Player2(aCtx){ // audiocontext y el archivo a cargar
 
 // me imagino un analizador mucho más sofisticado 
 
-export { AudioSetup, Sine, Noise, Analyser, Player2, LoadFile } // corregir errores 
+export { AudioSetup, Sine, Noise, Analyser, Player2, UploadFile, Load } // corregir errores 
