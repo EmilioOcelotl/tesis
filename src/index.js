@@ -273,12 +273,10 @@ function change(){
 	// pasar el reloj al smpl sin que se pierda la secuencia y el audioctx 
 	//const smpl = new Player(a.audioCtx, audioFile1); // tercer parámetro de reloj y que internamente decida o de plano enviar todo al control	
 	// smpl.sequence([1, 0, 0, 1, 0]); // es el reloj
-
-	console.log(audioFile1); 
 	// let algo = new UploadFile(a.audioCtx, audioFile1);
 
-	let otro = new Load(a.audioCtx, 'snd/cello.mp3');
-	console.log(otro.buffer); 
+	//let otro = new Load(a.audioCtx, 'snd/cello.mp3');
+	//console.log(otro.buffer); 
 	
 	// let pl2 = new Player2(a.audioCtx);
 	
@@ -302,15 +300,49 @@ function change(){
 		document.getElementById("info").innerHTML = ""; // cuando tween termine 
 	    })
 	    .onComplete(() => {
-		// parece que solamente puede funcionar un Player por vez
 
-		boolCosa = true; 
-		cosa = new Player2(a.audioCtx);
-		//buffer, pointer, freqScale, windowSize, overlaps, windowratio/
-		cosa.set(otro.buffer, Math.random(), 2, 1.5, 0.1, 0.6);
-		cosa.start();
+/*
+		// parece que solamente puede funcionar un Player por vez
+		let buffer = 0; 
+		let reader = new FileReader();    
+		reader.onload = function (ev) {
+		    a.audioCtx.decodeAudioData(ev.target.result).then(function (buffer2) {
+			buffer = buffer2;
+			boolCosa = true; 
+			cosa = new Player2(a.audioCtx);
+			//buffer, pointer, freqScale, windowSize, overlaps, windowratio/
+			cosa.set(buffer, Math.random(), 2, 1.5, 0.1, 0.6);
+			cosa.start();
+		    })
+		}
+		reader.readAsArrayBuffer(audioFile1.files[0]);
+		})
+*/
+		const request = new XMLHttpRequest();
+		request.open('GET', 'snd/cello.mp3', true);
+		request.responseType = 'arraybuffer';
+		self.buffer = 0; 
+		// console.log(this.request.response); 
 		
+		request.onload = function() {
+		    let audioData = request.response;
+		    // console.log(audioData); 
+		    a.audioCtx.decodeAudioData(audioData, function(buffer) {
+			// buffer = buffer2;
+			boolCosa = true; 
+			cosa = new Player2(a.audioCtx);
+			//buffer, pointer, freqScale, windowSize, overlaps, windowratio/
+			cosa.set(buffer, Math.random(), 2, 1.5, 0.1, 0.6);
+			cosa.start();
+		    },
+						  function(e){"Error with decoding audio data" + e.error});
+	
+    }
+    
+	    	request.send();
 	    })
+
+	
 	//trambién hay onComplete
 	    .start() // Start the tween immediately. No poner alguna propiedad, supongo que sustituye el tiempo de inicio y llegada. 
     }

@@ -296,12 +296,12 @@ function Player2(aCtx){ // audiocontext y el archivo a cargar
 	//Parece que es el mismo
 	//______________________________________________
 	
-	self.rev = buffer; // no estoy seguro si se sobreescribe buffer 
+	//self.rev = buffer; // no estoy seguro si se sobreescribe buffer 
 
 	// Si está aquí como que se traba, revisar si puede estar en otro lao
 	
-	Array.prototype.reverse.call( self.rev.getChannelData(0) );
-        Array.prototype.reverse.call( self.rev.getChannelData(1) );
+	//Array.prototype.reverse.call( self.rev.getChannelData(0) );
+        //Array.prototype.reverse.call( self.rev.getChannelData(1) );
 
 	// Estos valores tienen que estar al inicio 
 	
@@ -340,13 +340,7 @@ function Player2(aCtx){ // audiocontext y el archivo a cargar
 	self.source = self.audioCtx.createBufferSource();
 	self.source.connect(self.gainNode);
 
-	if(self.freqScale < 0){
-	    self.source.buffer = self.rev;
-	    // console.log("negativo"); 
-	} else{
-	    self.source.buffer = self.buffer;
-	    // console.log("positivo"); 
-	}
+	self.source.buffer = self.buffer;
 
 	// Esto realmente tendría que estar como en espejo
 	
