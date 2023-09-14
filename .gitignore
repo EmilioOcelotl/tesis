@@ -3,5 +3,4 @@ node_modules
 .parcel-cache
 static/sql/chinook.db
 static/sql/document.db
-static/img
 *.db
