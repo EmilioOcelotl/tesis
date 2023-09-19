@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import { DbReader } from "../js/avLib/dbSetup"
+// import { DbReader } from "../js/avLib/dbSetup"
+import { dbReader, dbParser, createDoc } from '../js/avLib/dbSetup2'; 
 import { VideoSetup, GLTFLd, Feedback, UnrealBloom } from "../js/avLib/videoSetup"
 import { HydraTex } from '../js/avLib/hydraSetup' // en deep se perdió esta referencia. HydraTex podría ser sustituído en el futuro por un generador de shaders
 import { AudioSetup, Analyser, Player2, UploadFile, Load } from '../js/avLib/audioSetup'
@@ -10,6 +11,9 @@ import * as TWEEN from 'tween';
 import { FontLoader } from '../static/jsm/loaders/FontLoader.js';
 import { Player } from '../js/avLib/Player.js'; 
 import { map_range } from '../js/avLib/utils.js';
+// import { printTHesis } from './print.js'; 
+///////////////////////////////////////////////////
+
 
 const mouse = [.5, .5]
 const audioFile1 = document.getElementById('audio_file1') // onload que lo decodifique 
@@ -17,7 +21,6 @@ const audioFile1 = document.getElementById('audio_file1') // onload que lo decod
 let a = new AudioSetup(); 
 let th = new VideoSetup(); 
 const hy = new HydraTex();
-const db = new DbReader();
 db.read("./sql/document.db");
 
 let cosa;
@@ -48,10 +51,14 @@ let an;
 
 function printPDF(){
 
+
+    // console.log(db.postdb); 
+
     // la opción print pdf debería también desplegar los renders pero no dibujarlos en el navegador. 
 
-    db.prepare(db.postdb); 
-    db.print(db.result2); 
+    //db.prepare(db.postdb); 
+    // db.print(db.result2);
+    
     
     // Hay un problema al seleccionar el texto a imprimir y la impresión. Tal vez es necesario relacionar el análisis del texto con la lectura y no tanto con el método de impresión. 
     // Parece ser que aquí necesitaremos expresiones regulares para hacer cosas como limpiar la base o separar cada cierto número de caracteres y agregar nuevas hojas.

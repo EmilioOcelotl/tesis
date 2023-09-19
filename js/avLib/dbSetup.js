@@ -1,4 +1,6 @@
-//code 
+//code
+
+// NOTA: librerías del lado del servidor y no del lado del cliente por ejemplo pdfkit. También está el asunto de la limpieza de la base de datos, por ejemplo el uso de parse html to json. html to text 
 
 // ¿dbsetup debería llamarse print o text?
 // Si tenemos cierta cantidad de páginas de un texto ¿Cómo podemos distribuir cierta cantidad de imágenes en todo el texto. 
