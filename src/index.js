@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-// import { DbReader } from "../js/avLib/dbSetup"
-import { dbReader, dbParser, createDoc } from '../js/avLib/dbSetup2'; 
+//import { DbReader } from "../js/avLib/dbSetup"
+import { DbReader, dbParser, createDoc } from '../js/avLib/dbSetup2'; 
 import { VideoSetup, GLTFLd, Feedback, UnrealBloom } from "../js/avLib/videoSetup"
 import { HydraTex } from '../js/avLib/hydraSetup' // en deep se perdió esta referencia. HydraTex podría ser sustituído en el futuro por un generador de shaders
 import { AudioSetup, Analyser, Player2, UploadFile, Load } from '../js/avLib/audioSetup'
@@ -21,6 +21,7 @@ const audioFile1 = document.getElementById('audio_file1') // onload que lo decod
 let a = new AudioSetup(); 
 let th = new VideoSetup(); 
 const hy = new HydraTex();
+const db = new DbReader();
 db.read("./sql/document.db");
 
 let cosa;
@@ -51,7 +52,8 @@ let an;
 
 function printPDF(){
 
-
+    const dbp = new dbParser(db.postdb);
+    const cdoc = new createDoc(dbp.db); 
     // console.log(db.postdb); 
 
     // la opción print pdf debería también desplegar los renders pero no dibujarlos en el navegador. 

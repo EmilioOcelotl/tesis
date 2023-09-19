@@ -17,14 +17,14 @@ import fs from 'fs';
 //const TurndownService = require('turndown')
 const TurndownService = require('turndown').default;
 
-function dbReader(){
+function DbReader(db){
     this.txtdb = [],  pretxtdb = [];
     this.postdb = []; 
 
     this.read = async function(path){
 	
 	const sqlPromise = initSqlJs({
-	    locateFile: file => `./static/sql/${file}`
+	    locateFile: file => `./sql/${file}`
 	});
 	
 	const dataPromise = fetch(path).then(res => res.arrayBuffer());
@@ -80,7 +80,7 @@ function dbParser(db){
 
 function createDoc(md){
 
-    this.doc = new pdfkit({font: 'Courier', layout: 'landscape'}); 
+    const doc = new pdfkit({font: 'Courier', layout: 'landscape'}); 
     // doc.text(str, 100, 100);
     //const doc = new PDFDocument;
     // pipe the document to a blob
@@ -96,14 +96,11 @@ function createDoc(md){
     // console.log(md); 
     // let str = md; 
 
-    
-    doc.image('asdfasd', 0, 15, {width: 300})
-	.text('Proportional to width', 0, 0);
-    
+   
     
     doc.fontSize(12);
     
-    doc.text(text,
+    doc.text(md,
 	     {linebreak: false});
 
     doc.addPage();
@@ -128,4 +125,4 @@ function createDoc(md){
     
 }
 
-export { dbReader, dbParser, createDoc }
+export { DbReader, dbParser, createDoc }
