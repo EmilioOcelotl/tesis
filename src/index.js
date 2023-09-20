@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 //import { DbReader } from "../js/avLib/dbSetup"
-import { DbReader, dbParser, createDoc } from '../js/avLib/dbSetup2'; 
+//import { DbReader, dbParser, createDoc } from '../js/avLib/dbSetup2'; 
 import { VideoSetup, GLTFLd, Feedback, UnrealBloom } from "../js/avLib/videoSetup"
 import { HydraTex } from '../js/avLib/hydraSetup' // en deep se perdió esta referencia. HydraTex podría ser sustituído en el futuro por un generador de shaders
 import { AudioSetup, Analyser, Player2, UploadFile, Load } from '../js/avLib/audioSetup'
@@ -14,15 +14,14 @@ import { map_range } from '../js/avLib/utils.js';
 // import { printTHesis } from './print.js'; 
 ///////////////////////////////////////////////////
 
-
 const mouse = [.5, .5]
 const audioFile1 = document.getElementById('audio_file1') // onload que lo decodifique 
 
 let a = new AudioSetup(); 
 let th = new VideoSetup(); 
 const hy = new HydraTex();
-const db = new DbReader();
-db.read("./sql/document.db");
+//const db = new DbReader();
+// db.read("./sql/document.db");
 
 let cosa;
 let boolCosa; 
@@ -52,8 +51,11 @@ let an;
 
 function printPDF(){
 
-    const dbp = new dbParser(db.postdb);
-    const cdoc = new createDoc(dbp.db); 
+      window.open(
+          "https://ocelotl.cc/tres", "_blank");
+
+    //const dbp = new dbParser(db.postdb);
+    //const cdoc = new createDoc(dbp.db); 
     // console.log(db.postdb); 
 
     // la opción print pdf debería también desplegar los renders pero no dibujarlos en el navegador. 

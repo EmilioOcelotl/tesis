@@ -20,7 +20,6 @@ const TurndownService = require('turndown').default;
 function DbReader(db){
     this.txtdb = [],  pretxtdb = [];
     this.postdb = []; 
-
     this.read = async function(path){
 	
 	const sqlPromise = initSqlJs({
