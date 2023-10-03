@@ -6,7 +6,7 @@ import { HydraTex } from '../js/avLib/hydraSetup' // en deep se perdió esta ref
 import { AudioSetup, Analyser, Player2, UploadFile, Load } from '../js/avLib/audioSetup'
 import { ImprovedNoise } from '../static/jsm/math/ImprovedNoise.js';
 import { EditorParser } from '../js/avLib/editorParser'
-// import { twCamera } from './js/avLib/controlSetup.js' 
+// import { twCamera } from './js/avLib/controlStup.js' 
 import * as TWEEN from 'tween'; 
 import { FontLoader } from '../static/jsm/loaders/FontLoader.js';
 import { Player } from '../js/avLib/Player.js'; 
@@ -47,7 +47,13 @@ document.getElementById("container").onclick = change;
 
 const meshes = [],materials = [],xgrid = 1, ygrid = 4;
 let material, mesh;
-let an; 
+let an;
+
+let windowHalfX = window.innerWidth / 2;
+let windowHalfY = window.innerHeight / 2;
+
+let mouseX = 0, mouseY = 0; 
+document.addEventListener( 'mousemove', onDocumentMouseMove );
 
 function printPDF(){
 
@@ -86,7 +92,7 @@ let raycaster;
 let INTERSECTED;
 const pointer = new THREE.Vector2();
  
-let menuC1str = ['regresar', '+ info', 'visualizar', 'imprimir']; 
+let menuC1str = ['regresar', '+ info', 'auto', 'live codeame', 'imprimir']; 
 const group = new THREE.Group();
 
 var cursorX;
@@ -152,7 +158,7 @@ function init(){
     
     for(let i = 0; i < menuC1str.length; i++){
 	
-	const geometry = new THREE.BoxGeometry( 7, 2, 0.1); 
+	const geometry = new THREE.BoxGeometry( 6, 1.25, 1.25); 
 	change_uvs( geometry, ux, uy, 0, i);
 	materials[i] = new THREE.MeshStandardMaterial({color:0xffffff,map:hy.vit, roughness:0.7});
 	//const material = new THREE.MeshStandardMaterial( {color: 0x00ff00} );
@@ -170,9 +176,10 @@ function init(){
 	pY[i] = posY;
 	pZ[i] = posZ;
 	*/
-	
-	cubos[i].position.y = ((i+1) *2)-5.5; 
-	//cubos[i].position.y = pY[i] * 2;
+	const desfase = Math.random()*8; 
+	cubos[i].position.y = ((i+1) *2)-5; 
+	cubos[i].position.x = desfase -4;
+	cubos[i].lookAt(0, 0, -10); 
 	//cubos[i].position.z = pZ[i] * 2;
 	//th.scene.add(cubos[i]);
 	cubos[i].userdata = {id: menuC1str[i]}; 
@@ -198,6 +205,12 @@ function animate(){
 
     th.camera.updateMatrixWorld();
 
+    th.camera.position.x += ( mouseX - th.camera.position.x ) * .05;
+    th.camera.position.y += ( - mouseY - th.camera.position.y ) * .05;
+
+    th.camera.lookAt( th.scene.position );
+
+
     if(boolCosa){
 	// la función map aquí no funciona jaja
 	// parece que no funciona dinámicamente, solo una vez, al inicio. 
@@ -211,6 +224,13 @@ function animate(){
     // find intersections
 
     var time2 = Date.now() * 0.0005;
+
+    /*
+    for(let i = 0; i < menuC1str.length; i++){
+	cubos[i].scale.x = Math.sin(((time2*0.1)+i*2))*0.5; 
+	}
+    */
+    
     raycaster.setFromCamera( pointer, th.camera );
     const intersects = raycaster.intersectObjects( th.scene.children, true );
 
@@ -256,20 +276,6 @@ function animate(){
     th.renderer2.render( th.scene, th.camera );
     un.render2(delta);}
     
-
-function change_uvs( geometry, unitx, unity, offsetx, offsety ) {
-
-    const uvs = geometry.attributes.uv.array;
-
-    for ( let i = 0; i < uvs.length; i += 2 ) {
-
-	uvs[ i ] = ( uvs[ i ] + offsetx ) * unitx;
-	uvs[ i + 1 ] = ( uvs[ i + 1 ] + offsety ) * unity;
-	
-    }
-    
-}
-
 // ¿Esto también podría ir a otra parte?
 
 function change(){
@@ -381,6 +387,27 @@ function change(){
     }
 }
 
+function change_uvs( geometry, unitx, unity, offsetx, offsety ) {
+       
+    const uvs = geometry.attributes.uv.array;
+    
+    for ( let i = 0; i < uvs.length; i += 2 ) {
+	
+	uvs[ i ] = ( uvs[ i ] + offsetx ) * unitx;
+	uvs[ i + 1 ] = ( uvs[ i + 1 ] + offsety ) * unity;
+	
+    }
+    
+}
+
+function onDocumentMouseMove( event ) {
+
+    mouseX = ( event.clientX - windowHalfX ) / 100;
+    mouseY = ( event.clientY - windowHalfY ) / 100;
+    
+}
+
+
 // algún día retomar los cubos
 
 /*
@@ -473,5 +500,7 @@ function initCubes(){
     animate();
     // stein(20); 
     
-}
+    }
+
+
 */ 
