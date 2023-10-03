@@ -273,7 +273,7 @@ function UnrealBloom (scene, camera, renderer){
     
     const renderScene = new RenderPass( self.scene, self.camera );
 
-    const bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1, 0.1, 0 );
+    const bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.8, 0 );
     
     const composer = new EffectComposer( self.renderer );
     composer.addPass( renderScene );
@@ -282,7 +282,6 @@ function UnrealBloom (scene, camera, renderer){
     self.render2 = function (delta){
 	  composer.render(delta);
     }
-
 }
 
 

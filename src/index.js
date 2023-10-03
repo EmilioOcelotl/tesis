@@ -14,6 +14,9 @@ import { map_range } from '../js/avLib/utils.js';
 // import { printTHesis } from './print.js'; 
 ///////////////////////////////////////////////////
 
+const group = new THREE.Group();
+let lcbool = false; 
+
 const mouse = [.5, .5]
 const audioFile1 = document.getElementById('audio_file1') // onload que lo decodifique 
 
@@ -30,6 +33,7 @@ let boolCosa;
 let tween;
 let tweenBool = false; 
 //const avButton = avButton.addEventListener('click', renderAV);
+let cubos2 = []; 
 
 let interStr = ''; 
 
@@ -45,12 +49,14 @@ document.getElementById("container").onclick = change;
 
 // extras intervención oci
 
-const meshes = [],materials = [],xgrid = 1, ygrid = 4;
+const meshes = [],materials = [],xgrid = 14, ygrid = 14;
 let material, mesh;
 let an;
 
 let windowHalfX = window.innerWidth / 2;
 let windowHalfY = window.innerHeight / 2;
+
+let materialslc = []; 
 
 let mouseX = 0, mouseY = 0; 
 document.addEventListener( 'mousemove', onDocumentMouseMove );
@@ -59,17 +65,7 @@ function printPDF(){
 
       window.open(
           "https://ocelotl.cc/tres", "_blank");
-
-    //const dbp = new dbParser(db.postdb);
-    //const cdoc = new createDoc(dbp.db); 
-    // console.log(db.postdb); 
-
-    // la opción print pdf debería también desplegar los renders pero no dibujarlos en el navegador. 
-
-    //db.prepare(db.postdb); 
-    // db.print(db.result2);
-    
-    
+   
     // Hay un problema al seleccionar el texto a imprimir y la impresión. Tal vez es necesario relacionar el análisis del texto con la lectura y no tanto con el método de impresión. 
     // Parece ser que aquí necesitaremos expresiones regulares para hacer cosas como limpiar la base o separar cada cierto número de caracteres y agregar nuevas hojas.
     // También hace falta diseñar la base de datos desde trilium y subir esto para que pueda trabajar directamente con la base del servidor. 
@@ -92,8 +88,8 @@ let raycaster;
 let INTERSECTED;
 const pointer = new THREE.Vector2();
  
-let menuC1str = ['regresar', '+ info', 'auto', 'live codeame', 'imprimir']; 
-const group = new THREE.Group();
+let menuC1str = ['regresar', '+ info', 'auto', 'live-codeame', 'imprimir']; 
+// const group = new THREE.Group();
 
 var cursorX;
 var cursorY;
@@ -113,7 +109,7 @@ function init(){
     raycaster = new THREE.Raycaster();
     document.addEventListener( 'mousemove', onPointerMove );
     
-    // document.body.style.cursor = 'none';
+    // documentinde.body.style.cursor = 'none';
     th.initVideo();
     th.camera.position.z = 200; 
 
@@ -121,6 +117,10 @@ function init(){
     light.position.set( 0, 0, 500 );
     th.scene.add( light );
 
+    const light2 = new THREE.PointLight(  0xffffff, 1 );
+    light2.position.set( 0, 0, 20 );
+    th.scene.add( light2 );
+    
     th.renderer2.outputColorSpace = THREE.LinearSRGBColorSpace;
     th.renderer2.toneMapping = THREE.ReinhardToneMapping;
     th.renderer2.toneMappingExposure = Math.pow( 0.6, 1.5 )
@@ -132,7 +132,8 @@ function init(){
     sphere44 = new THREE.Mesh( geometry44, material44 );
 
     sphere44.userdata = {id:'iniciar'};
-    console.log(sphere44.userdata.id); 
+    console.log(sphere44.userdata.id); const group = new THREE.Group();
+
     th.scene.add( sphere44 );
     // sphere44.position.z = -20; 
 
@@ -141,8 +142,16 @@ function init(){
 	cursorY = e.pageY;
     }
 
-    osc(2, ()=>cursorX*0.001, 1 ).color(1.75, 0.5, 1.97).rotate(1, 0.1, 0.5).modulateScrollX(o0, 1.001).out(o0);
+    osc(4, ()=>cursorX*0.001, 4 ).color(1, 0.4, 0.7).rotate([1, 0.01, 0.5, 0.25].smooth(), 0.1, 0.5).mult(osc(4, 0)).modulateScrollX(o0, [1.1, 1.01, 1.001].smooth()).out(o0);
 
+
+    /*
+    osc(6, 0, 0.8)  .color(1, 0.1,.90)
+	.rotate(0.92, 0.3)  .mult(osc(4, 0.03).thresh(0.4).rotate(0, -0.02))
+	.modulateRotate(osc(20, 0).thresh(0.3, 0.6), [1,2,3,4].smooth())  .out(o0)
+    */
+
+    
     container = document.getElementById( 'container' );
     container.appendChild(th.renderer2.domElement);
  
@@ -202,12 +211,37 @@ function onPointerMove( event ) {
 }
 
 function animate(){ 
+ 
+    var time2 = Date.now() * 0.00001;
 
     th.camera.updateMatrixWorld();
 
+    // si esta activado el modo lc 
+
+    if(lcbool == true){
+
+	let cC = 0;
+	
+	for(let i = 0; i < xgrid; i++){
+	    for (let j = 0; j < ygrid; j++){
+		cubos2[cC].position.x = 1+(pX[cC]* (Math.sin(time2+i)* 2));
+		cubos2[cC].position.y = 1+(pY[cC]* (Math.sin(time2+j)* 1));
+		cubos2[cC].position.z = 1+(pZ[cC]* (Math.sin(time2+i+j)* 3));
+
+		cubos2[cC].rotation.x += Math.sin(time2+i)*0.002; 
+		cubos2[cC].scale.x = Math.sin(time2+i+j)*2; 
+
+		cC++; 
+	    }
+    }
+	
+	//group.rotation.x += 0.001;
+	//group.rotation.y -= 0.001; 
+    }
+
+    
     th.camera.position.x += ( mouseX - th.camera.position.x ) * .05;
     th.camera.position.y += ( - mouseY - th.camera.position.y ) * .05;
-
     th.camera.lookAt( th.scene.position );
 
 
@@ -222,8 +256,6 @@ function animate(){
 
     //let interStr = ''; 
     // find intersections
-
-    var time2 = Date.now() * 0.0005;
 
     /*
     for(let i = 0; i < menuC1str.length; i++){
@@ -249,6 +281,7 @@ function animate(){
 	    interStr = INTERSECTED.userdata.id;
 	    // console.log(interStr);
 	    document.getElementById("instrucciones").innerHTML = interStr;
+	     
 	}
 	
     } else {
@@ -274,7 +307,8 @@ function animate(){
     */
     
     th.renderer2.render( th.scene, th.camera );
-    un.render2(delta);}
+    un.render2(delta);
+}
     
 // ¿Esto también podría ir a otra parte?
 
@@ -294,7 +328,6 @@ function change(){
 
 	//let otro = new Load(a.audioCtx, 'snd/cello.mp3');
 	//console.log(otro.buffer); 
-	
 	// let pl2 = new Player2(a.audioCtx);
 	
 	//pl2.play();
@@ -302,7 +335,7 @@ function change(){
 	const coords = {x: th.camera.position.x,
 			y: th.camera.position.y,
 			z: th.camera.position.z} // Start at (0, 0)
-
+	
 	tween = new TWEEN.Tween(coords, false) // Create a new tween that modifies 'coords'.
 	    .to({x: 0, y: 0, z: 10}, 2000) // Move to (300, 200) in 1 second.
 	    .easing(TWEEN.Easing.Quadratic.InOut) // Use an easing function to make the animation smooth.
@@ -323,7 +356,7 @@ function change(){
 		let buffer = 0; 
 		let reader = new FileReader();    
 		reader.onload = function (ev) {
-		    a.audioCtx.decodeAudioData(ev.target.result).then(function (buffer2) {
+inde		    a.audioCtx.decodeAudioData(ev.target.result).then(function (buffer2) {
 			buffer = buffer2;
 			boolCosa = true; 
 			cosa = new Player2(a.audioCtx);
@@ -352,7 +385,7 @@ function change(){
 			cosa.set(buffer, Math.random(), 2, 1.5, 0.1, 0.6);
 			cosa.start();
 		    },
-						  function(e){"Error with decoding audio data" + e.error});
+					       function(e){"Error with decoding audio data" + e.error});
 	
     }
     
@@ -362,6 +395,10 @@ function change(){
 	
 	//trambién hay onComplete
 	    .start() // Start the tween immediately. No poner alguna propiedad, supongo que sustituye el tiempo de inicio y llegada. 
+    }
+
+    if(interStr == 'live-codeame'){
+	livecodeame(); 
     }
         
     if(interStr == 'regresar'){
@@ -404,44 +441,27 @@ function onDocumentMouseMove( event ) {
 
     mouseX = ( event.clientX - windowHalfX ) / 100;
     mouseY = ( event.clientY - windowHalfY ) / 100;
-    
+   
 }
 
+function livecodeame(){
 
-// algún día retomar los cubos
+    lcbool = true; 
+    console.log("lc");
 
-/*
-function initCubes(){
-
-    document.body.style.cursor = 'none'; 
-
-    const par = new EditorParser();     
+const par = new EditorParser();     
     
-    //const overlay = document.getElementById( 'overlay' );
-    //overlay.remove();
+    // remover
+    // esto podría tener una rampa
+    // falta el dispose
     
-    //const blocker = document.getElementById( 'blocker' );
-    //const instructions = document.getElementById( 'instructions' );
-    //instructions.remove(); 
-    //blocker.remove();
-
-    th.renderer2.outputColorSpace = THREE.LinearSRGBColorSpace;
-    th.renderer2.toneMapping = THREE.ReinhardToneMapping;
-    //th.renderer2.toneMappingExposure = Math.pow( 0.6, 1.5 )
-    
-    un = new UnrealBloom(th.scene, th.camera, th.renderer2); 
-    retro = new Feedback(th.scene, th.renderer2, 1080); 
-     
-    var cursorX;
-    var cursorY;
-    document.onmousemove = function(e){
-	cursorX = e.pageX;
-	cursorY = e.pageY;
+    for(let i = 0; i < menuC1str.length; i++){
+	th.scene.remove(cubos[i]); 
     }
 
-    osc(4, ()=>cursorX*0.0001, 0 ).color(0.6, 0.6, 0.6).rotate(1, 0.3, 0.5).modulateScrollX(o0, 1.001).out(o0);
+    th.scene.remove(sphere44);
 
-    let ox, oy, geometryTex;
+    // agregar
 
     const ux = 1 / xgrid;
     const uy = 1 / ygrid;
@@ -451,11 +471,7 @@ function initCubes(){
 
     const parameters = { color: 0xffffff, map: hy.vit };
 
-    a.initAudio(); 
-    an = new Analyser(a.audioCtx);
-    an.initAnalyser(128, 0.95);    
-
-    cubeCount = 0;
+    let cCount = 0;
     
     // podrían tener un orden inicial y luego descomponerse 
 
@@ -463,16 +479,16 @@ function initCubes(){
     
     for(let i = 0; i < xgrid; i++){
 	for (let j = 0; j < ygrid; j++){
-	    
-	    // geometry = new THREE.SphereGeometry(4, 3, 4 );
-	    const geometry = new THREE.BoxGeometry(8, 4, 2); 
-	    change_uvs( geometry, ux, uy, i, j );
 
-	    materials[ cubeCount] = new THREE.MeshStandardMaterial( { color: 0xffffff, map: hy.vit, roughness: 0.8, metalness:0.1 } );
+	    // geometry = new THREE.SphereGeometry(4, 3, 4 );
+	    const geometry22 = new THREE.BoxGeometry(4, 1, 1); 
+	    change_uvs( geometry22, ux, uy, i, j );
+	    // podría no hacer referencia a hydra sino a otra cosa, por ejemplo podrían tener formas, colores y materiales distintos dependiendo del capítulo o del tipo de nota. 
+	    materialslc[ cCount ] = new THREE.MeshStandardMaterial( { color: 0xffffff, map: hy.vit, roughness: 0.5, metalness:0.1 } );
 	    // materials[ cubeCount ] = new THREE.MeshLambertMaterial( parameters );
-	    material2 = materials[ cubeCount ];
+	    let material2lc = materialslc[ cCount ];
 	    
-	    cubos[cubeCount] = new THREE.Mesh( geometry, material2 );
+	    cubos2[cCount] = new THREE.Mesh( geometry22, material2lc );
 	    
 	    var posX, posY, posZ;
 	    var theta1 = Math.random() * (Math.PI*2);
@@ -480,27 +496,26 @@ function initCubes(){
 	    posX = Math.cos(theta1) * Math.cos(theta2)*1;
 	    posY = Math.sin(theta1)*1;
 	    posZ = Math.cos(theta1) * Math.sin(theta2)*1;
-	    pX[cubeCount] = posX;
-	    pY[cubeCount] = posY;
-	    pZ[cubeCount] = posZ; 
-	    cubos[cubeCount].position.x = pX[cubeCount] * 1 ; 
-	    cubos[cubeCount].position.y = pY[cubeCount] * 1;
-	    cubos[cubeCount].position.z = pZ[cubeCount] *  1;
-	    cubos[cubeCount].rotation.x = Math.random() * 360; 
-	    cubos[cubeCount].rotation.y = Math.random() * 360; 
-	    cubos[cubeCount].rotation.z = Math.random() * 360; 
-	    th.scene.add( cubos[cubeCount] );
-	    cubeCount++; 
+	    pX[cCount] = posX*15;
+	    pY[cCount] = posY*15;
+	    pZ[cCount] = posZ*15; 
+	    cubos2[cCount].position.x = pX[cCount]  ; 
+	    cubos2[cCount].position.y = pY[cCount] ;
+	    cubos2[cCount].position.z = pZ[cCount]  ;
+	    cubos2[cCount].rotation.x = Math.random() * 360; 
+	    cubos2[cCount].rotation.y = Math.random() * 360; 
+	    cubos2[cCount].rotation.z = Math.random() * 360;
+
+	    cubos2[cCount].userdata = {id:'cubo'+cCount};
+	    // console.log(cubos2[cCount].userdata.id); 
+	    group.add(cubos2[cCount]); 
+	    // th.scene.add( cubos2[cCount] );
+	    cCount++;
+	    
 	}
     }
-	
-    container = document.getElementById( 'container' );
-    container.appendChild(th.renderer2.domElement);
-    
-    animate();
-    // stein(20); 
-    
-    }
 
-
-*/ 
+    th.scene.add(group); 
+    
+    
+}
