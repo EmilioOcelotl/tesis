@@ -142,7 +142,7 @@ function init(){
 	cursorY = e.pageY;
     }
 
-    osc(4, ()=>cursorX*0.001, 4 ).color(1, 0.4, 0.7).rotate([1, 0.01, 0.5, 0.25].smooth(), 0.1, 0.5).mult(osc(4, 0)).modulateScrollX(o0, [1.1, 1.01, 1.001].smooth()).out(o0);
+    osc(4, ()=>cursorX*0.001, 4 ).color(2, 0.2, 0.9).rotate([1, 0.01, 0.5, 0.25].smooth(), 0.1, 0.5).mult(osc(1, 2)).modulateScrollX(o0, [1.1, 1.01, 1.001].smooth()).out(o0);
 
 
     /*
@@ -162,8 +162,8 @@ function init(){
     const ux = 1 / xgrid;
     const uy = 1 / ygrid;
 
-    const xsize = 1000 / xgrid;
-    const ysize = 1000 / ygrid;
+    const xsize = 200 / xgrid;
+    const ysize = 200 / ygrid;
     
     for(let i = 0; i < menuC1str.length; i++){
 	
@@ -229,8 +229,9 @@ function animate(){
 		cubos2[cC].position.z = 1+(pZ[cC]* (Math.sin(time2+i+j)* 3));
 
 		cubos2[cC].rotation.x += Math.sin(time2+i)*0.002; 
-		cubos2[cC].scale.x = Math.sin(time2+i+j)*2; 
-
+		cubos2[cC].scale.x = Math.sin(time2+i+j)*1;
+		
+		//cubos2[cC].lookAt(0, 0, -10); 
 		cC++; 
 	    }
     }
@@ -240,8 +241,8 @@ function animate(){
     }
 
     
-    th.camera.position.x += ( mouseX - th.camera.position.x ) * .05;
-    th.camera.position.y += ( - mouseY - th.camera.position.y ) * .05;
+    th.camera.position.x += ( mouseX - th.camera.position.x *0.5) * .5;
+    th.camera.position.y += ( - mouseY - th.camera.position.y ) * .5;
     th.camera.lookAt( th.scene.position );
 
 
