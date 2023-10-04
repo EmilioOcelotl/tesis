@@ -333,9 +333,9 @@ function Player2(aCtx){ // audiocontext y el archivo a cargar
 	// Pensando que el sonido puede estar muy alto
 	// La ganancia podría ser una ponderación de la cantidad de overlaps que se suman
 	// calcular un tiempo de ataque que corresponda con la duración de la ventana
-	self.gainNode.gain.linearRampToValueAtTime(0.5, time + ((self.windowSize+algo)/8)); // Parece que la envolvente funciona 
+	self.gainNode.gain.linearRampToValueAtTime(0.75, time + ((self.windowSize+algo)/8)); // Parece que la envolvente funciona 
 	self.gainNode.gain.linearRampToValueAtTime(0, time+self.windowSize+algo); 
-	self.gainNode.gain.setValueAtTime(0.5, self.audioCtx.currentTime);
+	self.gainNode.gain.setValueAtTime(0.75, self.audioCtx.currentTime);
 	// Mientras tanto la reproducción podría ser en loop.
 	self.source = self.audioCtx.createBufferSource();
 	self.source.connect(self.gainNode);

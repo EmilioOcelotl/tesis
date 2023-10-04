@@ -249,8 +249,8 @@ function animate(){
     if(boolCosa){
 	// la función map aquí no funciona jaja
 	// parece que no funciona dinámicamente, solo una vez, al inicio. 
-	cosa.pointer = cursorX / 10;
-	cosa.freqScale =  (cursorY/200)-2.2; 
+	cosa.pointer = cursorX / 20;
+	// cosa.freqScale =  (cursorY/100)-2.2; 
 	// cosa.freqScale = map_range(cursorY, 0, 1080, 0.5, 4);
 	// console.log((cursorY/200)-2.2); 
     }    
@@ -370,7 +370,7 @@ inde		    a.audioCtx.decodeAudioData(ev.target.result).then(function (buffer2) {
 		})
 */
 		const request = new XMLHttpRequest();
-		request.open('GET', 'snd/cello.mp3', true);
+		request.open('GET', 'snd/ani.mp3', true);
 		request.responseType = 'arraybuffer';
 		self.buffer = 0; 
 		// console.log(this.request.response); 
@@ -383,8 +383,9 @@ inde		    a.audioCtx.decodeAudioData(ev.target.result).then(function (buffer2) {
 			boolCosa = true; 
 			cosa = new Player2(a.audioCtx);
 			//buffer, pointer, freqScale, windowSize, overlaps, windowratio/
-			cosa.set(buffer, Math.random(), 2, 1.5, 0.1, 0.6);
-			cosa.start();
+			cosa.set(buffer, Math.random(), 4, 0.5, 0.05, 0.1);
+			cosa.start()
+			cosa.gain(0.25); 
 		    },
 					       function(e){"Error with decoding audio data" + e.error});
 	

@@ -5,8 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "limpiar": "rm -r node_modules dist && rm static/sql/document.db && cp /home/emi/.local/share/trilium-data/document.db /home/emi/proyectos/tesis/static/sql/",
-    "nodem": "nodemon ./src/print.js", 
+    "limpiar": "rm -r node_modules && rm sql/document.db && cp /root/trilium-data/document.db sql/",
+    "limpiar-dev": "rm -r node_modules && rm sql/document.db && cp /home/emi/.local/share/trilium-data/document.db sql",
     "start": "parcel ./src/index.html",
     "build": "parcel build ./src/index.html --public-url ./ --dist-dir docs",
     "test": "echo \"Error: no test specified\" && exit 1"
