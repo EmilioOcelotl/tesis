@@ -3,7 +3,7 @@ import * as THREE from 'three';
 //import { DbReader, dbParser, createDoc } from '../js/avLib/dbSetup2'; 
 import { VideoSetup, GLTFLd, Feedback, UnrealBloom } from "../js/avLib/videoSetup"
 import { HydraTex } from '../js/avLib/hydraSetup' // en deep se perdió esta referencia. HydraTex podría ser sustituído en el futuro por un generador de shaders
-import { AudioSetup, Analyser, Player2, UploadFile, Load } from '../js/avLib/audioSetup'
+import { AudioSetup, Analyser, Grain, UploadFile, Load } from '../js/avLib/audioSetup'
 import { ImprovedNoise } from '../static/jsm/math/ImprovedNoise.js';
 import { EditorParser } from '../js/avLib/editorParser'
 // import { twCamera } from './js/avLib/controlStup.js' 
@@ -381,11 +381,18 @@ inde		    a.audioCtx.decodeAudioData(ev.target.result).then(function (buffer2) {
 		    a.audioCtx.decodeAudioData(audioData, function(buffer) {
 			// buffer = buffer2;
 			boolCosa = true; 
-			cosa = new Player2(a.audioCtx);
+
+			cosa = new Grain(a.audioCtx);
+			const cosa2 = new Grain(a.audioCtx);
+		
 			//buffer, pointer, freqScale, windowSize, overlaps, windowratio/
 			cosa.set(buffer, Math.random(), 4, 0.5, 0.05, 0.1);
 			cosa.start()
-			cosa.gain(0.25); 
+			//buffer, pointer, freqScale, windowSize, overlaps, windowratio/
+			cosa2.set(buffer, Math.random(), 1, 0.5, 0.05, 0);
+			cosa2.start()
+	 
+	 		//cosa.gain(0.25); 
 		    },
 					       function(e){"Error with decoding audio data" + e.error});
 	
@@ -518,6 +525,5 @@ const par = new EditorParser();
     }
 
     th.scene.add(group); 
-    
     
 }
