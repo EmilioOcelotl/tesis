@@ -264,7 +264,7 @@ class Grain {
 	this.gainNode = this.audioCtx.createGain();
 	// En el futuro esto podría conectarse a una cadena de efectos para darle un poco de profundidad y brillo.
 	// Es posible usar este nodo de ganancia para darle una envolvente a cada grano, 
-	this.gainNode.connect(this.audioCtx.destination);
+	// this.gainNode.connect(this.audioCtx.destination);
 	this.overlap = 1;
 	this.counter = 0; 
     }

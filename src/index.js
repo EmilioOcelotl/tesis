@@ -11,6 +11,8 @@ import * as TWEEN from 'tween';
 import { FontLoader } from '../static/jsm/loaders/FontLoader.js';
 import { Player } from '../js/avLib/Player.js'; 
 import { map_range } from '../js/avLib/utils.js';
+import { Post } from '../js/avLib/Post.js';
+
 // import { printTHesis } from './print.js'; 
 ///////////////////////////////////////////////////
 
@@ -26,7 +28,7 @@ const hy = new HydraTex();
 //const db = new DbReader();
 // db.read("./sql/document.db");
 
-let cosa;
+let cosa, cosa2;
 let boolCosa; 
 
 // let twC; 
@@ -111,7 +113,8 @@ function init(){
     
     // documentinde.body.style.cursor = 'none';
     th.initVideo();
-    th.camera.position.z = 200; 
+    th.camera.position.z = 200;
+    th.scene.background = hy.vit; 
 
     const light = new THREE.PointLight(  0xffffff, 1 );
     light.position.set( 0, 0, 500 );
@@ -142,7 +145,7 @@ function init(){
 	cursorY = e.pageY;
     }
 
-    osc(4, ()=>cursorX*0.001, 4 ).color(2, 0.2, 0.9).rotate([1, 0.01, 0.5, 0.25].smooth(), 0.1, 0.5).mult(osc(1, 2)).modulateScrollX(o0, [1.1, 1.01, 1.001].smooth()).out(o0);
+    osc(4, ()=>cursorX*0.001, 0 ).color(1, 1, 1).rotate([1, 0.01, 0.5, 0.25].smooth(), 0.1, 0.5).mult(osc(1, 2)).modulateScrollX(o0, 0.999).out(o0);
 
 
     /*
@@ -250,7 +253,11 @@ function animate(){
 	// la función map aquí no funciona jaja
 	// parece que no funciona dinámicamente, solo una vez, al inicio. 
 	cosa.pointer = cursorX / 20;
-	// cosa.freqScale =  (cursorY/100)-2.2; 
+	cosa2.pointer = cursorY /20; 
+	//cosa.pointer = map_range(cursorX, 0, 1920, 0, 1);
+	//cosa2.pointer = map_range(cursorY, 0, 1920, 0, 1); 
+	cosa.freqScale =  (cursorY/100)-2.2;
+	cosa2.freqScale = (cursorY/100)-2.2*2;
 	// cosa.freqScale = map_range(cursorY, 0, 1080, 0.5, 4);
 	// console.log((cursorY/200)-2.2); 
     }    
@@ -276,7 +283,7 @@ function animate(){
 	    
 	    INTERSECTED = intersects[ 0 ].object;
 	    INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-	    INTERSECTED.material.emissive.setHex( 0xffffff );
+	    INTERSECTED.material.emissive.setHex( 0xb967ff );
 	    /// primer nivel 
 	    document.getElementById("container").style.cursor = "pointer";
 	    interStr = INTERSECTED.userdata.id;
@@ -382,15 +389,20 @@ inde		    a.audioCtx.decodeAudioData(ev.target.result).then(function (buffer2) {
 			// buffer = buffer2;
 			boolCosa = true; 
 
+			const post = new Post(a.audioCtx); 
 			cosa = new Grain(a.audioCtx);
-			const cosa2 = new Grain(a.audioCtx);
+			cosa2 = new Grain(a.audioCtx);
+			post.gain(4);
+		 
 		
 			//buffer, pointer, freqScale, windowSize, overlaps, windowratio/
-			cosa.set(buffer, Math.random(), 4, 0.5, 0.05, 0.1);
-			cosa.start()
+			cosa.set(buffer, Math.random(), 2, 0.5, 0.05, 0);
+			cosa.start();
+			cosa.gainNode.connect(post.input); 
 			//buffer, pointer, freqScale, windowSize, overlaps, windowratio/
-			cosa2.set(buffer, Math.random(), 1, 0.5, 0.05, 0);
+			cosa2.set(buffer, Math.random(), 1, 0.15, 0.05, 0);
 			cosa2.start()
+			cosa.gainNode.connect(post.input); 
 	 
 	 		//cosa.gain(0.25); 
 		    },
@@ -478,8 +490,6 @@ const par = new EditorParser();
     const xsize = 1000 / xgrid;
     const ysize = 1000 / ygrid;
 
-    const parameters = { color: 0xffffff, map: hy.vit };
-
     let cCount = 0;
     
     // podrían tener un orden inicial y luego descomponerse 
@@ -489,15 +499,16 @@ const par = new EditorParser();
     for(let i = 0; i < xgrid; i++){
 	for (let j = 0; j < ygrid; j++){
 
-	    // geometry = new THREE.SphereGeometry(4, 3, 4 );
+	    //const geometry22 = new THREE.SphereGeometry(0.1, 3, 4 );
 	    const geometry22 = new THREE.BoxGeometry(4, 1, 1); 
-	    change_uvs( geometry22, ux, uy, i, j );
+	    //change_uvs( geometry22, ux, uy, i, j );
 	    // podría no hacer referencia a hydra sino a otra cosa, por ejemplo podrían tener formas, colores y materiales distintos dependiendo del capítulo o del tipo de nota. 
-	    materialslc[ cCount ] = new THREE.MeshStandardMaterial( { color: 0xffffff, map: hy.vit, roughness: 0.5, metalness:0.1 } );
+	    materialslc = new THREE.MeshStandardMaterial( { color: 0x6a6a6a, roughness: 0.5, metalness:0.1 } );
+	    // materialslc[ cCount ] = new THREE.MeshStandardMaterial( { color: 0x808080, roughness: 0.5, metalness:0.1 } );
 	    // materials[ cubeCount ] = new THREE.MeshLambertMaterial( parameters );
-	    let material2lc = materialslc[ cCount ];
+	    //let material2lc = materialslc[ cCount ];
 	    
-	    cubos2[cCount] = new THREE.Mesh( geometry22, material2lc );
+	    cubos2[cCount] = new THREE.Mesh( geometry22, materialslc );
 	    
 	    var posX, posY, posZ;
 	    var theta1 = Math.random() * (Math.PI*2);

@@ -38,6 +38,7 @@
     "sql.js": "^1.8.0",
     "stringify": "^5.2.0",
     "three": "^0.150.1",
+    "tone": "^14.7.77",
     "transform-loader": "^0.2.4",
     "ts-node": "^10.9.1",
     "turndown": "^7.1.2",
