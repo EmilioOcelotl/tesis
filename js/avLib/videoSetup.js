@@ -273,7 +273,7 @@ function UnrealBloom (scene, camera, renderer){
     
     const renderScene = new RenderPass( self.scene, self.camera );
 
-    const bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1, 0.1, 0 );
+    const bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1, 0.3, 0.1 );
     
     const composer = new EffectComposer( self.renderer );
     composer.addPass( renderScene );
