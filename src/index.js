@@ -12,6 +12,11 @@ import { Post } from '../js/avLib/Post.js';
 // import { RTarget } from '../js/avLib/rtSetup.js'; 
 // import { FontLoader } from './static/jsm/loaders/FontLoader.js';
 
+
+let a = new AudioSetup(); 
+let th = new VideoSetup(); 
+const hy = new HydraTex();
+
 // Provisionalmente pendiente 
 
 //import data from "bundle-text:./inicio.txt" // works!
@@ -20,7 +25,7 @@ import { Post } from '../js/avLib/Post.js';
 ///////////////////////////////////////////////////
 // render target
 
-const rtWidth = 1080;
+const rtWidth = 1920;
 const rtHeight = 1080;
 const renderTarget = new THREE.WebGLRenderTarget(rtWidth, rtHeight, { format: THREE.RGBAFormat } );
 const rtFov = 75;
@@ -30,6 +35,10 @@ const rtFar = 5;
 const rtCamera = new THREE.PerspectiveCamera(rtFov, rtAspect, rtNear, rtFar);
 rtCamera.position.z = 4;
 const rtScene = new THREE.Scene();
+//rtScene.background = 0x000000; 
+//rtScene.background = new THREE.Color( 0x000000 );
+rtScene.background = hy.vit; 
+
 let cubort; 
 let fuente;
 let lineasSelectas = []; 
@@ -55,9 +64,6 @@ let lcbool = false;
 const mouse = [.5, .5]
 const audioFile1 = document.getElementById('audio_file1') // onload que lo decodifique 
 
-let a = new AudioSetup(); 
-let th = new VideoSetup(); 
-const hy = new HydraTex();
 // const rTarget = new RTarget(); 
 // rTarget.setText(); 
 
@@ -150,8 +156,9 @@ function init(){
     // documentinde.body.style.cursor = 'none';
     th.initVideo();
     th.camera.position.z = 200;
-    th.scene.background = hy.vit; 
-
+    //th.scene.background = renderTarget.texture; 
+    // th.scene.background = hy.vit; 
+    
     const light = new THREE.PointLight(  0xffffff, 1 );
     light.position.set( 0, 0, 500 );
     th.scene.add( light );
@@ -161,13 +168,13 @@ function init(){
     th.scene.add( light2 );
     
     th.renderer2.outputColorSpace = THREE.LinearSRGBColorSpace;
-    th.renderer2.toneMapping = THREE.ReinhardToneMapping;
-    th.renderer2.toneMappingExposure = Math.pow( 0.6, 1.5 )
+    // th.renderer2.toneMapping = THREE.ReinhardToneMapping;
+    // th.renderer2.toneMappingExposure = Math.pow( 0.6, 1.5 )
     
-    un = new UnrealBloom(th.scene, th.camera, th.renderer2); 
+    // un = new UnrealBloom(th.scene, th.camera, th.renderer2); 
     // retro = new Feedback(th.scene, th.renderer2, 1080);
     const geometry44 = new THREE.BoxGeometry( 100, 100, 100 ); 
-    const material44 = new THREE.MeshStandardMaterial( { color: 0xffffff, map: hy.vit, roughness: 0.6 } ); 
+    const material44 = new THREE.MeshStandardMaterial( { color: 0xffffff, map: renderTarget.texture, roughness: 0.6 } ); 
     sphere44 = new THREE.Mesh( geometry44, material44 );
 
     // rTarget.setText(); 
@@ -182,7 +189,7 @@ function init(){
 	cursorY = e.pageY;
     }
 
-    osc(4, ()=>cursorX*0.001, 0 ).color(1, 1, 1).rotate([1, 0.01, 0.5, 0.25].smooth(), 0.1, 0.5).mult(osc(1, 2)).modulateScrollX(o0, 0.999).out(o0);
+    osc(4, ()=>cursorX*0.001, 2 ).color(1, 0, 0.6).rotate([1, 0.01, 0.5, 0.25].smooth(), 0.1, 0.5).mult(osc(1, 2)).modulateScrollX(o0, 0.999).out(o0);
 
     /*
     osc(6, 0, 0.8)  .color(1, 0.1,.90)
@@ -205,9 +212,9 @@ function init(){
     
     for(let i = 0; i < menuC1str.length; i++){
 	
-	const geometry = new THREE.BoxGeometry( 6, 1.25, 1.25); 
+	const geometry = new THREE.BoxGeometry( 8, 1.25, 1.25); 
 	change_uvs( geometry, ux, uy, 0, i);
-	materials[i] = new THREE.MeshStandardMaterial({color:0xffffff,map:hy.vit, roughness:0.7});
+	materials[i] = new THREE.MeshStandardMaterial({color:0xffffff,map:hy.vit, roughness:0.4});
 	//const material = new THREE.MeshStandardMaterial( {color: 0x00ff00} );
 	material2 = materials[i]; 
 	cubos[i] = new THREE.Mesh( geometry, material2 );    
@@ -264,6 +271,10 @@ function animate(){
 
     // si esta activado el modo lc 
 
+    text.position.x = Math.sin(time2*20) * 2; 
+
+    text.position.y = Math.cos(time2*10) * 1; 
+	
     if(lcbool == true){
 
 	let cC = 0;
@@ -345,22 +356,14 @@ function animate(){
 	document.getElementById("instrucciones").innerHTML = "";
     }
 
+    
+    
     TWEEN.update();
    
     hy.vit.needsUpdate = true; 
     const delta = clock.getDelta();
 
-    /*
-    sphere44.rotation.x += 0.0001  
-    sphere44.rotation.y += 0.0002; 
-    sphere44.rotation.z -= 0.0001; 
-    */
-
-    //th.renderer2.setRenderTarget(rTarget.renderTarget);
-    
-    //th.renderer2.setClearColor(0x000000, 0);
-    //th.renderer2.render(rTarget.rtScene, rTarget.rtCamera);
-    //th.renderer2.setRenderTarget(null);
+    renderTarget.flipY = true; renderTarget.needsUpdate = true;
 
     th.renderer2.setRenderTarget(renderTarget);
     
@@ -369,7 +372,7 @@ function animate(){
     th.renderer2.setRenderTarget(null);
     
     th.renderer2.render( th.scene, th.camera );
-    un.render2(delta);
+    // un.render2(delta);
     requestAnimationFrame( animate );
 
 }
@@ -502,23 +505,16 @@ inde		    a.audioCtx.decodeAudioData(ev.target.result).then(function (buffer2) {
 }
 
 function change_uvs( geometry, unitx, unity, offsetx, offsety ) {
-       
     const uvs = geometry.attributes.uv.array;
-    
     for ( let i = 0; i < uvs.length; i += 2 ) {
-	
 	uvs[ i ] = ( uvs[ i ] + offsetx ) * unitx;
 	uvs[ i + 1 ] = ( uvs[ i + 1 ] + offsety ) * unity;
-	
     }
-    
 }
 
 function onDocumentMouseMove( event ) {
-
     mouseX = ( event.clientX - windowHalfX ) / 100;
     mouseY = ( event.clientY - windowHalfY ) / 100;
-   
 }
 
 function livecodeame(){
@@ -555,12 +551,12 @@ const par = new EditorParser();
     for(let i = 0; i < xgrid; i++){
 	for (let j = 0; j < ygrid; j++){
 
-	    //const geometry22 = new THREE.SphereGeometry(0.1, 3, 4 );
-	    const geometry22 = new THREE.BoxGeometry(4, 1, 1); 
+	    //const geometry22 = new THREE.SphereGeometry(1, 3, 4 );
+	    const geometry22 = new THREE.BoxGeometry(4, 2, 2); 
 	    change_uvs( geometry22, ux, uy, i, j );
 	    // podría no hacer referencia a hydra sino a otra cosa, por ejemplo podrían tener formas, colores y materiales distintos dependiendo del capítulo o del tipo de nota. 
-	    materialslc = new THREE.MeshStandardMaterial( { color: 0x6a6a6a, roughness: 0.5, metalness:0.1 } );
-	    materialslc[ cCount ] = new THREE.MeshStandardMaterial( { color: 0x808080, roughness: 0.5, metalness:0.1, map: renderTarget.texture } );
+	    // materialslc = new THREE.MeshStandardMaterial( { color: 0x6a6a6a, roughness: 0.5, metalness:0.1 } );
+	    materialslc[ cCount ] = new THREE.MeshStandardMaterial( { color: 0xffffff, roughness: 0.5, metalness:0.1, map: renderTarget.texture } );
 	    // materials[ cubeCount ] = new THREE.MeshLambertMaterial( parameters );
 	    let material2lc = materialslc[ cCount ];
 	    
@@ -581,7 +577,6 @@ const par = new EditorParser();
 	    cubos2[cCount].rotation.x = Math.random() * 360; 
 	    cubos2[cCount].rotation.y = Math.random() * 360; 
 	    cubos2[cCount].rotation.z = Math.random() * 360;
-
 	    cubos2[cCount].userdata = {id:'cubo'+cCount};
 	    // console.log(cubos2[cCount].userdata.id); 
 	    group.add(cubos2[cCount]); 
@@ -595,13 +590,13 @@ const par = new EditorParser();
     
 }
 
-function texto( mensaje= "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\nDuis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.\nExcepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." ){
+function texto( mensaje= "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\nDuis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.\nExcepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\nDuis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.\nExcepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." ){
     //const materialT = new THREE.MeshStandardMaterial({color: 0xffffff, metalnenss: 0.8, roughness: 0.2, flatShading: true});
 
     const loader = new FontLoader();
     const font = loader.load(
 	// resource URL
-	'fonts/square.json',
+	'fonts/Dela_Gothic_One_Regular.json',
 	
 	// onLoad callback
 	function ( font ) {
@@ -611,23 +606,23 @@ function texto( mensaje= "Lorem ipsum dolor sit amet, consectetur adipiscing eli
     
 	    const materialT = new THREE.MeshBasicMaterial({color: 0xffffff});
 	    text.material = materialT; 
-	    const shapes = fuente.generateShapes( mensaje, 0.1 );
+	    const shapes = fuente.generateShapes( mensaje, 0.075 );
 	    const geometry = new THREE.ShapeGeometry( shapes );
 	    // textGeoClon = geometry.clone(); // para modificar
 	    text.geometry.dispose(); 
 	    text.geometry= geometry;
 	    geometry.computeBoundingBox();
 	    geometry.computeVertexNormals(); 
-	    // const xMid = - 0.5 * ( geometry.boundingBox.max.x - geometry.boundingBox.min.x );
-	    //geometry.translate( xMid, 0, 0 );
+	    const xMid = - 0.5 * ( geometry.boundingBox.max.x - geometry.boundingBox.min.x );
+	    geometry.translate( xMid, 0, 0 );
 	    //geometry.rotation.x = Math.PI*2;
 	    text.geometry= geometry;
 	    rtScene.add(text);
 	    text.rotation.y = Math.PI * 2
 	    //text.rotation.z = Math.PI *2
 	    
-	    text.position.y = 3;
-	    text.position.x = -2; 
+	    text.position.y = 0;
+	    //text.position.x = -4; 
 	    //let lineasSelectas = [];
 	}
     )
