@@ -9,13 +9,18 @@ import { FontLoader } from '../static/jsm/loaders/FontLoader.js';
 import { Player } from '../js/avLib/Player.js'; 
 import { map_range } from '../js/avLib/utils.js';
 import { Post } from '../js/avLib/Post.js';
-// import { RTarget } from '../js/avLib/rtSetup.js'; 
+// import { DbReader } from '../js/avLib/dbSetup2.js'; 
 // import { FontLoader } from './static/jsm/loaders/FontLoader.js';
+import { DbReader, dbParser, createDoc } from '../js/avLib/dbSetup2'; 
 
-
-let a = new AudioSetup(); 
-let th = new VideoSetup(); 
+const a = new AudioSetup(); 
+const th = new VideoSetup(); 
 const hy = new HydraTex();
+const db = new DbReader()
+
+db.read("./sql/document.db");
+
+let notas = [];
 
 // Provisionalmente pendiente 
 
@@ -25,8 +30,8 @@ const hy = new HydraTex();
 ///////////////////////////////////////////////////
 // render target
 
-const rtWidth = 1920;
-const rtHeight = 1080;
+const rtWidth = 1920*2;
+const rtHeight = 1080*2;
 const renderTarget = new THREE.WebGLRenderTarget(rtWidth, rtHeight, { format: THREE.RGBAFormat } );
 const rtFov = 75;
 const rtAspect = rtWidth / rtHeight;
@@ -37,7 +42,7 @@ rtCamera.position.z = 4;
 const rtScene = new THREE.Scene();
 //rtScene.background = 0x000000; 
 //rtScene.background = new THREE.Color( 0x000000 );
-rtScene.background = hy.vit; 
+//rtScene.background = hy.vit; 
 
 let cubort; 
 let fuente;
@@ -137,17 +142,20 @@ let menuC1str = ['regresar', '+ info', 'auto', 'live-codeame', 'imprimir'];
 
 var cursorX;
 var cursorY;
+let fBool = false; 
 
 init(); // los elementos particulares de este init podrían ir en otro lado. En todo caso podría delimitar la escena que antes se detonaba con esta función.     
 function init(){
 
-    a.initAudio();
 
-    /*
+    loadFont();
+    
+    a.initAudio();
+        /*
     audioFile1.addEventListener("change", (event) => {
 	const archivo = new LoadFile(a.audioCtx, audioFile1);
 	});
-    */
+	*/
 
     // console.log(a.audioCtx); 
     raycaster = new THREE.Raycaster();
@@ -157,7 +165,7 @@ function init(){
     th.initVideo();
     th.camera.position.z = 200;
     //th.scene.background = renderTarget.texture; 
-    // th.scene.background = hy.vit; 
+ th.scene.background = hy.vit; 
     
     const light = new THREE.PointLight(  0xffffff, 1 );
     light.position.set( 0, 0, 500 );
@@ -189,7 +197,7 @@ function init(){
 	cursorY = e.pageY;
     }
 
-    osc(4, ()=>cursorX*0.001, 2 ).color(1, 0, 0.6).rotate([1, 0.01, 0.5, 0.25].smooth(), 0.1, 0.5).mult(osc(1, 2)).modulateScrollX(o0, 0.999).out(o0);
+    osc(4, ()=>cursorX*0.001, 0 ).color(1, 1, 1).rotate([1, 0.01, 0.5, 0.25].smooth(), 0.1, 0.5).mult(osc(1, 2)).modulateScrollX(o0, 0.999).out(o0);
 
     /*
     osc(6, 0, 0.8)  .color(1, 0.1,.90)
@@ -242,8 +250,7 @@ function init(){
 	th.scene.add(cubos[i]); 
 	
     }
-
-    texto(); 
+ 
     // realmente no es necesario, la textura pasa a otro lado 
     
     //const geometryrt = new THREE.BoxGeometry( 8, 8, 8 );
@@ -271,7 +278,7 @@ function animate(){
 
     // si esta activado el modo lc 
 
-    text.position.x = Math.sin(time2*20) * 2; 
+    text.position.x = Math.sin(time2*pointer.x) * 4; 
 
     text.position.y = Math.cos(time2*10) * 1; 
 	
@@ -281,14 +288,14 @@ function animate(){
 	
 	for(let i = 0; i < xgrid; i++){
 	    for (let j = 0; j < ygrid; j++){
-		cubos2[cC].position.x = 1+(pX[cC]* (Math.sin(time2+i)* 2));
-		cubos2[cC].position.y = 1+(pY[cC]* (Math.sin(time2+j)* 1));
-		cubos2[cC].position.z = 1+(pZ[cC]* (Math.sin(time2+i+j)* 3));
-
-		cubos2[cC].rotation.x += Math.sin(time2+i)*0.002; 
-		cubos2[cC].scale.x = Math.sin(time2+i+j)*1;
 		
-		//cubos2[cC].lookAt(0, 0, -10); 
+		//cubos2[cC].position.x = 1+(pX[cC]* (Math.sin(time2+i)* 2));
+		//cubos2[cC].position.y = 1+(pY[cC]* (Math.sin(time2+j)* 1));
+		cubos2[cC].position.z = 1+(pZ[cC]* (Math.sin(time2+i+j)* 6));
+		// cubos2[cC].rotation.x += Math.sin(time2+i)*0.002; 
+		cubos2[cC].scale.x = Math.sin(time2+i+j)*1;
+		// cubos2[cC].lookAt(0, 0, 0); 
+		cubos2[cC].lookAt(th.camera.position); 
 		cC++; 
 	    }
     }
@@ -341,6 +348,20 @@ function animate(){
 	    /// primer nivel 
 	    document.getElementById("container").style.cursor = "pointer";
 	    interStr = INTERSECTED.userdata.id;
+
+	    // aqui va el mensaje
+	    
+	    //console.log(notas[parseInt(INTERSECTED.userdata.id)]); 
+	    // texto(notas[parseInt(INTERSECTED.userdata.id)]); // fuentes no funciona asi  
+	    
+	    // Parece ser que calcular la geometría sigue siendo demasiado costosa, tal vez sea necesario guardar en módulos más pequeños. 
+	    
+	    if( fBool ){
+		texto(notas[parseInt(INTERSECTED.userdata.id.slice(0, 4))]); 
+	    }
+	    
+	    
+	    // la lectura de la fuente tiene que suceder en otro momento 
 	    // console.log(interStr);
 	    document.getElementById("instrucciones").innerHTML = interStr;
 	     
@@ -387,6 +408,22 @@ function change(){
  
     if(interStr == 'iniciar'){
 
+	
+	// console.log(db.postdb); // leer todo
+
+	let contNota = 0;
+	
+	for(let i = 0; i < db.postdb.length; i++){
+	    if(db.postdb[i].length > 2){
+		notas[contNota] = (db.postdb[i]);
+		contNota++; 
+	    }
+	}
+
+
+	console.log(notas); 
+	// quitar espacios vacíos 
+	
 	// cargar un archivo, poner un loader o algo así
 	// pasar el reloj al smpl sin que se pierda la secuencia y el audioctx 
 	//const smpl = new Player(a.audioCtx, audioFile1); // tercer parámetro de reloj y que internamente decida o de plano enviar todo al control	
@@ -404,7 +441,7 @@ function change(){
 			z: th.camera.position.z} // Start at (0, 0)
 	
 	tween = new TWEEN.Tween(coords, false) // Create a new tween that modifies 'coords'.
-	    .to({x: 0, y: 0, z: 10}, 2000) // Move to (300, 200) in 1 second.
+	    .to({x: 0, y: 0, z: 15}, 2000) // Move to (300, 200) in 1 second.
 	    .easing(TWEEN.Easing.Quadratic.InOut) // Use an easing function to make the animation smooth.
 	    .onUpdate(() => {
 		th.camera.position.z=coords.z;
@@ -552,7 +589,7 @@ const par = new EditorParser();
 	for (let j = 0; j < ygrid; j++){
 
 	    //const geometry22 = new THREE.SphereGeometry(1, 3, 4 );
-	    const geometry22 = new THREE.BoxGeometry(4, 2, 2); 
+	    const geometry22 = new THREE.BoxGeometry(4, 1, 1); 
 	    change_uvs( geometry22, ux, uy, i, j );
 	    // podría no hacer referencia a hydra sino a otra cosa, por ejemplo podrían tener formas, colores y materiales distintos dependiendo del capítulo o del tipo de nota. 
 	    // materialslc = new THREE.MeshStandardMaterial( { color: 0x6a6a6a, roughness: 0.5, metalness:0.1 } );
@@ -565,19 +602,25 @@ const par = new EditorParser();
 	    var posX, posY, posZ;
 	    var theta1 = Math.random() * (Math.PI*2);
 	    var theta2 = Math.random() * (Math.PI*2); 
-	    posX = Math.cos(theta1) * Math.cos(theta2)*1;
-	    posY = Math.sin(theta1)*1;
-	    posZ = Math.cos(theta1) * Math.sin(theta2)*1;
-	    pX[cCount] = posX*15;
-	    pY[cCount] = posY*15;
-	    pZ[cCount] = posZ*15; 
+
+	    //posX = Math.cos(theta1) * Math.cos(theta2)*1;
+	    //posY = Math.sin(theta1)*1;
+	    // posZ = Math.cos(theta1) * Math.sin(theta2)*1;
+
+	    posX = ( i - xgrid / 12 ) -6;
+	    posY = ( j - ygrid / 5 ) -2.5;
+	    posZ = (Math.random() * 1)-0.5;
+	    
+	    pX[cCount] = posX*2;
+	    pY[cCount] = posY*1;
+	    pZ[cCount] = posZ*1; 
 	    cubos2[cCount].position.x = pX[cCount]  ; 
 	    cubos2[cCount].position.y = pY[cCount] ;
 	    cubos2[cCount].position.z = pZ[cCount]  ;
-	    cubos2[cCount].rotation.x = Math.random() * 360; 
-	    cubos2[cCount].rotation.y = Math.random() * 360; 
-	    cubos2[cCount].rotation.z = Math.random() * 360;
-	    cubos2[cCount].userdata = {id:'cubo'+cCount};
+	    //cubos2[cCount].rotation.x = Math.random() * 360; 
+	    //cubos2[cCount].rotation.y = Math.random() * 360; 
+	    //cubos2[cCount].rotation.z = Math.random() * 360;
+	    cubos2[cCount].userdata = {id:[cCount]};
 	    // console.log(cubos2[cCount].userdata.id); 
 	    group.add(cubos2[cCount]); 
 	    // th.scene.add( cubos2[cCount] );
@@ -590,9 +633,7 @@ const par = new EditorParser();
     
 }
 
-function texto( mensaje= "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\nDuis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.\nExcepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\nDuis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.\nExcepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." ){
-    //const materialT = new THREE.MeshStandardMaterial({color: 0xffffff, metalnenss: 0.8, roughness: 0.2, flatShading: true});
-
+function loadFont(){
     const loader = new FontLoader();
     const font = loader.load(
 	// resource URL
@@ -600,30 +641,36 @@ function texto( mensaje= "Lorem ipsum dolor sit amet, consectetur adipiscing eli
 	
 	// onLoad callback
 	function ( font ) {
-	    fuente = font; 
-	    // do something with the font
-	    console.log( font );
+	    fuente = font;
+	    console.log(font);
+	    fBool = true; 
     
-	    const materialT = new THREE.MeshBasicMaterial({color: 0xffffff});
-	    text.material = materialT; 
-	    const shapes = fuente.generateShapes( mensaje, 0.075 );
-	    const geometry = new THREE.ShapeGeometry( shapes );
-	    // textGeoClon = geometry.clone(); // para modificar
-	    text.geometry.dispose(); 
-	    text.geometry= geometry;
-	    geometry.computeBoundingBox();
-	    geometry.computeVertexNormals(); 
-	    const xMid = - 0.5 * ( geometry.boundingBox.max.x - geometry.boundingBox.min.x );
-	    geometry.translate( xMid, 0, 0 );
-	    //geometry.rotation.x = Math.PI*2;
-	    text.geometry= geometry;
-	    rtScene.add(text);
-	    text.rotation.y = Math.PI * 2
-	    //text.rotation.z = Math.PI *2
-	    
-	    text.position.y = 0;
-	    //text.position.x = -4; 
-	    //let lineasSelectas = [];
-	}
-    )
+	})
+}
+
+function texto( mensaje= "TRES ESTUDIOS ABIERTOS TRES ESTUDIOS ABIERTOS TRES ESTUDIOS ABIERTOS TRES ESTUDIOS ABIERTOS TRES ESTUDIOS ABIERTOS TRES ESTUDIOS ABIERTOS\nESCRITURAS PERFORMÁTICAS AUDIOVISUALES E INVESTIGACIÓN CON JAVASCRIPT" ){
+    //const materialT = new THREE.MeshStandardMaterial({color: 0xffffff, metalnenss: 0.8, roughness: 0.2, flatShading: true});
+
+    const materialT = new THREE.MeshBasicMaterial({color: 0xffffff});
+    text.material = materialT; 
+    const shapes = fuente.generateShapes( mensaje, 0.5 );
+    const geometry = new THREE.ShapeGeometry( shapes );
+    // textGeoClon = geometry.clone(); // para modificar
+    text.geometry.dispose(); 
+    text.geometry= geometry;
+    geometry.computeBoundingBox();
+    geometry.computeVertexNormals(); 
+    const xMid = - 0.5 * ( geometry.boundingBox.max.x - geometry.boundingBox.min.x );
+    geometry.translate( xMid, 0, 0 );
+    //geometry.rotation.x = Math.PI*2;
+    text.geometry= geometry;
+    text.rotation = Math.PI * time; 
+    rtScene.add(text);
+    text.rotation.y = Math.PI * 2
+    //text.rotation.z = Math.PI *2
+    
+    text.position.y = 0;
+    //text.position.x = -4; 
+    //let lineasSelectas = [];
+    
 }
