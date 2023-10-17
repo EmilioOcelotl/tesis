@@ -13,6 +13,9 @@ import { Post } from '../js/avLib/Post.js';
 // import { FontLoader } from './static/jsm/loaders/FontLoader.js';
 import { DbReader, dbParser, createDoc } from '../js/avLib/dbSetup2'; 
 
+const TurndownService = require('turndown').default;	
+var turndownService = new TurndownService()
+
 const a = new AudioSetup(); 
 const th = new VideoSetup(); 
 const hy = new HydraTex();
@@ -20,7 +23,8 @@ const db = new DbReader()
 
 db.read("./sql/document.db");
 
-let notas = [];
+// let notas = [];
+let markdown = [];
 
 // Provisionalmente pendiente 
 
@@ -42,7 +46,7 @@ rtCamera.position.z = 4;
 const rtScene = new THREE.Scene();
 //rtScene.background = 0x000000; 
 //rtScene.background = new THREE.Color( 0x000000 );
-//rtScene.background = hy.vit; 
+rtScene.background = hy.vit; 
 
 let cubort; 
 let fuente;
@@ -147,7 +151,6 @@ let fBool = false;
 init(); // los elementos particulares de este init podrían ir en otro lado. En todo caso podría delimitar la escena que antes se detonaba con esta función.     
 function init(){
 
-
     loadFont();
     
     a.initAudio();
@@ -164,8 +167,8 @@ function init(){
     // documentinde.body.style.cursor = 'none';
     th.initVideo();
     th.camera.position.z = 200;
-    //th.scene.background = renderTarget.texture; 
- th.scene.background = hy.vit; 
+    th.scene.background = renderTarget.texture; 
+    //th.scene.background = hy.vit; 
     
     const light = new THREE.PointLight(  0xffffff, 1 );
     light.position.set( 0, 0, 500 );
@@ -278,9 +281,8 @@ function animate(){
 
     // si esta activado el modo lc 
 
-    text.position.x = Math.sin(time2*pointer.x) * 4; 
-
-    text.position.y = Math.cos(time2*10) * 1; 
+    text.position.x = Math.sin(time2*20) * 4; 
+    text.position.y = Math.cos(time2*15) * 2; 
 	
     if(lcbool == true){
 
@@ -288,7 +290,6 @@ function animate(){
 	
 	for(let i = 0; i < xgrid; i++){
 	    for (let j = 0; j < ygrid; j++){
-		
 		//cubos2[cC].position.x = 1+(pX[cC]* (Math.sin(time2+i)* 2));
 		//cubos2[cC].position.y = 1+(pY[cC]* (Math.sin(time2+j)* 1));
 		cubos2[cC].position.z = 1+(pZ[cC]* (Math.sin(time2+i+j)* 6));
@@ -357,7 +358,12 @@ function animate(){
 	    // Parece ser que calcular la geometría sigue siendo demasiado costosa, tal vez sea necesario guardar en módulos más pequeños. 
 	    
 	    if( fBool ){
-		texto(notas[parseInt(INTERSECTED.userdata.id.slice(0, 4))]); 
+		onclick=function(){
+		    // Procesamiento antes de imprimir 
+		    var markd = markdown[parseInt(INTERSECTED.userdata.id.slice(0, 4))];  
+		    texto(markd);
+		    //console.log(markd); 
+		}; 
 	    }
 	    
 	    
@@ -375,9 +381,7 @@ function animate(){
 	document.getElementById("container").style.cursor = "default";
 	interStr = '';
 	document.getElementById("instrucciones").innerHTML = "";
-    }
-
-    
+    } 
     
     TWEEN.update();
    
@@ -408,20 +412,14 @@ function change(){
  
     if(interStr == 'iniciar'){
 
-	
+
+	saveNotes(); 
+    
 	// console.log(db.postdb); // leer todo
 
-	let contNota = 0;
+	// En algún momento hay que convertir esto a markdown 
 	
-	for(let i = 0; i < db.postdb.length; i++){
-	    if(db.postdb[i].length > 2){
-		notas[contNota] = (db.postdb[i]);
-		contNota++; 
-	    }
-	}
-
-
-	console.log(notas); 
+	// console.log(notas); 
 	// quitar espacios vacíos 
 	
 	// cargar un archivo, poner un loader o algo así
@@ -653,7 +651,7 @@ function texto( mensaje= "TRES ESTUDIOS ABIERTOS TRES ESTUDIOS ABIERTOS TRES EST
 
     const materialT = new THREE.MeshBasicMaterial({color: 0xffffff});
     text.material = materialT; 
-    const shapes = fuente.generateShapes( mensaje, 0.5 );
+    const shapes = fuente.generateShapes( mensaje, 0.25 );
     const geometry = new THREE.ShapeGeometry( shapes );
     // textGeoClon = geometry.clone(); // para modificar
     text.geometry.dispose(); 
@@ -661,7 +659,8 @@ function texto( mensaje= "TRES ESTUDIOS ABIERTOS TRES ESTUDIOS ABIERTOS TRES EST
     geometry.computeBoundingBox();
     geometry.computeVertexNormals(); 
     const xMid = - 0.5 * ( geometry.boundingBox.max.x - geometry.boundingBox.min.x );
-    geometry.translate( xMid, 0, 0 );
+    const yMid = 0.5 * ( geometry.boundingBox.max.y - geometry.boundingBox.min.y );
+    geometry.translate( xMid, yMid, 0 );
     //geometry.rotation.x = Math.PI*2;
     text.geometry= geometry;
     text.rotation = Math.PI * time; 
@@ -669,8 +668,34 @@ function texto( mensaje= "TRES ESTUDIOS ABIERTOS TRES ESTUDIOS ABIERTOS TRES EST
     text.rotation.y = Math.PI * 2
     //text.rotation.z = Math.PI *2
     
-    text.position.y = 0;
+    //text.position.y = 0;
     //text.position.x = -4; 
     //let lineasSelectas = [];
+    
+}
+
+function saveNotes(){
+
+    let notas = []; 
+    // console.log(db.postdb); 
+    let contNota = 0;
+	
+    for(let i = 0; i < db.postdb.length; i++){
+	if(db.postdb[i].length > 2){
+	    notas[contNota] = (db.postdb[i]);
+	    contNota++; 
+	}
+    }
+
+    // console.log(notas); 
+
+    for(let i = 0; i < notas.length; i++){
+	markdown[i] = turndownService.turndown(notas[i].toString());
+	markdown[i] = markdown[i].split(".").join("\n"); 
+    }
+
+    // queda pendiente eliminar indices 
+    
+    // console.log(markdown); 
     
 }
