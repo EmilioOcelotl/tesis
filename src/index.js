@@ -3,7 +3,7 @@ import { VideoSetup, GLTFLd, Feedback, UnrealBloom } from "../js/avLib/videoSetu
 import { HydraTex } from '../js/avLib/hydraSetup' // en deep se perdió esta referencia. HydraTex podría ser sustituído en el futuro por un generador de shaders
 import { AudioSetup, Analyser, Grain, UploadFile, Load } from '../js/avLib/audioSetup'
 import { ImprovedNoise } from '../static/jsm/math/ImprovedNoise.js';
-import { EditorParser } from '../js/avLib/editorParser'
+import { EditorParser} from '../js/avLib/editorParser'
 import * as TWEEN from 'tween'; 
 import { FontLoader } from '../static/jsm/loaders/FontLoader.js';
 import { Player } from '../js/avLib/Player.js'; 
@@ -565,7 +565,7 @@ function livecodeame(){
     console.log("lc");
     controls.enabled = true; 
     
-    const par = new EditorParser();     
+    // const par = new EditorParser();     
     
     // remover
     // esto podría tener una rampa
