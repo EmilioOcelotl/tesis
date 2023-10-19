@@ -294,16 +294,6 @@ function animate(){
 
     if(positions.length > 3){
 
-
-	for ( var i = 0; i < ARC_SEGMENTS; i ++ ) {
-	    
-	    var p = curveObject.geometry.position[ i ];
-	    var t = i /  ( ARC_SEGMENTS - 1 );
-	    curveObject.getPoint( t, p );
-	    
-	}				
-
-	
 	curveObject.geometry.attributes.position.needsUpdate = true;
     let path = (time1*10) % 1;
 	let pos = curve1.getPointAt(path); 
@@ -361,12 +351,12 @@ function animate(){
     if(boolCosa){
 	// la función map aquí no funciona jaja
 	// parece que no funciona dinámicamente, solo una vez, al inicio. 
-	//cosa.pointer = cursorX / 20;
+	cosa.pointer = cursorX / 20;
 	//cosa2.pointer = cursorY /20; 
 	//cosa.pointer = map_range(cursorX, 0, 1920, 0, 1);
 	//cosa2.pointer = map_range(cursorY, 0, 1920, 0, 1); 
-	// cosa.freqScale =  (cursorY/100)-2.2;
-	// cosa2.freqScale = (cursorY/100)-2.2*2;
+	cosa.freqScale =  (cursorY/100)-2.2;
+	//cosa2.freqScale = (cursorY/100)-2.2*2;
 	// cosa.freqScale = map_range(cursorY, 0, 1080, 0.5, 4);
 	// console.log((cursorY/200)-2.2); 
     }    
