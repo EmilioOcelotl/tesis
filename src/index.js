@@ -254,7 +254,8 @@ function init(){
     controls.dampingFactor = 0.05;
     
     controls.screenSpacePanning = false;
-    
+
+    controls.enabled = false; 
     //controls.minDistance = 100;
     //controls.maxDistance = 500;
     
@@ -274,8 +275,10 @@ function animate(){
  
     var time2 = Date.now() * 0.00001;
 
-    controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
-
+    // if(lcbool){
+	controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
+   
+    
     th.camera.updateMatrixWorld();
 
     // si esta activado el modo lc 
@@ -388,8 +391,8 @@ function animate(){
     hy.vit.needsUpdate = true; 
     const delta = clock.getDelta();
 
-    renderTarget.flipY = true; renderTarget.needsUpdate = true;
-
+    renderTarget.flipY = true;
+    renderTarget.needsUpdate = true;
     th.renderer2.setRenderTarget(renderTarget);
     
     th.renderer2.setClearColor(0x000000, 0);
@@ -556,8 +559,9 @@ function livecodeame(){
 
     lcbool = true; 
     console.log("lc");
-
-const par = new EditorParser();     
+    controls.enabled = true; 
+    
+    const par = new EditorParser();     
     
     // remover
     // esto podría tener una rampa
