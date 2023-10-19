@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { VideoSetup, GLTFLd, Feedback, UnrealBloom } from "../js/avLib/videoSetup"
-import { HydraTex } from '../js/avLib/hydraSetup' // en deep se perdió esta referencia. HydraTex podría ser sustituído en el futuro por un generador de shaders
+import { HydraTex } from '../js/avLib/hydraSetup'
 import { AudioSetup, Analyser, Grain, UploadFile, Load } from '../js/avLib/audioSetup'
 import { ImprovedNoise } from '../static/jsm/math/ImprovedNoise.js';
 import { EditorParser} from '../js/avLib/editorParser'
@@ -9,10 +9,9 @@ import { FontLoader } from '../static/jsm/loaders/FontLoader.js';
 import { Player } from '../js/avLib/Player.js'; 
 import { map_range } from '../js/avLib/utils.js';
 import { Post } from '../js/avLib/Post.js';
-// import { DbReader } from '../js/avLib/dbSetup2.js'; 
-// import { FontLoader } from './static/jsm/loaders/FontLoader.js';
 import { DbReader, dbParser, createDoc } from '../js/avLib/dbSetup2'; 
 import { OrbitControls } from '../static/jsm/controls/OrbitControls.js';
+import { TransformControls } from '../static/jsm/controls/TransformControls.js';
 
 const TurndownService = require('turndown').default;	
 var turndownService = new TurndownService()
@@ -24,9 +23,24 @@ const db = new DbReader()
 
 db.read("./sql/document.db");
 
-// let notas = [];
 let markdown = [];
-let controls; 
+let controls;
+
+///////////////////////////////////////////////////
+// splines 
+
+let positions = []; 
+const ARC_SEGMENTS = 200;
+// const splines = {};
+let geometryCurve = new THREE.LineBasicMaterial();
+let materialCurve = new THREE.LineBasicMaterial(); 
+let curveObject = new THREE.Line(); 
+let curve1 = new THREE.CatmullRomCurve3(); 
+
+const geometryP1 = new THREE.SphereGeometry( 2, 32, 16 ); 
+const materialP1 = new THREE.MeshBasicMaterial( { color:  0x05ffa1 } ); 
+const sphereP1 = new THREE.Mesh( geometryP1, materialP1 );
+
 ///////////////////////////////////////////////////
 // render target
 
@@ -254,10 +268,11 @@ function init(){
     controls.dampingFactor = 0.05;
     
     controls.screenSpacePanning = false;
-
     controls.enabled = false; 
     //controls.minDistance = 100;
     //controls.maxDistance = 500;
+
+    //curve(); 
     
     animate(); 
     
@@ -274,10 +289,32 @@ function animate(){
 
     var time1 = Date.now() * 0.00002;
     var time2 = Date.now() * 0.00001;
-
     // if(lcbool){
 	controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
-   
+
+    if(positions.length > 3){
+
+
+	for ( var i = 0; i < ARC_SEGMENTS; i ++ ) {
+	    
+	    var p = curveObject.geometry.position[ i ];
+	    var t = i /  ( ARC_SEGMENTS - 1 );
+	    curveObject.getPoint( t, p );
+	    
+	}				
+
+	
+	curveObject.geometry.attributes.position.needsUpdate = true;
+    let path = (time1*10) % 1;
+	let pos = curve1.getPointAt(path); 
+	sphereP1.position.x = pos.x;
+	sphereP1.position.y = pos.y;
+	sphereP1.position.z = pos.z;
+	cosa.pointer = (pos.x+40)-20 / 20;
+	cosa.freqScale = (pos.y+40) -20 / 10 * 0.25;
+	// console.log(pos.x);
+	//console.log(curve1.getPointAt(path)); 
+    }
     
     th.camera.updateMatrixWorld();
 
@@ -288,6 +325,10 @@ function animate(){
 	
     if(lcbool == true){
 
+	//geometryCurve.geometry.verticesNeedUpdate = true;
+	// geometryCurve.needsUpdate = true;
+	// curveObject.geometry.needsUpdate = true;
+
 	let cC = 0;
 	
 	for(let i = 0; i < xgrid; i++){
@@ -296,9 +337,9 @@ function animate(){
 		//cubos2[cC].position.y = 1+(pY[cC]* (Math.sin(time2+j)* 1));
 
 		// podría haber una condicional para la distribución vertical u horizontal
-		cubos2[cC].position.x = (pX[cC] * (Math.sin(time1+i+j)* 8));
-		cubos2[cC].position.y = (pY[cC] * (Math.sin(time1+i+j)* 8));
-		cubos2[cC].position.z = (pZ[cC] * (Math.sin(time1+i+j)* 8));
+		//cubos2[cC].position.x = (pX[cC] * (Math.sin(time1+i+j)* 2));
+		//cubos2[cC].position.y = (pY[cC] * (Math.sin(time1+i+j)* 2));
+		//cubos2[cC].position.z = (pZ[cC] * (Math.sin(time1+i+j)* 2));
 
 		// cubos2[cC].rotation.x += Math.sin(time2+i)*0.002; 
 		cubos2[cC].scale.x = 1+Math.sin(time2+i+j)*4;
@@ -320,12 +361,12 @@ function animate(){
     if(boolCosa){
 	// la función map aquí no funciona jaja
 	// parece que no funciona dinámicamente, solo una vez, al inicio. 
-	cosa.pointer = cursorX / 20;
-	cosa2.pointer = cursorY /20; 
+	//cosa.pointer = cursorX / 20;
+	//cosa2.pointer = cursorY /20; 
 	//cosa.pointer = map_range(cursorX, 0, 1920, 0, 1);
 	//cosa2.pointer = map_range(cursorY, 0, 1920, 0, 1); 
-	cosa.freqScale =  (cursorY/100)-2.2;
-	cosa2.freqScale = (cursorY/100)-2.2*2;
+	// cosa.freqScale =  (cursorY/100)-2.2;
+	// cosa2.freqScale = (cursorY/100)-2.2*2;
 	// cosa.freqScale = map_range(cursorY, 0, 1080, 0.5, 4);
 	// console.log((cursorY/200)-2.2); 
     }    
@@ -343,9 +384,9 @@ function animate(){
     const intersects = raycaster.intersectObjects( th.scene.children, true );
 
     if ( intersects.length > 0 ) {
-	if ( INTERSECTED != intersects[ 0 ].object ) { // si INTERSECTED es tal objeto entonces realiza tal cosa
+	if ( INTERSECTED != intersects[ 0 ].object && intersects[0].object.material.emissive != undefined) { // si INTERSECTED es tal objeto entonces realiza tal cosa
 
-	    // console.log(intersects[ 0 ].object.userdata); 
+	    //console.log(INTERSECTED); 
 
 	    if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
 	    
@@ -365,11 +406,17 @@ function animate(){
 	    
 	    if( fBool ){
 		onclick=function(){
-		    // Procesamiento antes de imprimir 
+		    // Procesamiento antes de imprimir
+		    // INTERSECTED.material.color = 0x05ffa1 ;
 		    var markd = markdown[parseInt(INTERSECTED.userdata.id.slice(0, 4))];  
 		    texto(markd);
 		    controls.target =INTERSECTED.position; 
-		    console.log(INTERSECTED); 
+		    // console.log(INTERSECTED);
+		    if(lcbool){
+			positions.push(INTERSECTED.position);
+			console.log(positions);
+			curve(positions); 
+		    }
 		}; 
 	    }
 	    
@@ -418,7 +465,6 @@ function change(){
     }
  
     if(interStr == 'iniciar'){
-
 
 	saveNotes(); 
     
@@ -478,7 +524,7 @@ inde		    a.audioCtx.decodeAudioData(ev.target.result).then(function (buffer2) {
 		})
 */
 		const request = new XMLHttpRequest();
-		request.open('GET', 'snd/ani.mp3', true);
+		request.open('GET', 'snd/uxmal.wav', true);
 		request.responseType = 'arraybuffer';
 		self.buffer = 0; 
 		// console.log(this.request.response); 
@@ -490,20 +536,20 @@ inde		    a.audioCtx.decodeAudioData(ev.target.result).then(function (buffer2) {
 			// buffer = buffer2;
 			boolCosa = true; 
 
-			const post = new Post(a.audioCtx); 
+			// const post = new Post(a.audioCtx); 
 			cosa = new Grain(a.audioCtx);
-			cosa2 = new Grain(a.audioCtx);
-			post.gain(4);
+			// cosa2 = new Grain(a.audioCtx);
+			//post.gain(0.5);
 		 
 		
 			//buffer, pointer, freqScale, windowSize, overlaps, windowratio/
-			cosa.set(buffer, Math.random(), 2, 0.5, 0.05, 0);
+			cosa.set(buffer, Math.random(), 1, 1, 0.05, 0.6);
 			cosa.start();
-			cosa.gainNode.connect(post.input); 
+			//cosa.gainNode.connect(post.input); 
 			//buffer, pointer, freqScale, windowSize, overlaps, windowratio/
-			cosa2.set(buffer, Math.random(), 1, 0.15, 0.05, 0);
-			cosa2.start()
-			cosa.gainNode.connect(post.input); 
+			//cosa2.set(buffer, Math.random(), 1, 0.15, 0.05, 0);
+			//cosa2.start()
+			// cosa.gainNode.connect(post.input); 
 	 
 	 		//cosa.gain(0.25); 
 		    },
@@ -561,6 +607,10 @@ function onDocumentMouseMove( event ) {
 
 function livecodeame(){
 
+    controls.autoRotate = true; 
+    controls.autoRotateSpeed = 0.5; 
+    th.scene.add( sphereP1 );
+
     lcbool = true; 
     console.log("lc");
     controls.enabled = true; 
@@ -577,7 +627,8 @@ function livecodeame(){
 
     th.scene.remove(sphere44);
 
-    // agregar
+    // agregarmesh.geometry.attributes.position.needsUpdate = true;
+
 
     const ux = 1 / xgrid;
     const uy = 1 / ygrid;
@@ -617,9 +668,9 @@ function livecodeame(){
 	    //posY = ( j - ygrid / 5 ) -2.5;
 	    //posZ = (Math.random() * 1)-0.5;
 	    
-	    pX[cCount] = posX*10;
-	    pY[cCount] = posY*10;
-	    pZ[cCount] = posZ*10; 
+	    pX[cCount] = posX*(Math.random()*100);
+	    pY[cCount] = posY*(Math.random()*100);
+	    pZ[cCount] = posZ*(Math.random()*100); 
 	    cubos2[cCount].position.x = pX[cCount]  ; 
 	    cubos2[cCount].position.y = pY[cCount] ;
 	    cubos2[cCount].position.z = pZ[cCount]  ;
@@ -659,7 +710,7 @@ function texto( mensaje= "TRES ESTUDIOS ABIERTOS TRES ESTUDIOS ABIERTOS TRES EST
 
     const materialT = new THREE.MeshBasicMaterial({color: 0xffffff});
     text.material = materialT; 
-    const shapes = fuente.generateShapes( mensaje, 0.25 );
+    const shapes = fuente.generateShapes( mensaje, 0.5 );
     const geometry = new THREE.ShapeGeometry( shapes );
     // textGeoClon = geometry.clone(); // para modificar
     text.geometry.dispose(); 
@@ -707,3 +758,31 @@ function saveNotes(){
     // console.log(markdown); 
     
 }
+
+function curve(positions){
+
+    th.scene.remove(curveObject); 
+    geometryCurve.dispose();
+    materialCurve.dispose(); 
+    //Create a closed wavey loop
+    curve1 = new THREE.CatmullRomCurve3( positions );
+
+    console.log(curve1); 
+    curve1.closed = true; 
+    
+    const points = curve1.getPoints( 50 );
+
+    geometryCurve = new THREE.BufferGeometry().setFromPoints( points );
+
+    // console.log(geometryCurve); 
+
+    materialCurve = new THREE.LineBasicMaterial( { color: 0x05ffa1, linewidth: 4 } );
+    // Create the final object to add to the scene
+    curveObject = new THREE.Line( geometryCurve, materialCurve );
+ 
+    curveObject.geometry.attributes.position.needsUpdate = true;
+    
+    console.log(geometryCurve);
+    th.scene.add(curveObject); 
+}
+ 
