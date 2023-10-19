@@ -1,4 +1,14 @@
 
-# Tesis
+# Tres Estudios Abiertos
 
-Repositorio provisional para desplegar la compilación de la tesis en el navegador.
+Para instalar
+
+`npm install`
+
+Para correr localmente
+
+`npm start`
+
+Para construir
+
+`npm build`

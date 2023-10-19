@@ -12,6 +12,7 @@ import { Post } from '../js/avLib/Post.js';
 // import { DbReader } from '../js/avLib/dbSetup2.js'; 
 // import { FontLoader } from './static/jsm/loaders/FontLoader.js';
 import { DbReader, dbParser, createDoc } from '../js/avLib/dbSetup2'; 
+import { OrbitControls } from '../static/jsm/controls/OrbitControls.js';
 
 const TurndownService = require('turndown').default;	
 var turndownService = new TurndownService()
@@ -25,12 +26,7 @@ db.read("./sql/document.db");
 
 // let notas = [];
 let markdown = [];
-
-// Provisionalmente pendiente 
-
-//import data from "bundle-text:./inicio.txt" // works!
-//let arrlines = data.split("\n"); 
-
+let controls; 
 ///////////////////////////////////////////////////
 // render target
 
@@ -47,11 +43,7 @@ const rtScene = new THREE.Scene();
 //rtScene.background = 0x000000; 
 //rtScene.background = new THREE.Color( 0x000000 );
 rtScene.background = hy.vit; 
-
-let cubort; 
 let fuente;
-let lineasSelectas = []; 
- 
 let text = new THREE.Mesh();
 
 const materialrt = new THREE.MeshBasicMaterial({
@@ -71,7 +63,7 @@ const group = new THREE.Group();
 let lcbool = false; 
 
 const mouse = [.5, .5]
-const audioFile1 = document.getElementById('audio_file1') // onload que lo decodifique 
+//const audioFile1 = document.getElementById('audio_file1') // onload que lo decodifique 
 
 // const rTarget = new RTarget(); 
 // rTarget.setText(); 
@@ -87,13 +79,8 @@ let tween;
 let tweenBool = false; 
 //const avButton = avButton.addEventListener('click', renderAV);
 let cubos2 = []; 
-
 let interStr = ''; 
 
-function renderAV(){
-    // la versión render av no debería desplegar code Mirror 
-    console.log("render AV"); 
-}
 
 document.getElementById("container").onclick = change;
 
@@ -169,13 +156,17 @@ function init(){
     th.camera.position.z = 200;
     th.scene.background = renderTarget.texture; 
     //th.scene.background = hy.vit; 
-    
+    // th.scene.background = new THREE.Color( 0x000000 );
     const light = new THREE.PointLight(  0xffffff, 1 );
     light.position.set( 0, 0, 500 );
     th.scene.add( light );
 
-    const light2 = new THREE.PointLight(  0xffffff, 1 );
-    light2.position.set( 0, 0, 20 );
+    const light3 = new THREE.PointLight(  0xffffff, 1 );
+    light3.position.set( 0, 0, -50 );
+    th.scene.add( light3 );
+    
+    const light2 = new THREE.PointLight(  0xffffff, 2 );
+    light2.position.set( 0, 0, 50 );
     th.scene.add( light2 );
     
     th.renderer2.outputColorSpace = THREE.LinearSRGBColorSpace;
@@ -200,7 +191,7 @@ function init(){
 	cursorY = e.pageY;
     }
 
-    osc(4, ()=>cursorX*0.001, 0 ).color(1, 1, 1).rotate([1, 0.01, 0.5, 0.25].smooth(), 0.1, 0.5).mult(osc(1, 2)).modulateScrollX(o0, 0.999).out(o0);
+    osc(4, ()=>cursorX*0.001, 0 ).color(1, 1, 1).rotate(0.01, 0.1, 0.5).mult(osc(1, 2)).modulateScrollX(o0, 0.999).out(o0);
 
     /*
     osc(6, 0, 0.8)  .color(1, 0.1,.90)
@@ -253,15 +244,21 @@ function init(){
 	th.scene.add(cubos[i]); 
 	
     }
- 
-    // realmente no es necesario, la textura pasa a otro lado 
-    
-    //const geometryrt = new THREE.BoxGeometry( 8, 8, 8 );
-    //cubort = new THREE.Mesh( geometryrt, materialrt );
-    //th.scene.add( cubort ); 
 
-    // texto(); 
-    // twC = new twCamera(th.camera); 
+    controls = new OrbitControls( th.camera, th.renderer2.domElement );
+    controls.listenToKeyEvents( window ); // optional
+    
+    //controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
+    
+    controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+    controls.dampingFactor = 0.05;
+    
+    controls.screenSpacePanning = false;
+    
+    //controls.minDistance = 100;
+    //controls.maxDistance = 500;
+    
+    
     animate(); 
     
 }
@@ -276,6 +273,8 @@ function onPointerMove( event ) {
 function animate(){ 
  
     var time2 = Date.now() * 0.00001;
+
+    controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
 
     th.camera.updateMatrixWorld();
 
@@ -292,25 +291,26 @@ function animate(){
 	    for (let j = 0; j < ygrid; j++){
 		//cubos2[cC].position.x = 1+(pX[cC]* (Math.sin(time2+i)* 2));
 		//cubos2[cC].position.y = 1+(pY[cC]* (Math.sin(time2+j)* 1));
-		cubos2[cC].position.z = 1+(pZ[cC]* (Math.sin(time2+i+j)* 6));
+
+		cubos2[cC].position.x = (pX[cC] * (Math.sin(time2+i+j)* 4));
+		cubos2[cC].position.y = (pY[cC] * (Math.sin(time2+i+j)* 4));
+		cubos2[cC].position.z = (pZ[cC] * (Math.sin(time2+i+j)* 4));
+
 		// cubos2[cC].rotation.x += Math.sin(time2+i)*0.002; 
-		cubos2[cC].scale.x = Math.sin(time2+i+j)*1;
+		cubos2[cC].scale.x = 1+Math.sin(time2+i+j)*1;
 		// cubos2[cC].lookAt(0, 0, 0); 
 		cubos2[cC].lookAt(th.camera.position); 
 		cC++; 
 	    }
-    }
-	
-	//group.rotation.x += 0.001;
-	//group.rotation.y -= 0.001; 
+	}
     }
 
-    
+    /*
     th.camera.position.x += ( mouseX - th.camera.position.x *0.5) * .5;
     th.camera.position.y += ( - mouseY - th.camera.position.y ) * .5;
     th.camera.lookAt( th.scene.position );
-
-
+    */
+    
     if(boolCosa){
 	// la función map aquí no funciona jaja
 	// parece que no funciona dinámicamente, solo una vez, al inicio. 
@@ -587,7 +587,7 @@ const par = new EditorParser();
 	for (let j = 0; j < ygrid; j++){
 
 	    //const geometry22 = new THREE.SphereGeometry(1, 3, 4 );
-	    const geometry22 = new THREE.BoxGeometry(4, 1, 1); 
+	    const geometry22 = new THREE.BoxGeometry(6, 3, 3); 
 	    change_uvs( geometry22, ux, uy, i, j );
 	    // podría no hacer referencia a hydra sino a otra cosa, por ejemplo podrían tener formas, colores y materiales distintos dependiendo del capítulo o del tipo de nota. 
 	    // materialslc = new THREE.MeshStandardMaterial( { color: 0x6a6a6a, roughness: 0.5, metalness:0.1 } );
@@ -601,17 +601,17 @@ const par = new EditorParser();
 	    var theta1 = Math.random() * (Math.PI*2);
 	    var theta2 = Math.random() * (Math.PI*2); 
 
-	    //posX = Math.cos(theta1) * Math.cos(theta2)*1;
-	    //posY = Math.sin(theta1)*1;
-	    // posZ = Math.cos(theta1) * Math.sin(theta2)*1;
+	    posX = Math.cos(theta1) * Math.cos(theta2)*1;
+	    posY = Math.sin(theta1)*1;
+	    posZ = Math.cos(theta1) * Math.sin(theta2)*1;
 
-	    posX = ( i - xgrid / 12 ) -6;
-	    posY = ( j - ygrid / 5 ) -2.5;
-	    posZ = (Math.random() * 1)-0.5;
+	    //posX = ( i - xgrid / 12 ) -6;
+	    //posY = ( j - ygrid / 5 ) -2.5;
+	    //posZ = (Math.random() * 1)-0.5;
 	    
-	    pX[cCount] = posX*2;
-	    pY[cCount] = posY*1;
-	    pZ[cCount] = posZ*1; 
+	    pX[cCount] = posX*10;
+	    pY[cCount] = posY*10;
+	    pZ[cCount] = posZ*10; 
 	    cubos2[cCount].position.x = pX[cCount]  ; 
 	    cubos2[cCount].position.y = pY[cCount] ;
 	    cubos2[cCount].position.z = pZ[cCount]  ;
@@ -651,7 +651,7 @@ function texto( mensaje= "TRES ESTUDIOS ABIERTOS TRES ESTUDIOS ABIERTOS TRES EST
 
     const materialT = new THREE.MeshBasicMaterial({color: 0xffffff});
     text.material = materialT; 
-    const shapes = fuente.generateShapes( mensaje, 0.25 );
+    const shapes = fuente.generateShapes( mensaje, 0.5 );
     const geometry = new THREE.ShapeGeometry( shapes );
     // textGeoClon = geometry.clone(); // para modificar
     text.geometry.dispose(); 
