@@ -22,13 +22,10 @@ function EditorParser(){
     let language = new Compartment, tabSize = new Compartment
     const windowHeight = document.documentElement.clientHeight;
 
-    // definir una paleta de colores loca 
-    const link = `https://uiwjs.github.io/react-codemirror`;
-
     const myHighlightStyle = HighlightStyle.define([
-	{tag: tags.keyword, color: "#ea00d9"},
+	{tag: tags.keyword, color: "white"},
 	{tag: tags.comment, color: "white", fontStyle: "italic"},
-	{tag: tags.string, color: "#FF00FF"}
+	{tag: tags.string, color: "white"}
     ])
 
     let textoActivo = "Enlace"
@@ -47,17 +44,18 @@ function EditorParser(){
 	    syntaxHighlighting(myHighlightStyle),
 	    tabSize.of(EditorState.tabSize.of(8)),
 	    EditorView.theme({
-		"&": {color: "white", fontSize:"24px"}, // Está loco que se salga y que pueda entrar a otro "render como si fuera un documento lineal 
-		".cm-scroller": {overflow: "auto", height: "950px"},
-		".cm-gutters": {color: "gray", background: "transparent"},
-		".cm-line":{color:"gray"},
+
+		"&": {fontSize:"24px", width: "50%"}, 
+		".cm-scroller": { overflox: "auto", height:"50vw"},
+		".cm-gutters": {color: "white", background: "transparent"},
+		".cm-line":{color:"white"},
 		".cm-activeline-background":{background:"black"}
 	    })]    
     })
     
     let view = new EditorView({
 	state, 
-	// parent: document.querySelector('#editor'),	
+	parent: document.querySelector('#editor'),	
     })
 
     

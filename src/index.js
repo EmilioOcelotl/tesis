@@ -154,8 +154,8 @@ function init(){
     // documentinde.body.style.cursor = 'none';
     th.initVideo();
     th.camera.position.z = 200;
-    th.scene.background = renderTarget.texture; 
-    //th.scene.background = hy.vit; 
+    //th.scene.background = renderTarget.texture; 
+    th.scene.background = hy.vit; 
     // th.scene.background = new THREE.Color( 0x000000 );
     const light = new THREE.PointLight(  0xffffff, 1 );
     light.position.set( 0, 0, 500 );
@@ -191,7 +191,7 @@ function init(){
 	cursorY = e.pageY;
     }
 
-    osc(4, ()=>cursorX*0.001, 0 ).color(1, 1, 1).rotate(0.01, 0.1, 0.5).mult(osc(1, 2)).modulateScrollX(o0, 0.999).out(o0);
+    osc(()=>cursorY* 0.01, ()=>cursorX*0.001, 0 ).color(1, 1, 1).rotate(0.1, 0.1, 0.5).mult(osc(0.1, 1)).modulateScrollX(o0, 0.99).out(o0);
 
     /*
     osc(6, 0, 0.8)  .color(1, 0.1,.90)
@@ -259,7 +259,6 @@ function init(){
     //controls.minDistance = 100;
     //controls.maxDistance = 500;
     
-    
     animate(); 
     
 }
@@ -272,7 +271,8 @@ function onPointerMove( event ) {
 }
 
 function animate(){ 
- 
+
+    var time1 = Date.now() * 0.00002;
     var time2 = Date.now() * 0.00001;
 
     // if(lcbool){
@@ -295,14 +295,17 @@ function animate(){
 		//cubos2[cC].position.x = 1+(pX[cC]* (Math.sin(time2+i)* 2));
 		//cubos2[cC].position.y = 1+(pY[cC]* (Math.sin(time2+j)* 1));
 
-		cubos2[cC].position.x = (pX[cC] * (Math.sin(time2+i+j)* 4));
-		cubos2[cC].position.y = (pY[cC] * (Math.sin(time2+i+j)* 4));
-		cubos2[cC].position.z = (pZ[cC] * (Math.sin(time2+i+j)* 4));
+		// podría haber una condicional para la distribución vertical u horizontal
+		cubos2[cC].position.x = (pX[cC] * (Math.sin(time1+i+j)* 8));
+		cubos2[cC].position.y = (pY[cC] * (Math.sin(time1+i+j)* 8));
+		cubos2[cC].position.z = (pZ[cC] * (Math.sin(time1+i+j)* 8));
 
 		// cubos2[cC].rotation.x += Math.sin(time2+i)*0.002; 
-		cubos2[cC].scale.x = 1+Math.sin(time2+i+j)*1;
+		cubos2[cC].scale.x = 1+Math.sin(time2+i+j)*4;
+		cubos2[cC].scale.x = 1+Math.sin(time2+i+j)*4;
+
 		// cubos2[cC].lookAt(0, 0, 0); 
-		cubos2[cC].lookAt(th.camera.position); 
+		// cubos2[cC].lookAt(th.camera.position); 
 		cC++; 
 	    }
 	}
@@ -365,7 +368,8 @@ function animate(){
 		    // Procesamiento antes de imprimir 
 		    var markd = markdown[parseInt(INTERSECTED.userdata.id.slice(0, 4))];  
 		    texto(markd);
-		    //console.log(markd); 
+		    controls.target =INTERSECTED.position; 
+		    console.log(INTERSECTED); 
 		}; 
 	    }
 	    
@@ -591,11 +595,11 @@ function livecodeame(){
 	for (let j = 0; j < ygrid; j++){
 
 	    //const geometry22 = new THREE.SphereGeometry(1, 3, 4 );
-	    const geometry22 = new THREE.BoxGeometry(6, 3, 3); 
+	    const geometry22 = new THREE.BoxGeometry(6, 6, 3); 
 	    change_uvs( geometry22, ux, uy, i, j );
 	    // podría no hacer referencia a hydra sino a otra cosa, por ejemplo podrían tener formas, colores y materiales distintos dependiendo del capítulo o del tipo de nota. 
 	    // materialslc = new THREE.MeshStandardMaterial( { color: 0x6a6a6a, roughness: 0.5, metalness:0.1 } );
-	    materialslc[ cCount ] = new THREE.MeshStandardMaterial( { color: 0xffffff, roughness: 0.5, metalness:0.1, map: renderTarget.texture } );
+	    materialslc[ cCount ] = new THREE.MeshPhongMaterial( { color: 0xffffff,  map: renderTarget.texture } );
 	    // materials[ cubeCount ] = new THREE.MeshLambertMaterial( parameters );
 	    let material2lc = materialslc[ cCount ];
 	    
@@ -619,9 +623,9 @@ function livecodeame(){
 	    cubos2[cCount].position.x = pX[cCount]  ; 
 	    cubos2[cCount].position.y = pY[cCount] ;
 	    cubos2[cCount].position.z = pZ[cCount]  ;
-	    //cubos2[cCount].rotation.x = Math.random() * 360; 
-	    //cubos2[cCount].rotation.y = Math.random() * 360; 
-	    //cubos2[cCount].rotation.z = Math.random() * 360;
+	    cubos2[cCount].rotation.x = Math.random() * 360; 
+	    cubos2[cCount].rotation.y = Math.random() * 360; 
+	    cubos2[cCount].rotation.z = Math.random() * 360;
 	    cubos2[cCount].userdata = {id:[cCount]};
 	    // console.log(cubos2[cCount].userdata.id); 
 	    group.add(cubos2[cCount]); 
@@ -655,7 +659,7 @@ function texto( mensaje= "TRES ESTUDIOS ABIERTOS TRES ESTUDIOS ABIERTOS TRES EST
 
     const materialT = new THREE.MeshBasicMaterial({color: 0xffffff});
     text.material = materialT; 
-    const shapes = fuente.generateShapes( mensaje, 0.5 );
+    const shapes = fuente.generateShapes( mensaje, 0.25 );
     const geometry = new THREE.ShapeGeometry( shapes );
     // textGeoClon = geometry.clone(); // para modificar
     text.geometry.dispose(); 
