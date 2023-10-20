@@ -12,6 +12,21 @@ import { Post } from '../js/avLib/Post.js';
 import { DbReader, dbParser, createDoc } from '../js/avLib/dbSetup2'; 
 import { OrbitControls } from '../static/jsm/controls/OrbitControls.js';
 import { TransformControls } from '../static/jsm/controls/TransformControls.js';
+import * as dat from 'dat.gui';
+
+const gui = new dat.GUI();
+
+gui.userdata = {id:'gui'};
+console.log(gui.userdata.id); 
+
+const params = {
+    hydra: false,
+    textoAlFondo: false
+};
+
+function testFunc(){
+    console.log("holi"); 
+}
 
 const TurndownService = require('turndown').default;	
 var turndownService = new TurndownService()
@@ -37,7 +52,7 @@ let materialCurve = new THREE.LineBasicMaterial();
 let curveObject = new THREE.Line(); 
 let curve1 = new THREE.CatmullRomCurve3(); 
 
-const geometryP1 = new THREE.SphereGeometry( 2, 32, 16 ); 
+const geometryP1 = new THREE.SphereGeometry( 1, 32, 16 ); 
 const materialP1 = new THREE.MeshBasicMaterial( { color:  0x05ffa1 } ); 
 const sphereP1 = new THREE.Mesh( geometryP1, materialP1 );
 
@@ -272,10 +287,14 @@ function init(){
     //controls.minDistance = 100;
     //controls.maxDistance = 500;
 
-    //curve(); 
+    //curve();
     
     animate(); 
     
+}
+
+function modoEx(){
+    console.log("hola mundo"); 
 }
 
 function onPointerMove( event ) {
@@ -287,6 +306,8 @@ function onPointerMove( event ) {
 
 function animate(){ 
 
+    th.camera.lookAt(sphereP1); 
+    
     var time1 = Date.now() * 0.00002;
     var time2 = Date.now() * 0.00001;
     // if(lcbool){
@@ -393,8 +414,8 @@ function animate(){
 	    // texto(notas[parseInt(INTERSECTED.userdata.id)]); // fuentes no funciona asi  
 	    
 	    // Parece ser que calcular la geometría sigue siendo demasiado costosa, tal vez sea necesario guardar en módulos más pequeños. 
-	    
-	    if( fBool ){
+
+	    if( fBool && INTERSECTED.userdata.id != "gui"){
 		onclick=function(){
 		    // Procesamiento antes de imprimir
 		    // INTERSECTED.material.color = 0x05ffa1 ;
@@ -596,7 +617,15 @@ function onDocumentMouseMove( event ) {
 }
 
 function livecodeame(){
+    
+    // GUI
+    
+    gui.add(params, 'hydra');
+    gui.add(params, 'textoAlFondo');
 
+    var obj = { imprimir:function(){ console.log("clicked") }};
+    gui.add(obj,'imprimir');
+    
     controls.autoRotate = true; 
     controls.autoRotateSpeed = 0.5; 
     th.scene.add( sphereP1 );
@@ -766,7 +795,7 @@ function curve(positions){
 
     // console.log(geometryCurve); 
 
-    materialCurve = new THREE.LineBasicMaterial( { color: 0x05ffa1, linewidth: 4 } );
+    materialCurve = new THREE.LineBasicMaterial( { color: 0x05ffa1, linewidth: 5 } );
     // Create the final object to add to the scene
     curveObject = new THREE.Line( geometryCurve, materialCurve );
  
