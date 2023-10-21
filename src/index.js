@@ -13,6 +13,11 @@ import { DbReader, dbParser, createDoc } from '../js/avLib/dbSetup2';
 import { OrbitControls } from '../static/jsm/controls/OrbitControls.js';
 import { TransformControls } from '../static/jsm/controls/TransformControls.js';
 
+
+const print = document.getElementById('print');
+print.addEventListener('click', printPDF );
+
+
 const params = {
     hydra: false,
     textoAlFondo: false
