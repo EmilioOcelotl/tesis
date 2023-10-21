@@ -10,7 +10,7 @@ body {
 
 #info {
     position: absolute; 
-    top: 40px;
+    top: 160px;
     width: 100vw;
     vertical-align: center; 
     padding: 0px;
@@ -45,4 +45,11 @@ body {
     top: 0px;
     width: 100%;
     bottom: 0px;
+}
+
+#clickableAwesomeFont {
+    cursor: pointer;
+    position:absolute;
+    right: 50px;
+    top: 25px;
 }

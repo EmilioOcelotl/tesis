@@ -409,7 +409,55 @@ function animate(){
 	    
 	    // Parece ser que calcular la geometría sigue siendo demasiado costosa, tal vez sea necesario guardar en módulos más pequeños. 
 
-	    if( fBool){
+	   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+){
 		onclick=function(){
 		    // Procesamiento antes de imprimir
 		    // INTERSECTED.material.color = 0x05ffa1 ;
@@ -611,6 +659,14 @@ function onDocumentMouseMove( event ) {
 }
 
 function livecodeame(){
+    
+    // GUI
+    
+    gui.add(params, 'hydra');
+    gui.add(params, 'textoAlFondo');
+
+    var obj = { imprimir:function(){ console.log("clicked") }};
+    gui.add(obj,'imprimir');
     
     controls.autoRotate = true; 
     controls.autoRotateSpeed = 0.5; 
