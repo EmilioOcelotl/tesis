@@ -13,22 +13,34 @@ import { DbReader, dbParser, createDoc } from '../js/avLib/dbSetup2';
 import { OrbitControls } from '../static/jsm/controls/OrbitControls.js';
 import { TransformControls } from '../static/jsm/controls/TransformControls.js';
 
-
+const par = new EditorParser();     
+    
 const print = document.getElementById('print');
 print.addEventListener('click', printPDF );
 
+const editorP = document.getElementById('codeEditor');
+editorP.addEventListener('click', codeEditorFunc );
+// editorP.style.display = 'none';
 
-const params = {
-    hydra: false,
-    textoAlFondo: false
-};
+const ed = document.getElementById('editor');
+ed.style.display = 'none';     
 
-function testFunc(){
-    console.log("holi"); 
-}
+let codeBool = false; 
 
-const TurndownService = require('turndown').default;	
-var turndownService = new TurndownService()
+const backHy = document.getElementById('backgroundHy');
+backHy.addEventListener('click', backgroundFunc );
+// editorP.style.display = 'none';
+// backHy.userdata = {id:'backHy'};
+
+let backBool = false; 
+
+const infoButton = document.getElementById('information');
+infoButton.addEventListener('click', informationFunc );
+
+let infoBool = false; 
+
+const disposeButton = document.getElementById("delete");
+disposeButton.addEventListener('click', disposeLines); 
 
 const a = new AudioSetup(); 
 const th = new VideoSetup(); 
@@ -183,8 +195,8 @@ function init(){
     th.initVideo();
     th.camera.position.z = 200;
     //th.scene.background = renderTarget.texture; 
-    th.scene.background = hy.vit; 
-    // th.scene.background = new THREE.Color( 0x000000 );
+    //th.scene.background = hy.vit; 
+    th.scene.background = new THREE.Color( 0x000000 );
     const light = new THREE.PointLight(  0xffffff, 1 );
     light.position.set( 0, 0, 500 );
     th.scene.add( light );
@@ -203,7 +215,7 @@ function init(){
     
     // un = new UnrealBloom(th.scene, th.camera, th.renderer2); 
     // retro = new Feedback(th.scene, th.renderer2, 1080);
-    const geometry44 = new THREE.BoxGeometry( 100, 100, 100 ); 
+    const geometry44 = new THREE.BoxGeometry( 70, 70, 70 ); 
     const material44 = new THREE.MeshStandardMaterial( { color: 0xffffff, map: renderTarget.texture, roughness: 0.6 } ); 
     sphere44 = new THREE.Mesh( geometry44, material44 );
 
@@ -239,39 +251,7 @@ function init(){
 
     const xsize = 200 / xgrid;
     const ysize = 200 / ygrid;
-    
-    for(let i = 0; i < menuC1str.length; i++){
-	
-	const geometry = new THREE.BoxGeometry( 8, 1.25, 1.25); 
-	change_uvs( geometry, ux, uy, 0, i);
-	materials[i] = new THREE.MeshStandardMaterial({color:0xffffff,map:hy.vit, roughness:0.4});
-	//const material = new THREE.MeshStandardMaterial( {color: 0x00ff00} );
-	material2 = materials[i]; 
-	cubos[i] = new THREE.Mesh( geometry, material2 );    
 
-	/*
-	var posX, posY, posZ;
-	var theta1 = Math.random() * (Math.PI*2);
-	var theta2 = Math.random() * (Math.PI*2); 
-	posX = Math.cos(theta1) * Math.cos(theta2)*1;
-	posY = Math.sin(theta1)*1;
-	posZ = Math.cos(theta1) * Math.sin(theta2)*1;
-	pX[i] = posX;
-	pY[i] = posY;
-	pZ[i] = posZ;
-	*/
-	
-	const desfase = Math.random()*8; 
-	cubos[i].position.y = ((i+1) *2)-5; 
-	cubos[i].position.x = desfase -4;
-	cubos[i].lookAt(0, 0, -10); 
-	//cubos[i].position.z = pZ[i] * 2;
-	//th.scene.add(cubos[i]);
-	cubos[i].userdata = {id: menuC1str[i]}; 
-	// group.add(cubos[i]);
-	th.scene.add(cubos[i]); 
-	
-    }
 
     controls = new OrbitControls( th.camera, th.renderer2.domElement );
     controls.listenToKeyEvents( window ); // optional
@@ -290,10 +270,6 @@ function init(){
     
     animate(); 
     
-}
-
-function modoEx(){
-    console.log("hola mundo"); 
 }
 
 function onPointerMove( event ) {
@@ -332,7 +308,12 @@ function animate(){
 
     text.position.x = Math.sin(time2*20) * 4; 
     text.position.y = Math.cos(time2*15) * 2; 
-	
+
+    if(!lcbool){
+	sphere44.rotation.x += 0.001;
+	sphere44.rotation.y -= 0.002; 
+    }
+    
     if(lcbool == true){
 
 	//geometryCurve.geometry.verticesNeedUpdate = true;
@@ -406,7 +387,7 @@ function animate(){
 	    /// primer nivel 
 	    document.getElementById("container").style.cursor = "pointer";
 	    interStr = INTERSECTED.userdata.id;
-
+	    infoBool = false; 
 	    // aqui va el mensaje
 	    
 	    //console.log(notas[parseInt(INTERSECTED.userdata.id)]); 
@@ -416,6 +397,7 @@ function animate(){
 
 	    if( fBool){
 		onclick=function(){
+		   
 		    // Procesamiento antes de imprimir
 		    // INTERSECTED.material.color = 0x05ffa1 ;
 		    var markd = markdown[parseInt(INTERSECTED.userdata.id.slice(0, 4))];  
@@ -444,7 +426,9 @@ function animate(){
 	INTERSECTED = null;
 	document.getElementById("container").style.cursor = "default";
 	interStr = '';
-	document.getElementById("instrucciones").innerHTML = "";
+	if(!infoBool){
+	    document.getElementById("instrucciones").innerHTML = "";
+	} 
     } 
     
     TWEEN.update();
@@ -477,81 +461,38 @@ function change(){
     if(interStr == 'iniciar'){
 
 	saveNotes(); 
-    
-	// console.log(db.postdb); // leer todo
-
-	// En algún momento hay que convertir esto a markdown 
-	
-	// console.log(notas); 
-	// quitar espacios vacíos 
-	
-	// cargar un archivo, poner un loader o algo así
-	// pasar el reloj al smpl sin que se pierda la secuencia y el audioctx 
-	//const smpl = new Player(a.audioCtx, audioFile1); // tercer parámetro de reloj y que internamente decida o de plano enviar todo al control	
-	// smpl.sequence([1, 0, 0, 1, 0]); // es el reloj
-	// let algo = new UploadFile(a.audioCtx, audioFile1);
-
-	//let otro = new Load(a.audioCtx, 'snd/cello.mp3');
-	//console.log(otro.buffer); 
-	// let pl2 = new Player2(a.audioCtx);
-	
-	//pl2.play();
 	
 	const coords = {x: th.camera.position.x,
 			y: th.camera.position.y,
 			z: th.camera.position.z} // Start at (0, 0)
 	
 	tween = new TWEEN.Tween(coords, false) // Create a new tween that modifies 'coords'.
-	    .to({x: 0, y: 0, z: 15}, 2000) // Move to (300, 200) in 1 second.
-	    .easing(TWEEN.Easing.Quadratic.InOut) // Use an easing function to make the animation smooth.
+	    .to({x: 0, y: 0, z: 65}, 2000) // Move to (300, 200) in 1 second.
+	    .easing(TWEEN.Easing.Quadratic.InOut) 
 	    .onUpdate(() => {
 		th.camera.position.z=coords.z;
-		// console.log(coords); 
 	    })  
 	    .onStart(() => {
-	// 	th.camera.remove(sphere44); 
-		// Pienso que onComplete está bien para eliminar objetos no utilizados
-		// Podría reproducir algún sonido 
 		document.getElementById("info").innerHTML = ""; // cuando tween termine 
 	    })
 	    .onComplete(() => {
+		livecodeame(); 
 
-/*
-		// parece que solamente puede funcionar un Player por vez
-		let buffer = 0; 
-		let reader = new FileReader();    
-		reader.onload = function (ev) {
-inde		    a.audioCtx.decodeAudioData(ev.target.result).then(function (buffer2) {
-			buffer = buffer2;
-			boolCosa = true; 
-			cosa = new Player2(a.audioCtx);
-			//buffer, pointer, freqScale, windowSize, overlaps, windowratio/
-			cosa.set(buffer, Math.random(), 2, 1.5, 0.1, 0.6);
-			cosa.start();
-		    })
-		}
-		reader.readAsArrayBuffer(audioFile1.files[0]);
-		})
-*/
 		const request = new XMLHttpRequest();
 		request.open('GET', 'snd/uxmal.wav', true);
 		request.responseType = 'arraybuffer';
 		self.buffer = 0; 
 		// console.log(this.request.response); 
-		
 		request.onload = function() {
 		    let audioData = request.response;
 		    // console.log(audioData); 
 		    a.audioCtx.decodeAudioData(audioData, function(buffer) {
 			// buffer = buffer2;
 			boolCosa = true; 
-
 			// const post = new Post(a.audioCtx); 
 			cosa = new Grain(a.audioCtx);
 			// cosa2 = new Grain(a.audioCtx);
 			//post.gain(0.5);
-		 
-		
 			//buffer, pointer, freqScale, windowSize, overlaps, windowratio/
 			cosa.set(buffer, Math.random(), 1, 1, 0.05, 0.6);
 			cosa.start();
@@ -564,9 +505,7 @@ inde		    a.audioCtx.decodeAudioData(ev.target.result).then(function (buffer2) {
 	 		//cosa.gain(0.25); 
 		    },
 					       function(e){"Error with decoding audio data" + e.error});
-	
     }
-    
 	    	request.send();
 	    })
 
@@ -576,7 +515,6 @@ inde		    a.audioCtx.decodeAudioData(ev.target.result).then(function (buffer2) {
     }
 
     if(interStr == 'live-codeame'){
-	livecodeame(); 
     }
         
     if(interStr == 'regresar'){
@@ -616,7 +554,7 @@ function onDocumentMouseMove( event ) {
 }
 
 function livecodeame(){
-    
+
     controls.autoRotate = true; 
     controls.autoRotateSpeed = 0.5; 
     th.scene.add( sphereP1 );
@@ -624,8 +562,6 @@ function livecodeame(){
     lcbool = true; 
     console.log("lc");
     controls.enabled = true; 
-    
-    // const par = new EditorParser();     
     
     // remover
     // esto podría tener una rampa
@@ -639,10 +575,8 @@ function livecodeame(){
 
     // agregarmesh.geometry.attributes.position.needsUpdate = true;
 
-
     const ux = 1 / xgrid;
     const uy = 1 / ygrid;
-
     const xsize = 1000 / xgrid;
     const ysize = 1000 / ygrid;
 
@@ -745,6 +679,9 @@ function texto( mensaje= "TRES ESTUDIOS ABIERTOS TRES ESTUDIOS ABIERTOS TRES EST
 
 function saveNotes(){
 
+    const TurndownService = require('turndown').default;	
+    var turndownService = new TurndownService()
+
     let notas = []; 
     // console.log(db.postdb); 
     let contNota = 0;
@@ -764,7 +701,6 @@ function saveNotes(){
     }
 
     // queda pendiente eliminar indices 
-    
     // console.log(markdown); 
     
 }
@@ -796,3 +732,43 @@ function curve(positions){
     th.scene.add(curveObject); 
 }
  
+function codeEditorFunc(){
+
+    codeBool = !codeBool;
+
+    console.log(codeBool); 
+    if(codeBool){
+	ed.style.display = 'block';     
+    } else {
+	ed.style.display = 'none';     
+    }
+    
+}
+
+function backgroundFunc(){
+
+    backBool = !backBool;
+    console.log(backBool); 
+
+    if(backBool){
+	//th.scene.background = renderTarget.texture; 
+	th.scene.background = hy.vit; 
+	// th.scene.background = new THREE.Color( 0x000000 );
+    } else {
+	th.scene.background = new THREE.Color( 0x000000 );
+    }
+    
+}
+
+function informationFunc(){
+    infoBool = !infoBool; 
+    console.log(infoBool); 
+    document.getElementById("instrucciones").innerHTML = "Clic en el cubo para iniciar.</br>El icono de impresora arroja la versión PDF de este documento.</br>También es posible activar una versión livecodeable y activar y desactivar la textura al fondo.";   
+}
+
+function disposeLines(){
+    // falta detener el movimiento de la esfera 
+    th.scene.remove(curveObject); 
+    geometryCurve.dispose();
+    materialCurve.dispose(); 
+}

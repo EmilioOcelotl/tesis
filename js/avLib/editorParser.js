@@ -53,7 +53,7 @@ function EditorParser(){
 	    })]    
     })
     
-    let view = new EditorView({
+    view = new EditorView({
 	state, 
 	parent: document.querySelector('#editor'),	
     })

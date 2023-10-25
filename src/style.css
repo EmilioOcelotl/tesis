@@ -5,7 +5,7 @@ body {
     font-family: Source Code Pro;
     font-size: 18px; 
     color: #f7f8f9;
-    line-height: 10px;
+    line-height: 20px;
 }
 
 #info {
@@ -26,7 +26,7 @@ body {
 
 #instrucciones {
     position: absolute; 
-    bottom: 100px;
+    bottom: 170px;
     width: 100vw;
     padding: 40px;
     text-align: center; 
