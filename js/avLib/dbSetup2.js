@@ -31,7 +31,10 @@ function DbReader(db){
 	const intarr = new Uint8Array(buf);
 	const db = new SQL.Database(intarr);
 	//const stmt = db.prepare("SELECT notes.noteId FROM notes ORDER BY dateModified DESC"); // como filtrar para que aparezcan en un orden determinado?
-	const stmt = db.prepare("SELECT note_contents.content FROM note_contents ORDER BY note_contents.content ASC"); // como filtrar para que aparezcan en un orden determinado?
+	//const stmt = db.prepare("SELECT note_contents.content FROM note_contents ORDER BY note_contents.content ASC"); // como filtrar para que aparezcan en un orden determinado?
+	const stmt = db.prepare("SELECT note_contents.content FROM note_contents ORDER BY dateModified DESC");
+	// Aquí tendría que ir el statement que ordena por fecha de modificación. ¿Podría obtener el stmt por otro orden y luego ordenarlo? El back está haciendo otras cosas  
+	// console.log(stmt); 
 	while (stmt.step()) pretxtdb.push(stmt.get()); // recorre y mientras stmt.step() arroje verdadero, entonces imprime los valores de stmt
 	stmt.free();
 	// liberar o cerrar hay que checar bien eso

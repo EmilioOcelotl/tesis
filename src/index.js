@@ -121,7 +121,6 @@ let tweenBool = false;
 let cubos2 = []; 
 let interStr = ''; 
 
-
 document.getElementById("container").onclick = change;
 
 //const pdfButton = document.getElementById('pdf');
@@ -683,7 +682,7 @@ function saveNotes(){
     var turndownService = new TurndownService()
 
     let notas = []; 
-    // console.log(db.postdb); 
+    console.log(db.postdb); 
     let contNota = 0;
 	
     for(let i = 0; i < db.postdb.length; i++){
