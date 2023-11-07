@@ -219,7 +219,17 @@ export default {
 	    "nota": "Errores en la lectura e impresión de este documento",
 	    "w": "18.95",
 	    "h": "9.6"
+	},
+
+	{
+	    "img": "img/tesis.jpg",
+	    "pie": "tesis",
+	    "url": "https://tres.ocelotl.cc/",
+	    "nota": "Prototipo de visualización de la información en un espacio triimensional",
+	    "w": "18.95",
+	    "h": "9.6"
 	}
+
 
 	/*
 	{

@@ -11,8 +11,10 @@ import { map_range } from '../js/avLib/utils.js';
 import { Post } from '../js/avLib/Post.js';
 import { DbReader, dbParser, createDoc } from '../js/avLib/dbSetup2'; 
 import { OrbitControls } from '../static/jsm/controls/OrbitControls.js';
-import { TransformControls } from '../static/jsm/controls/TransformControls.js';
-    
+import { TransformControls } from '../static/jsm/controls/TransformControls.js'; 
+import Text from 'markov-chains-text';
+
+
 const print = document.getElementById('print');
 print.addEventListener('click', printPDF );
 
@@ -27,8 +29,6 @@ let codeBool = false;
 
 const backHy = document.getElementById('backgroundHy');
 backHy.addEventListener('click', backgroundFunc );
-// editorP.style.display = 'none';
-// backHy.userdata = {id:'backHy'};
 
 let backBool = false; 
 
@@ -95,9 +95,6 @@ const materialrt = new THREE.MeshBasicMaterial({
     //metalness: 0.2
 });
 
-const loadertext = new THREE.FileLoader();
-lineasInicio = [];
-
 ///////////////////////////////////////////////////
 
 const group = new THREE.Group();
@@ -138,25 +135,14 @@ let mouseX = 0, mouseY = 0;
 document.addEventListener( 'mousemove', onDocumentMouseMove );
 
 function printPDF(){
-
-      window.open(
-          "https://ocelotl.cc/tres", "_blank");
-   
-    // Hay un problema al seleccionar el texto a imprimir y la impresión. Tal vez es necesario relacionar el análisis del texto con la lectura y no tanto con el método de impresión. 
-    // Parece ser que aquí necesitaremos expresiones regulares para hacer cosas como limpiar la base o separar cada cierto número de caracteres y agregar nuevas hojas.
-    // También hace falta diseñar la base de datos desde trilium y subir esto para que pueda trabajar directamente con la base del servidor. 
-
+      window.open("https://ocelotl.cc/tres", "_blank");
 }
 
 const clock = new THREE.Clock();
 
-//const fixButton = document.getElementById('edit');
-//fixButton.addEventListener('click', init);
-
 let cubos = [];
 let geometry; 
-// const geometry = new THREE.SphereGeometry(2, 3, 4 );
-//const material2 = new THREE.MeshBasicMaterial( { color: 0xffffff, map: hy.vit } );
+
 let pX = [], pY = [], pZ = []; 
 
 let sphere; 
@@ -173,8 +159,8 @@ let fBool = false;
 
 init(); // los elementos particulares de este init podrían ir en otro lado. En todo caso podría delimitar la escena que antes se detonaba con esta función.     
 function init(){
+
     loadFont();
-    
     a.initAudio();
         /*
     audioFile1.addEventListener("change", (event) => {
@@ -349,7 +335,7 @@ function animate(){
 
     raycaster.setFromCamera( pointer, th.camera );
     const intersects = raycaster.intersectObjects( th.scene.children, true );
-
+ 
     if ( intersects.length > 0 ) {
 	if ( INTERSECTED != intersects[ 0 ].object && intersects[0].object.material.emissive != undefined) { // si INTERSECTED es tal objeto entonces realiza tal cosa
 
@@ -636,8 +622,12 @@ function saveNotes(){
 	}
     }
 
-    // console.log(notas.length); 
-
+    // console.log(notas.join(" "));
+    const fakeText = new Text(notas.join(" "));
+    //console.log(fakeText); 
+    const sentence = fakeText.makeSentence();
+    console.log(sentence);
+    
     for(let i = 0; i < notas.length; i++){
 	markdown[i] = turndownService.turndown(notas[i].toString());
 	markdown[i] = markdown[i].split(".").join("\n"); 
@@ -712,5 +702,6 @@ function disposeLines(){
     // falta detener el movimiento de la esfera 
     th.scene.remove(curveObject); 
     geometryCurve.dispose();
-    materialCurve.dispose(); 
+    materialCurve.dispose();
+    positions = []; 
 }
