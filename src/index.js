@@ -14,7 +14,6 @@ import { OrbitControls } from '../static/jsm/controls/OrbitControls.js';
 import { TransformControls } from '../static/jsm/controls/TransformControls.js'; 
 import Text from 'markov-chains-text';
 
-
 const print = document.getElementById('print');
 print.addEventListener('click', printPDF );
 
@@ -339,7 +338,6 @@ function animate(){
     if ( intersects.length > 0 ) {
 	if ( INTERSECTED != intersects[ 0 ].object && intersects[0].object.material.emissive != undefined) { // si INTERSECTED es tal objeto entonces realiza tal cosa
 
-	    //console.log(INTERSECTED); 
 
 	    if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
 	    
@@ -405,7 +403,6 @@ function animate(){
 }
     
 // ¿Esto también podría ir a otra parte?
-
 function change(){
     
     if(interStr == 'imprimir'){

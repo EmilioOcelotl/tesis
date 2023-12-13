@@ -1,4 +1,5 @@
 
+
 // Nueva clase para leer, limpiar e imprimir
 
 const initSqlJs = require('sql.js'); // para leer sql
