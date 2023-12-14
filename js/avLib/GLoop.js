@@ -1,4 +1,4 @@
-const { map_range } = require('./maprange.js');
+const { map_range } = require('./utils.js');
 import * as TWEEN from 'tween'; 
 
 // La clase GLoop se encarga de modificar los parámetros de un sintetizador Grain. Por esto, es el primer elemento del constructor. Hay un parámetro para que el loop no inicie inmediatamente. 

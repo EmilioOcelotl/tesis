@@ -7,11 +7,12 @@ import { EditorParser} from '../js/avLib/editorParser'
 import * as TWEEN from 'tween'; 
 import { FontLoader } from '../static/jsm/loaders/FontLoader.js';
 import { Player } from '../js/avLib/Player.js'; 
-import { map_range } from '../js/avLib/utils.js';
 import { Post } from '../js/avLib/Post.js';
 import { DbReader, dbParser, createDoc } from '../js/avLib/dbSetup2'; 
 import { OrbitControls } from '../static/jsm/controls/OrbitControls.js';
 import { TransformControls } from '../static/jsm/controls/TransformControls.js'; 
+
+// quitar 
 import Text from 'markov-chains-text';
 
 const print = document.getElementById('print');
@@ -46,6 +47,12 @@ const a = new AudioSetup();
 const th = new VideoSetup(); 
 const hy = new HydraTex();
 const db = new DbReader()
+
+a.initAudio();
+
+const { Grain } = require('../js/avLib/Grain')
+const { GLoop } = require('../js/avLib/GLoop'); 
+import { map_range } from '../js/avLib/utils.js';
 
 db.read("./sql/document.db");
 
@@ -105,7 +112,9 @@ const mouse = [.5, .5]
 // const rTarget = new RTarget(); 
 // rTarget.setText(); 
 
-let cosa, cosa2;
+let cosa = new Grain(a.audioCtx);
+const gloop = new GLoop({grain: cosa});  
+
 let boolCosa; 
 
 // let twC; 
@@ -160,7 +169,6 @@ init(); // los elementos particulares de este init podrían ir en otro lado. En 
 function init(){
 
     loadFont();
-    a.initAudio();
         /*
     audioFile1.addEventListener("change", (event) => {
 	const archivo = new LoadFile(a.audioCtx, audioFile1);
@@ -328,8 +336,9 @@ function animate(){
 
     // Esto se tiene que convertir en otra cosa
     if(boolCosa){
-	cosa.pointer = cursorX / 20;
-	cosa.freqScale =  (cursorY/100)-2.2;
+	//cosa.pointer = cursorX / 20;
+	//cosa.freqScale =  (cursorY/100)-2.2;
+	gloop.update(); 
     }    
 
     raycaster.setFromCamera( pointer, th.camera );
@@ -426,7 +435,6 @@ function change(){
 	    })
 	    .onComplete(() => {
 		livecodeame(); 
-
 		const request = new XMLHttpRequest();
 		request.open('GET', 'snd/uxmal.wav', true);
 		request.responseType = 'arraybuffer';
@@ -436,20 +444,17 @@ function change(){
 		    a.audioCtx.decodeAudioData(audioData, function(buffer) {
 			// buffer = buffer2;
 			boolCosa = true; 
-			// const post = new Post(a.audioCtx); 
-			cosa = new Grain(a.audioCtx);
-			// cosa2 = new Grain(a.audioCtx);
-			//post.gain(0.5);
-			//buffer, pointer, freqScale, windowSize, overlaps, windowratio/
 			cosa.set(buffer, Math.random(), 1, 1, 0.05, 0.6);
 			cosa.start();
-			//cosa.gainNode.connect(post.input); 
-			//buffer, pointer, freqScale, windowSize, overlaps, windowratio/
-			//cosa2.set(buffer, Math.random(), 1, 0.15, 0.05, 0);
-			//cosa2.start()
-			// cosa.gainNode.connect(post.input); 
-	 
-	 		//cosa.gain(0.25); 
+
+			gloop.seqpointer = [0.1, 0.3, 0.5];
+			gloop.seqfreqScale = [1, 0.5, 4, 2]; 
+			gloop.seqwindowSize = [1, 0.01, 2];
+			gloop.overlaps = [0.11, 2];
+			gloop.windowRandRatio = [0.5, 0.1, 0.5, 1, 0.21]; 
+			gloop.start();
+			boolCosa = true;
+			
 		    },
 					       function(e){"Error with decoding audio data" + e.error});
     }

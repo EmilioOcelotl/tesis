@@ -1,4 +1,4 @@
-const { map_range } = require('./maprange.js');
+const { map_range } = require('./utils.js');
 
 class Grain {
 
