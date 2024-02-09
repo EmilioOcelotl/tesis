@@ -629,12 +629,44 @@ function saveNotes(){
     // aquí ya se leen las notas por fecha de modificación 
     // console.log(marksort);
 
-       for(let i = 0; i < marksort.length; i++){
+    let sphCap = [];
+    
+    for(let i = 0; i < marksort.length; i++){
 
 	   // Solamente se imprimen notas con más de dos caracteres
-	   if(marksort[i].length > 2){ 
-	       const txt = marksort[i].slice(3);
-	       //console.log(txt); 
+	if(marksort[i].length > 2 && marksort[i].slice(2, 3) == "0"){
+
+	    var posX, posY, posZ;
+	    var theta1 = Math.random() * (Math.PI*2);
+	    var theta2 = Math.random() * (Math.PI*2); 
+
+	    // guardar estas posiciones en algún lado, serán el eje de rotación de otras esferas
+	    
+	    posX = Math.cos(theta1) * Math.cos(theta2)*15;
+	    posY = Math.sin(theta1)*15;
+	    posZ = Math.cos(theta1) * Math.sin(theta2)*15;
+
+	    console.log(marksort[i].slice(3));
+	    const geoCap = new THREE.SphereGeometry( 0.75, 32, 32 ); 
+	    const matCap = new THREE.MeshStandardMaterial( { color: 0xffffff, map: renderTarget.texture, roughness: 0.6 } ); 
+	    sphCap[i] = new THREE.Mesh( geoCap, matCap );
+	    // rTarget.setText(); 
+	    sphCap[i].userdata = {id:marksort[i].slice(3)};
+	    sphCap[i].position.x = posX  ; 
+	    sphCap[i].position.y = posY  ; 
+	    sphCap[i].position.z = posZ  ; 
+
+	    th.scene.add( sphCap[i] );
+
+	    const material = new THREE.LineBasicMaterial( { color: 0xffffff } );
+	    const points = [];
+	    points.push( new THREE.Vector3(  0, 0, 0 ) );
+	    points.push( new THREE.Vector3( posX, posY, posZ ) );
+	    const geometry = new THREE.BufferGeometry().setFromPoints( points );
+	    const line = new THREE.Line( geometry, material );
+
+	    th.scene.add(line); 
+	    
 	   }
 
        }
@@ -671,14 +703,14 @@ function saveNotes(){
 	    contNota++; 
 	}
     }
-
     
-
+    /*
     // console.log(notas.join(" "));
     const fakeText = new Text(notas.join(" "));
     //console.log(fakeText); 
     const sentence = fakeText.makeSentence();
     console.log(sentence);
+    */
     
     for(let i = 0; i < notas.length; i++){
 	markdown[i] = turndownService.turndown(notas[i].toString());
