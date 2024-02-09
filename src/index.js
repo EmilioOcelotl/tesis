@@ -209,11 +209,21 @@ function init(){
 
     // rTarget.setText(); 
     sphere44.userdata = {id:'iniciar'};
-    console.log(sphere44.userdata.id); const group = new THREE.Group();
+    //console.log(sphere44.userdata.id);
 
     th.scene.add( sphere44 );
-    // sphere44.position.z = -20; 
+    // sphere44.position.z = -20;
 
+    const geoTres = new THREE.SphereGeometry( 2, 32, 32 ); 
+    const matTres = new THREE.MeshStandardMaterial( { color: 0xffffff, map: renderTarget.texture, roughness: 0.6 } ); 
+    sphTres = new THREE.Mesh( geoTres, matTres );
+
+    // rTarget.setText(); 
+    sphTres.userdata = {id:'Tres Estudios Abiertos'};
+    //console.log(sphere44.userdata.id);
+
+    th.scene.add( sphTres );
+    
     document.onmousemove = function(e){
 	cursorX = e.pageX;
 	cursorY = e.pageY;
@@ -228,33 +238,25 @@ function init(){
     */
     
     container = document.getElementById( 'container' );
-    container.appendChild(th.renderer2.domElement);
- 
+    container.appendChild(th.renderer2.domElement); 
     cubeCount = 0;
-
     let ox, oy, geometryTex;
-
     const ux = 1 / xgrid;
     const uy = 1 / ygrid;
-
     const xsize = 200 / xgrid;
     const ysize = 200 / ygrid;
-
     controls = new OrbitControls( th.camera, th.renderer2.domElement );
     controls.listenToKeyEvents( window ); // optional
     
     //controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
     
-    controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+    controls.enableDamping = true;
     controls.dampingFactor = 0.05;
-    
     controls.screenSpacePanning = false;
     controls.enabled = false; 
     //controls.minDistance = 100;
     //controls.maxDistance = 500;
-
-    //curve();
-    
+    //curve()
     animate(); 
     
 }
@@ -273,12 +275,12 @@ function animate(){
     var time1 = Date.now() * 0.00002;
     var time2 = Date.now() * 0.00001;
     // if(lcbool){
-	controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
+    controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
 
     if(positions.length > 3){
 
 	curveObject.geometry.attributes.position.needsUpdate = true;
-    let path = (time1*10) % 1;
+	let path = (time1*10) % 1;
 	let pos = curve1.getPointAt(path); 
 	sphereP1.position.x = pos.x;
 	sphereP1.position.y = pos.y;
@@ -306,27 +308,26 @@ function animate(){
 	let cC = 0;
 
 	// Revisar si estas modificaciones son relevantes
-	
+	/*
 	for(let i = 0; i < xgrid; i++){
 	    for (let j = 0; j < ygrid; j++){
 		//cubos2[cC].position.x = 1+(pX[cC]* (Math.sin(time2+i)* 2));
 		//cubos2[cC].position.y = 1+(pY[cC]* (Math.sin(time2+j)* 1));
-		
 		// podría haber una condicional para la distribución vertical u horizontal
 		//cubos2[cC].position.x = (pX[cC] * (Math.sin(time1+i+j)* 2));
 		//cubos2[cC].position.y = (pY[cC] * (Math.sin(time1+i+j)* 2));
 		//cubos2[cC].position.z = (pZ[cC] * (Math.sin(time1+i+j)* 2));
-
 		// cubos2[cC].rotation.x += Math.sin(time2+i)*0.002; 
 		cubos2[cC].scale.x = 1+Math.sin(time2+i+j)*4;
 		cubos2[cC].scale.y = 1+Math.sin(time2+i+j)*4;
-
 		// cubos2[cC].lookAt(0, 0, 0); 
 		cubos2[cC].lookAt(th.camera.position); 
 		cC++; 
 	    }
+	    }
+	    */
 	}
-    }
+	
 
     /*
     th.camera.position.x += ( mouseX - th.camera.position.x *0.5) * .5;
@@ -483,6 +484,8 @@ function onDocumentMouseMove( event ) {
 
 function livecodeame(){
 
+    th.scene.remove( sphere44 );  
+
     controls.autoRotate = true; 
     controls.autoRotateSpeed = 0.5; 
     th.scene.add( sphereP1 );
@@ -494,15 +497,20 @@ function livecodeame(){
     // remover
     // esto podría tener una rampa
     // falta el dispose
-    
+
+    // Estos cubos ya no existen creo
+
+    /*
     for(let i = 0; i < menuC1str.length; i++){
 	th.scene.remove(cubos[i]); 
     }
 
     th.scene.remove(sphere44);
-
+    */
     // agregarmesh.geometry.attributes.position.needsUpdate = true;
 
+    // Podrían conservarse estos elementos en las esferas desplegadas 
+    
     const ux = 1 / xgrid;
     const uy = 1 / ygrid;
     const xsize = 1000 / xgrid;
@@ -510,10 +518,8 @@ function livecodeame(){
 
     let cCount = 0;
     
-    // podrían tener un orden inicial y luego descomponerse 
-
-    // malla de 2x2 ¿Podría ser de otra manera?
-
+    /*
+   
     for(let i = 0; i < xgrid; i++){
 	for (let j = 0; j < ygrid; j++){
 
@@ -531,8 +537,7 @@ function livecodeame(){
 	    var posX, posY, posZ;
 	    var theta1 = Math.random() * (Math.PI*2);
 	    var theta2 = Math.random() * (Math.PI*2); 
-	    
-	    
+	    	    
 	    posX = Math.cos(theta1) * Math.cos(theta2)*1;
 	    posY = Math.sin(theta1)*1;
 	    posZ = Math.cos(theta1) * Math.sin(theta2)*1;
@@ -561,6 +566,8 @@ function livecodeame(){
     }
 
     th.scene.add(group); 
+
+    */
     
 }
 
@@ -612,17 +619,60 @@ function saveNotes(){
     const TurndownService = require('turndown').default;	
     var turndownService = new TurndownService()
 
+    let markdown = []; 
+
+    for(let i = 0; i < db.postdb.length; i++){
+	markdown[i] = turndownService.turndown(db.postdb[i].toString());
+    }
+
+    marksort = markdown.sort(); 
     // aquí ya se leen las notas por fecha de modificación 
-    // console.log(db.postdb); 
+    // console.log(marksort);
+
+       for(let i = 0; i < marksort.length; i++){
+
+	   // Solamente se imprimen notas con más de dos caracteres
+	   if(marksort[i].length > 2){ 
+	       const txt = marksort[i].slice(3);
+	       //console.log(txt); 
+	   }
+
+       }
+    
+    //my_string="hello python world , i'm a beginner"
+    // console.log(db.postdb[4].split("root",1)[1])
+
+
+    /*
+    
+    //console.log(db.postdb[93].split("data-note-path=\"root").pop());
+    let unosss = db.postdb[4].split('data-note-path=\"root').pop().split('\"')[0];
+    let dossss = db.postdb[93].split('data-note-path=\"root').pop().split('\"')[1]; 
+
+    console.log(unosss); // returns 'two'
+    console.log(dossss); 
+
+    */
+    //let nwregex = /root(.*)\n/g
+    
+    //console.log(index); 
+    
+    //console.log(regexText.test(db.postdb[4])); 
+    
+    // si dos notas coniciden en lo que está entre root y un espacio entonces hay una conexión entre dos puntos 
 
     let contNota = 0;
-	
+
+    // Sustituir esto 
+    
     for(let i = 0; i < db.postdb.length; i++){
 	if(db.postdb[i].length > 2){
 	    notas[contNota] = db.postdb[i];
 	    contNota++; 
 	}
     }
+
+    
 
     // console.log(notas.join(" "));
     const fakeText = new Text(notas.join(" "));
