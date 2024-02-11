@@ -661,10 +661,15 @@ function saveNotes(){
 	    
 	    let norm = Math.sqrt(posX*posX + posY*posY+ posZ*posZ); 
 
-	    let vec = new THREE.Vector3((posX / norm)*15, (posY/norm)*15, (posZ/norm)*15); 
+	    let vec = new THREE.Vector3((posX / norm)*5, (posY/norm)*5, (posZ/norm)*5); 
 	    notesCoords.push(vec); 
+
+	    let nwVec1 = new THREE.Vector3();	    
+	    let nwVec2 = new THREE.Vector3(0, 0, 0);
+
+	    console.log(nwVec1.subVectors(vec, nwVec2)); 
 	    
-	    console.log(marksort[i].slice(3));
+	    console.log(vec);
 	    const geoCap = new THREE.BoxGeometry( 1, 1, 1 ); 
 	    const matCap = new THREE.MeshStandardMaterial( { color: 0xffffff, roughness: 0.6 } ); 
 	    sphCap[i] = new THREE.Mesh( geoCap, matCap );
@@ -679,7 +684,7 @@ function saveNotes(){
 	    const material = new THREE.LineBasicMaterial( { color: 0xffffff } );
 	    const points = [];
 	    points.push( new THREE.Vector3(  0, 0, 0 ) );
-	    points.push( new THREE.Vector3( posX/norm*15, posY/norm*15, posZ/norm*15 ) );
+	    points.push( new THREE.Vector3( posX/norm*5, posY/norm*5, posZ/norm*5 ) );
 	    const geometry = new THREE.BufferGeometry().setFromPoints( points );
 	    const line = new THREE.Line( geometry, material );
 
@@ -689,48 +694,52 @@ function saveNotes(){
     }
 
 
-    for(let i = 0; i < marksort.length; i++){
+    for(let j = 0; j < notesCoords.length; j++){
+	for(let i = 0; i < marksort.length; i++){
 	
-	// Solamente se imprimen notas con más de dos caracteres
-	if(marksort[i].length > 2 && marksort[i].slice(2, 3) != "0" && marksort[i].slice(0, 1) == "1"){
+	    // Solamente se imprimen notas con más de dos caracteres
+	    if(marksort[i].length > 2 && marksort[i].slice(2, 3) != "0" && marksort[i].slice(0, 1) == (j+1).toString()){ // y si es distinto al índice de notas
 		
-	    var posX, posY, posZ;
-	    posX = (Math.random()-0.5);
-	    posY = (Math.random()-0.5);
-	    posZ = (Math.random()-0.5); 
-	    
-	    let norm = Math.sqrt(posX*posX + posY*posY+ posZ*posZ);
-	    let vec = new THREE.Vector3((posX / norm)*5, (posY/norm)*5, (posZ/norm)*5); 
-
-	    // console.log(marksort[i].slice(3));
-	    const geoNotes = new THREE.BoxGeometry( 0.5, 0.5, 0.5 ); 
-	    const matNotes = new THREE.MeshStandardMaterial( { color: 0xffffff, roughness: 0.6 } ); 
-	    sphNotes[i] = new THREE.Mesh( geoNotes, matNotes );
-	    // rTarget.setText(); 
-	    sphNotes[i].userdata = {id:marksort[i].slice(3)};
-
-
-	    let nPosX = vec.x + notesCoords[0].x;
-	    let nPosY = vec.y + notesCoords[0].y;
-	    let nPosZ = vec.z + notesCoords[0].z;
+		var posX, posY, posZ;
+		posX = notesCoords[j].x*(Math.random()*14);
+		posY = notesCoords[j].y*(Math.random()*14);
+		posZ = notesCoords[j].z*(Math.random()*14); 
+		
+		let norm = Math.sqrt(posX*posX + posY*posY+ posZ*posZ);
+		let vec = new THREE.Vector3((posX / norm)*2.5, (posY/norm)*2.5, (posZ/norm)*2.5); 
+		
+		// console.log(marksort[i].slice(3));
+		const geoNotes = new THREE.BoxGeometry( 0.5, 0.5, 0.5 ); 
+		const matNotes = new THREE.MeshStandardMaterial( { color: 0xffffff, roughness: 0.6 } ); 
+		sphNotes[i] = new THREE.Mesh( geoNotes, matNotes );
+		// rTarget.setText(); 
+		sphNotes[i].userdata = {id:marksort[i].slice(3)};
+		
+		let nPosX = vec.x + notesCoords[j].x;
+		let nPosY = vec.y + notesCoords[j].y;
+		let nPosZ = vec.z + notesCoords[j].z;
 	    	    
-	    sphNotes[i].position.x = nPosX; 
-	    sphNotes[i].position.y = nPosY; 
-	    sphNotes[i].position.z = nPosZ;
-	    
-	    th.scene.add( sphNotes[i] );
-	    
-	    const material = new THREE.LineBasicMaterial( { color: 0xffffff } );
-	    const points = [];
-	    points.push( notesCoords[0] );
-	    points.push( new THREE.Vector3(nPosX, nPosY, nPosZ) );
-	    const geometry = new THREE.BufferGeometry().setFromPoints( points );
-	    const line = new THREE.Line( geometry, material );
+		sphNotes[i].position.x = nPosX; 
+		sphNotes[i].position.y = nPosY; 
+		sphNotes[i].position.z = nPosZ;
+		
+		th.scene.add( sphNotes[i] );
+		
+		const material = new THREE.LineBasicMaterial( { color: 0xffffff } );
+		const points = [];
+		points.push( notesCoords[j] );
+		points.push( new THREE.Vector3(nPosX, nPosY, nPosZ) );
+		const geometry = new THREE.BufferGeometry().setFromPoints( points );
+		const line = new THREE.Line( geometry, material );
+		
+		th.scene.add(line);
+		
+		// falta guardar la posición de notas y a partir de ahi construir el otro arbol 
+		
+	    }
 
-	    th.scene.add(line);
-	    
 	}
-
+	
     }
 
     //my_string="hello python world , i'm a beginner"
