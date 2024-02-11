@@ -625,14 +625,21 @@ function saveNotes(){
 	markdown[i] = turndownService.turndown(db.postdb[i].toString());
     }
 
-    marksort = markdown.sort(); 
+    marksort = markdown.sort();
+    
     // aquí ya se leen las notas por fecha de modificación 
     // console.log(marksort);
 
-    let sphCap = [];
-    
-    for(let i = 0; i < marksort.length; i++){
+    // tendría que organizar las notas por capítulos
 
+    // let aclaraciones = [], introduccion, cap1=[],cap2=[],cap3=[], cap4=[], conclusiones=[],referencias=[];
+
+    let notesCoords = []; 
+    
+    let sphCap = [];
+    let sphNotes = []; 
+    
+    for(let i = 0; i < marksort.length; i++){	
 	   // Solamente se imprimen notas con más de dos caracteres
 	if(marksort[i].length > 2 && marksort[i].slice(2, 3) == "0"){
 
@@ -641,36 +648,91 @@ function saveNotes(){
 	    var theta2 = Math.random() * (Math.PI*2); 
 
 	    // guardar estas posiciones en algún lado, serán el eje de rotación de otras esferas
-	    
+
+	    /*
 	    posX = Math.cos(theta1) * Math.cos(theta2)*15;
 	    posY = Math.sin(theta1)*15;
 	    posZ = Math.cos(theta1) * Math.sin(theta2)*15;
+	    */
 
+	    posX = Math.random()-0.5;
+	    posY = Math.random()-0.5;
+	    posZ = Math.random()-0.5; 
+	    
+	    let norm = Math.sqrt(posX*posX + posY*posY+ posZ*posZ); 
+
+	    let vec = new THREE.Vector3((posX / norm)*15, (posY/norm)*15, (posZ/norm)*15); 
+	    notesCoords.push(vec); 
+	    
 	    console.log(marksort[i].slice(3));
-	    const geoCap = new THREE.SphereGeometry( 0.75, 32, 32 ); 
-	    const matCap = new THREE.MeshStandardMaterial( { color: 0xffffff, map: renderTarget.texture, roughness: 0.6 } ); 
+	    const geoCap = new THREE.BoxGeometry( 1, 1, 1 ); 
+	    const matCap = new THREE.MeshStandardMaterial( { color: 0xffffff, roughness: 0.6 } ); 
 	    sphCap[i] = new THREE.Mesh( geoCap, matCap );
 	    // rTarget.setText(); 
 	    sphCap[i].userdata = {id:marksort[i].slice(3)};
-	    sphCap[i].position.x = posX  ; 
-	    sphCap[i].position.y = posY  ; 
-	    sphCap[i].position.z = posZ  ; 
+	    sphCap[i].position.x = vec.x; 
+	    sphCap[i].position.y = vec.y; 
+	    sphCap[i].position.z = vec.z; 
 
 	    th.scene.add( sphCap[i] );
 
 	    const material = new THREE.LineBasicMaterial( { color: 0xffffff } );
 	    const points = [];
 	    points.push( new THREE.Vector3(  0, 0, 0 ) );
-	    points.push( new THREE.Vector3( posX, posY, posZ ) );
+	    points.push( new THREE.Vector3( posX/norm*15, posY/norm*15, posZ/norm*15 ) );
 	    const geometry = new THREE.BufferGeometry().setFromPoints( points );
 	    const line = new THREE.Line( geometry, material );
 
-	    th.scene.add(line); 
-	    
-	   }
+	    th.scene.add(line);
+	   
+	} 	
+    }
 
-       }
-    
+
+    for(let i = 0; i < marksort.length; i++){
+	
+	// Solamente se imprimen notas con más de dos caracteres
+	if(marksort[i].length > 2 && marksort[i].slice(2, 3) != "0" && marksort[i].slice(0, 1) == "1"){
+		
+	    var posX, posY, posZ;
+	    posX = (Math.random()-0.5);
+	    posY = (Math.random()-0.5);
+	    posZ = (Math.random()-0.5); 
+	    
+	    let norm = Math.sqrt(posX*posX + posY*posY+ posZ*posZ);
+	    let vec = new THREE.Vector3((posX / norm)*5, (posY/norm)*5, (posZ/norm)*5); 
+
+	    // console.log(marksort[i].slice(3));
+	    const geoNotes = new THREE.BoxGeometry( 0.5, 0.5, 0.5 ); 
+	    const matNotes = new THREE.MeshStandardMaterial( { color: 0xffffff, roughness: 0.6 } ); 
+	    sphNotes[i] = new THREE.Mesh( geoNotes, matNotes );
+	    // rTarget.setText(); 
+	    sphNotes[i].userdata = {id:marksort[i].slice(3)};
+
+
+	    let nPosX = vec.x + notesCoords[0].x;
+	    let nPosY = vec.y + notesCoords[0].y;
+	    let nPosZ = vec.z + notesCoords[0].z;
+	    	    
+	    sphNotes[i].position.x = nPosX; 
+	    sphNotes[i].position.y = nPosY; 
+	    sphNotes[i].position.z = nPosZ;
+	    
+	    th.scene.add( sphNotes[i] );
+	    
+	    const material = new THREE.LineBasicMaterial( { color: 0xffffff } );
+	    const points = [];
+	    points.push( notesCoords[0] );
+	    points.push( new THREE.Vector3(nPosX, nPosY, nPosZ) );
+	    const geometry = new THREE.BufferGeometry().setFromPoints( points );
+	    const line = new THREE.Line( geometry, material );
+
+	    th.scene.add(line);
+	    
+	}
+
+    }
+
     //my_string="hello python world , i'm a beginner"
     // console.log(db.postdb[4].split("root",1)[1])
 
