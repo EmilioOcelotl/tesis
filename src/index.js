@@ -155,7 +155,7 @@ let pX = [], pY = [], pZ = [];
 
 let sphere; 
 let raycaster;
-let INTERSECTED;
+let INTERSECTED
 const pointer = new THREE.Vector2();
  
 let menuC1str = ['regresar', '+ info', 'auto', 'live-codeame', 'imprimir']; 
@@ -184,7 +184,7 @@ function init(){
     th.camera.position.z = 200;
     //th.scene.background = renderTarget.texture; 
     //th.scene.background = hy.vit; 
-    th.scene.background = new THREE.Color( 0x000000 );
+    th.scene.background = new THREE.Color( 0x010101 );
     const light = new THREE.PointLight(  0xffffff, 1 );
     light.position.set( 0, 0, 500 );
     th.scene.add( light );
@@ -203,7 +203,7 @@ function init(){
     
     //un = new UnrealBloom(th.scene, th.camera, th.renderer2); 
     // retro = new Feedback(th.scene, th.renderer2, 1080);
-    const geometry44 = new THREE.BoxGeometry( 70, 70, 70 ); 
+    const geometry44 = new THREE.SphereGeometry( 20, 32, 32 ); 
     const material44 = new THREE.MeshStandardMaterial( { color: 0xffffff, map: renderTarget.texture, roughness: 0.6 } ); 
     sphere44 = new THREE.Mesh( geometry44, material44 );
 
@@ -359,6 +359,8 @@ function animate(){
 	    interStr = INTERSECTED.userdata.id;
 	    infoBool = false; 
 
+	    controls.autoRotate = false; 
+	    
 	    if( fBool){
 		onclick=function(){
 		   
@@ -384,6 +386,10 @@ function animate(){
     } else {
 	
 	if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+
+	
+	controls.autoRotate = true; 
+	controls.autoRotateSpeed = 0.5; 
 	
 	INTERSECTED = null;
 	document.getElementById("container").style.cursor = "default";
@@ -426,7 +432,7 @@ function change(){
 			z: th.camera.position.z} // Start at (0, 0)
 	
 	tween = new TWEEN.Tween(coords, false) // Create a new tween that modifies 'coords'.
-	    .to({x: 0, y: 0, z: 30}, 2000) // Move to (300, 200) in 1 second.
+	    .to({x: 0, y: 0, z: 20}, 2000) // Move to (300, 200) in 1 second.
 	    .easing(TWEEN.Easing.Quadratic.InOut) 
 	    .onUpdate(() => {
 		th.camera.position.z=coords.z;
@@ -485,9 +491,6 @@ function onDocumentMouseMove( event ) {
 function livecodeame(){
 
     th.scene.remove( sphere44 );  
-
-    controls.autoRotate = true; 
-    controls.autoRotateSpeed = 0.5; 
     th.scene.add( sphereP1 );
 
     lcbool = true; 
@@ -671,7 +674,7 @@ function saveNotes(){
 	    
 	    console.log(vec);
 	    const geoCap = new THREE.BoxGeometry( 1, 1, 1 ); 
-	    const matCap = new THREE.MeshStandardMaterial( { color: 0xffffff, roughness: 0.6 } ); 
+	    const matCap = new THREE.MeshStandardMaterial( { color: 0x000000, roughness: 0.6 } ); 
 	    sphCap[i] = new THREE.Mesh( geoCap, matCap );
 	    // rTarget.setText(); 
 	    sphCap[i].userdata = {id:marksort[i].slice(3)};
