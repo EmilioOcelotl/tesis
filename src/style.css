@@ -8,8 +8,7 @@ body {
     line-height: 20px;
 }
 
-#info {
-    position: absolute; 
+#info {    position: absolute; 
     top: 50px;
     width: 100vw;
     vertical-align: center; 
@@ -24,10 +23,17 @@ body {
     z-index: 0; /* TODO Solve this in HTML */
 }
 
-#instrucciones {
+#instrucciones {    
+    overflow-y: auto; /* Agrega la barra de desplazamiento vertical cuando sea necesario */
+    /*border: 1px solid #ccc;*/ /* Borde para mayor claridad */
+   
+    scrollbar-width: thin;          /* "auto" or "thin" */
+    scrollbar-color: black gray;   /* scroll thumb and track */
+    
     position: relative; 
     top: 50px; 
     width: 50vw;
+    height:100vh;
     padding: 40px;
     float: right;
     text-align: right; 

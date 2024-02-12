@@ -359,7 +359,7 @@ function animate(){
 	    interStr = INTERSECTED.userdata.id;
 	    infoBool = false; 
 
-	    controls.autoRotate = false; 
+	    //controls.autoRotate = false; 
 	    
 	    if( fBool){
 		onclick=function(){
@@ -388,8 +388,8 @@ function animate(){
 	if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
 
 	
-	controls.autoRotate = true; 
-	controls.autoRotateSpeed = 0.5; 
+	//controls.autoRotate = true; 
+	//controls.autoRotateSpeed = 0.5; 
 	
 	INTERSECTED = null;
 	document.getElementById("container").style.cursor = "default";
@@ -621,17 +621,17 @@ function saveNotes(){
 
     const TurndownService = require('turndown').default;	
     var turndownService = new TurndownService()
-
+    
     let markdown = []; 
-
+    
     for(let i = 0; i < db.postdb.length; i++){
 	markdown[i] = turndownService.turndown(db.postdb[i].toString());
     }
-
+  
     marksort = markdown.sort();
     
     // aquí ya se leen las notas por fecha de modificación 
-    // console.log(marksort);
+    //console.log(marksort);
 
     // tendría que organizar las notas por capítulos
 
@@ -785,11 +785,12 @@ function saveNotes(){
     const sentence = fakeText.makeSentence();
     console.log(sentence);
     */
-    
+   
     for(let i = 0; i < notas.length; i++){
 	markdown[i] = turndownService.turndown(notas[i].toString());
 	markdown[i] = markdown[i].split(".").join("\n"); 
-    }
+	}
+   
 
     // queda pendiente eliminar indices 
     console.log(markdown.length); 
