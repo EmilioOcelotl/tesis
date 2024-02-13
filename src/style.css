@@ -3,19 +3,20 @@ body {
     background-color: black;
     overflow-y: hidden;
     font-family: Source Code Pro;
-    font-size: 18px; 
+    font-size: 14px; 
     color: #f7f8f9;
     line-height: 20px;
 }
 
-#info {    position: absolute; 
+#info {
+    position: absolute; 
     top: 50px;
     width: 100vw;
-    vertical-align: center; 
+    float: right; 
     padding: 0px;
-    text-align: left; 
+    text-align: right; 
     box-sizing: border-box;
-    vertical-align: center; 
+    vertical-align: right; 
     -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
@@ -23,20 +24,28 @@ body {
     z-index: 0; /* TODO Solve this in HTML */
 }
 
-#instrucciones {    
-    overflow-y: auto; /* Agrega la barra de desplazamiento vertical cuando sea necesario */
+#instrucciones {
     /*border: 1px solid #ccc;*/ /* Borde para mayor claridad */
    
     scrollbar-width: thin;          /* "auto" or "thin" */
     scrollbar-color: black gray;   /* scroll thumb and track */
     
-    position: relative; 
-    top: 50px; 
+    position: absolute; 
+    margin-top: 50px;
+   
     width: 50vw;
-    height:100vh;
-    padding: 40px;
-    float: right;
-    text-align: right; 
+    height:94vh;
+
+    
+    overflow-x: auto; 
+    overflow-y: auto;  /*Agrega la barra de desplazamiento vertical cuando sea necesario */
+
+    padding: 0px;
+    float: center;
+
+    
+  
+    text-align: left; 
     box-sizing: border-box;
     vertical-align: top; 
     -moz-user-select: none;
@@ -57,10 +66,14 @@ body {
 #clickableAwesomeFont {
     cursor: pointer;
     position:absolute;
-    right: 50px;
+    right: 0px;
     top: 25px;
+   
 }
 
 a {
   color: white;
+}
+
+p {
 }

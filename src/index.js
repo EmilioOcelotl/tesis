@@ -185,6 +185,8 @@ function init(){
     //th.scene.background = renderTarget.texture; 
     //th.scene.background = hy.vit; 
     th.scene.background = new THREE.Color( 0x010101 );
+
+    /*
     const light = new THREE.PointLight(  0xffffff, 1 );
     light.position.set( 0, 0, 500 );
     th.scene.add( light );
@@ -196,12 +198,16 @@ function init(){
     const light2 = new THREE.PointLight(  0xffffff, 2 );
     light2.position.set( 0, 0, 50 );
     th.scene.add( light2 );
+    */
+
+    th.scene.add( new THREE.AmbientLight( 0xcccccc ) );
+
     
-    // th.renderer2.outputColorSpace = THREE.LinearSRGBColorSpace;
-    //th.renderer2.toneMapping = THREE.ReinhardToneMapping;
-    //th.renderer2.toneMappingExposure = Math.pow( 0.6, 1.5 )
+    th.renderer2.outputColorSpace = THREE.LinearSRGBColorSpace;
+    th.renderer2.toneMapping = THREE.ReinhardToneMapping;
+    th.renderer2.toneMappingExposure = Math.pow(1.25, 4 )
     
-    //un = new UnrealBloom(th.scene, th.camera, th.renderer2); 
+    un = new UnrealBloom(th.scene, th.camera, th.renderer2); 
     // retro = new Feedback(th.scene, th.renderer2, 1080);
     const geometry44 = new THREE.SphereGeometry( 20, 32, 32 ); 
     const material44 = new THREE.MeshStandardMaterial( { color: 0xffffff, map: renderTarget.texture, roughness: 0.6 } ); 
@@ -214,8 +220,8 @@ function init(){
     th.scene.add( sphere44 );
     // sphere44.position.z = -20;
 
-    const geoTres = new THREE.SphereGeometry( 2, 32, 32 ); 
-    const matTres = new THREE.MeshStandardMaterial( { color: 0xffffff, map: renderTarget.texture, roughness: 0.6 } ); 
+    const geoTres = new THREE.SphereGeometry( 1, 32, 32 ); 
+    const matTres = new THREE.MeshBasicMaterial( { color: 0xffffff, map: renderTarget.texture } ); 
     sphTres = new THREE.Mesh( geoTres, matTres );
 
     // rTarget.setText(); 
@@ -402,7 +408,7 @@ function animate(){
     TWEEN.update();
    
     hy.vit.needsUpdate = true; 
-    //const delta = clock.getDelta();
+    const delta = clock.getDelta();
 
     renderTarget.flipY = true;
     renderTarget.needsUpdate = true;
@@ -413,7 +419,7 @@ function animate(){
     th.renderer2.setRenderTarget(null);
     
     th.renderer2.render( th.scene, th.camera );
-    //un.render2(delta);
+    un.render2(delta);
     requestAnimationFrame( animate );
 
 }
@@ -619,6 +625,7 @@ function texto( mensaje ){
 
 function saveNotes(){
 
+    /*
     const TurndownService = require('turndown').default;	
     var turndownService = new TurndownService()
     
@@ -627,11 +634,21 @@ function saveNotes(){
     for(let i = 0; i < db.postdb.length; i++){
 	markdown[i] = turndownService.turndown(db.postdb[i].toString());
     }
-  
-    marksort = markdown.sort();
+
     
+    marksort = markdown.sort();
+
+    */
+
+    for(let i = 0; i < db.postdb.length; i++){
+	markdown[i] = db.postdb[i].toString();
+    }
+
+    marksort = markdown.sort();
+
+  
     // aquí ya se leen las notas por fecha de modificación 
-    //console.log(marksort);
+    console.log(marksort);
 
     // tendría que organizar las notas por capítulos
 
@@ -644,7 +661,7 @@ function saveNotes(){
     
     for(let i = 0; i < marksort.length; i++){	
 	   // Solamente se imprimen notas con más de dos caracteres
-	if(marksort[i].length > 2 && marksort[i].slice(2, 3) == "0"){
+	if(marksort[i].length > 2 && marksort[i].slice(6, 7) == "0"){
 
 	    var posX, posY, posZ;
 	    var theta1 = Math.random() * (Math.PI*2);
@@ -673,18 +690,18 @@ function saveNotes(){
 	    console.log(nwVec1.subVectors(vec, nwVec2)); 
 	    
 	    console.log(vec);
-	    const geoCap = new THREE.BoxGeometry( 1, 1, 1 ); 
-	    const matCap = new THREE.MeshStandardMaterial( { color: 0x000000, roughness: 0.6 } ); 
+	    const geoCap = new THREE.SphereGeometry( 0.5, 32, 32); 
+	    const matCap = new THREE.MeshStandardMaterial( { color: 0x00CED1, emissive: 0x00CED1, roughness: 0.4 } ); 
 	    sphCap[i] = new THREE.Mesh( geoCap, matCap );
 	    // rTarget.setText(); 
-	    sphCap[i].userdata = {id:marksort[i].slice(3)};
+	    sphCap[i].userdata = {id:marksort[i].slice(4)};
 	    sphCap[i].position.x = vec.x; 
 	    sphCap[i].position.y = vec.y; 
 	    sphCap[i].position.z = vec.z; 
 
 	    th.scene.add( sphCap[i] );
 
-	    const material = new THREE.LineBasicMaterial( { color: 0xffffff } );
+	    const material = new THREE.LineBasicMaterial( { color: 0xffffff, emissive: 0xffffff } );
 	    const points = [];
 	    points.push( new THREE.Vector3(  0, 0, 0 ) );
 	    points.push( new THREE.Vector3( posX/norm*5, posY/norm*5, posZ/norm*5 ) );
@@ -785,7 +802,8 @@ function saveNotes(){
     const sentence = fakeText.makeSentence();
     console.log(sentence);
     */
-   
+
+    /*
     for(let i = 0; i < notas.length; i++){
 	markdown[i] = turndownService.turndown(notas[i].toString());
 	markdown[i] = markdown[i].split(".").join("\n"); 
@@ -793,7 +811,8 @@ function saveNotes(){
    
 
     // queda pendiente eliminar indices 
-    console.log(markdown.length); 
+    console.log(markdown.length);
+    */
     
 }
 
