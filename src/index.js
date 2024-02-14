@@ -41,6 +41,8 @@ const disposeButton = document.getElementById("delete");
 disposeButton.addEventListener('click', disposeLines); 
 
 let notas = []; 
+let sphCap = [];
+let noteBool = false; 
 
 const par = new EditorParser();     
 const a = new AudioSetup(); 
@@ -58,6 +60,19 @@ db.read("./sql/document.db");
 
 let markdown = [];
 let controls;
+let controlsBool = true; 
+
+const colors = [
+    0x993366, // Dusty Rose
+    0x3399CC, // Steel Blue
+    0x996633, // Mocha
+    0x669966,  // Sage Green
+    0x993366, // Dusty Rose
+    0x3399CC, // Steel Blue
+    0x996633, // Mocha
+    0x669966  // Sage Green
+];
+
 
 ///////////////////////////////////////////////////
 // splines 
@@ -203,9 +218,9 @@ function init(){
     th.scene.add( new THREE.AmbientLight( 0xcccccc ) );
 
     
-    th.renderer2.outputColorSpace = THREE.LinearSRGBColorSpace;
-    th.renderer2.toneMapping = THREE.ReinhardToneMapping;
-    th.renderer2.toneMappingExposure = Math.pow(1.25, 4 )
+    //th.renderer2.outputColorSpace = THREE.LinearSRGBColorSpace;
+    // th.renderer2.toneMapping = THREE.ReinhardToneMapping;
+    th.renderer2.toneMappingExposure = Math.pow(1, 4 )
     
     un = new UnrealBloom(th.scene, th.camera, th.renderer2); 
     // retro = new Feedback(th.scene, th.renderer2, 1080);
@@ -220,8 +235,8 @@ function init(){
     th.scene.add( sphere44 );
     // sphere44.position.z = -20;
 
-    const geoTres = new THREE.SphereGeometry( 1, 32, 32 ); 
-    const matTres = new THREE.MeshBasicMaterial( { color: 0xffffff, map: renderTarget.texture } ); 
+    const geoTres = new THREE.BoxGeometry( 2, 1, 1 ); 
+    const matTres = new THREE.MeshStandardMaterial( { color: 0xffffff, map: renderTarget.texture } ); 
     sphTres = new THREE.Mesh( geoTres, matTres );
 
     // rTarget.setText(); 
@@ -235,7 +250,7 @@ function init(){
 	cursorY = e.pageY;
     }
 
-    osc(()=>cursorY* 0.01, ()=>cursorX*0.001, 0 ).color(1, 1, 1).rotate(0.1, 0.1, 0.5).mult(osc(0.1, 1)).modulateScrollX(o0, 0.99).out(o0);
+    osc(()=>cursorY* 0.01, ()=>cursorX*0.001, 0 ).color(0.3, 0.1, 0.5).rotate(0.1, 0.1, 0.5).mult(osc(0.1, 1)).modulateScrollX(o0, 0.99).out(o0);
 
     /*
     osc(6, 0, 0.8)  .color(1, 0.1,.90)
@@ -308,11 +323,14 @@ function animate(){
 	sphere44.rotation.x += 0.001;
 	sphere44.rotation.y -= 0.002; 
     }
+
     
     if(lcbool == true){
 
+	// console.log(sphCap[0]); 
 	let cC = 0;
 
+	
 	// Revisar si estas modificaciones son relevantes
 	/*
 	for(let i = 0; i < xgrid; i++){
@@ -342,7 +360,7 @@ function animate(){
     */
 
     // Esto se tiene que convertir en otra cosa
-    if(boolCosa){
+    if(boolCosa) {
 	//cosa.pointer = cursorX / 20;
 	//cosa.freqScale =  (cursorY/100)-2.2;
 	gloop.update(); 
@@ -362,23 +380,24 @@ function animate(){
 	    INTERSECTED.material.emissive.setHex( 0xb967ff );
 	    /// primer nivel 
 	    document.getElementById("container").style.cursor = "pointer";
-	    interStr = INTERSECTED.userdata.id;
 	    infoBool = false; 
-
 	    //controls.autoRotate = false; 
+	    interStr = INTERSECTED.userdata.id;
 	    
 	    if( fBool){
 		onclick=function(){
 		   
 		    // Procesamiento antes de imprimir
 		    // INTERSECTED.material.color = 0x05ffa1 ;
-		    var markd = markdown[parseInt(INTERSECTED.userdata.id.slice(0, 4))];  
+		    var markd = markdown[parseInt(INTERSECTED.userdata.id.slice(0, 4))];
+	
+		    
 		    texto(markd);
 		    controls.target =INTERSECTED.position; 
-		    if(lcbool){
-			positions.push(INTERSECTED.position);
-			curve(positions); 
-		    }
+		    //if(lcbool){
+			//positions.push(INTERSECTED.position);
+			//curve(positions); 
+		    //}
 		}; 
 	    }
 	    
@@ -401,7 +420,7 @@ function animate(){
 	document.getElementById("container").style.cursor = "default";
 	interStr = '';
 	if(!infoBool){
-	    document.getElementById("instrucciones").innerHTML = "";
+	    //document.getElementById("instrucciones").innerHTML = "";
 	} 
     } 
     
@@ -648,7 +667,6 @@ function saveNotes(){
 
   
     // aquí ya se leen las notas por fecha de modificación 
-    console.log(marksort);
 
     // tendría que organizar las notas por capítulos
 
@@ -656,8 +674,8 @@ function saveNotes(){
 
     let notesCoords = []; 
     
-    let sphCap = [];
-    let sphNotes = []; 
+    let sphNotes = [];
+    let contCol = 0; 
     
     for(let i = 0; i < marksort.length; i++){	
 	   // Solamente se imprimen notas con más de dos caracteres
@@ -675,12 +693,15 @@ function saveNotes(){
 	    posZ = Math.cos(theta1) * Math.sin(theta2)*15;
 	    */
 
-	    posX = Math.random()-0.5;
-	    posY = Math.random()-0.5;
-	    posZ = Math.random()-0.5; 
-	    
-	    let norm = Math.sqrt(posX*posX + posY*posY+ posZ*posZ); 
+	    const phi = Math.acos(-1+ (2 * contCol) / 8);
+	    const theta = Math.sqrt(8 * Math.PI) * phi;
 
+	    const posX = Math.cos(theta) * Math.sin(phi);
+	    const posY = Math.sin(theta) * Math.sin(phi);
+	    const posZ = Math.cos(phi);   
+
+	    let norm = Math.sqrt(posX*posX + posY*posY+ posZ*posZ); 
+	    
 	    let vec = new THREE.Vector3((posX / norm)*5, (posY/norm)*5, (posZ/norm)*5); 
 	    notesCoords.push(vec); 
 
@@ -690,8 +711,8 @@ function saveNotes(){
 	    console.log(nwVec1.subVectors(vec, nwVec2)); 
 	    
 	    console.log(vec);
-	    const geoCap = new THREE.SphereGeometry( 0.5, 32, 32); 
-	    const matCap = new THREE.MeshStandardMaterial( { color: 0x00CED1, emissive: 0x00CED1, roughness: 0.4 } ); 
+	    const geoCap = new THREE.BoxGeometry( 2, 0.25, 0.25); 
+	    const matCap = new THREE.MeshStandardMaterial( { color: colors[contCol], emissive: colors[contCol], roughness: 0.4 } ); 
 	    sphCap[i] = new THREE.Mesh( geoCap, matCap );
 	    // rTarget.setText(); 
 	    sphCap[i].userdata = {id:marksort[i].slice(4)};
@@ -709,16 +730,21 @@ function saveNotes(){
 	    const line = new THREE.Line( geometry, material );
 
 	    th.scene.add(line);
+
+	    contCol++; 
 	   
-	} 	
+	   
+	}
     }
 
+    console.log(notesCoords); 
 
-    for(let j = 0; j < notesCoords.length; j++){
-	for(let i = 0; i < marksort.length; i++){
+    for(let i = 0; i < marksort.length; i++){
+
+	for(let j = 0; j < notesCoords.length; j++){
 	
 	    // Solamente se imprimen notas con más de dos caracteres
-	    if(marksort[i].length > 2 && marksort[i].slice(2, 3) != "0" && marksort[i].slice(0, 1) == (j+1).toString()){ // y si es distinto al índice de notas
+	    if(marksort[i].length > 2 && marksort[i].slice(6, 7) != "0" && marksort[i].slice(4, 5) == (j+1).toString()){ // y si es distinto al índice de notas
 		
 		var posX, posY, posZ;
 		posX = notesCoords[j].x*(Math.random()*14);
@@ -729,11 +755,11 @@ function saveNotes(){
 		let vec = new THREE.Vector3((posX / norm)*2.5, (posY/norm)*2.5, (posZ/norm)*2.5); 
 		
 		// console.log(marksort[i].slice(3));
-		const geoNotes = new THREE.BoxGeometry( 0.5, 0.5, 0.5 ); 
-		const matNotes = new THREE.MeshStandardMaterial( { color: 0xffffff, roughness: 0.6 } ); 
+		const geoNotes = new THREE.BoxGeometry( 0.5, 0.125, 0.125 ); 
+		const matNotes = new THREE.MeshStandardMaterial( { color: colors[i%8], emissive: colors[i%8], roughness: 0.6 } ); 
 		sphNotes[i] = new THREE.Mesh( geoNotes, matNotes );
 		// rTarget.setText(); 
-		sphNotes[i].userdata = {id:marksort[i].slice(3)};
+		sphNotes[i].userdata = {id:marksort[i].slice(4)};
 		
 		let nPosX = vec.x + notesCoords[j].x;
 		let nPosY = vec.y + notesCoords[j].y;
@@ -813,7 +839,8 @@ function saveNotes(){
     // queda pendiente eliminar indices 
     console.log(markdown.length);
     */
-    
+    // console.log(sphCap[0]); 
+    noteBool = true; 
 }
 
 function curve(positions){
