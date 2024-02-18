@@ -676,6 +676,8 @@ function saveNotes(){
     
     let sphNotes = [];
     let contCol = 0; 
+
+    // Filtrar capítulos 
     
     for(let i = 0; i < marksort.length; i++){	
 	   // Solamente se imprimen notas con más de dos caracteres
@@ -708,9 +710,8 @@ function saveNotes(){
 	    let nwVec1 = new THREE.Vector3();	    
 	    let nwVec2 = new THREE.Vector3(0, 0, 0);
 
-	    console.log(nwVec1.subVectors(vec, nwVec2)); 
-	    
-	    console.log(vec);
+	    //console.log(nwVec1.subVectors(vec, nwVec2)); 
+	    //console.log(vec);
 	    const geoCap = new THREE.BoxGeometry( 2, 0.25, 0.25); 
 	    const matCap = new THREE.MeshStandardMaterial( { color: colors[contCol], emissive: colors[contCol], roughness: 0.4 } ); 
 	    sphCap[i] = new THREE.Mesh( geoCap, matCap );
@@ -722,7 +723,7 @@ function saveNotes(){
 
 	    th.scene.add( sphCap[i] );
 
-	    const material = new THREE.LineBasicMaterial( { color: 0xffffff, emissive: 0xffffff } );
+	    const material = new THREE.LineBasicMaterial( { color: 0xffffff} );
 	    const points = [];
 	    points.push( new THREE.Vector3(  0, 0, 0 ) );
 	    points.push( new THREE.Vector3( posX/norm*5, posY/norm*5, posZ/norm*5 ) );
@@ -737,19 +738,57 @@ function saveNotes(){
 	}
     }
 
-    console.log(notesCoords); 
+    // console.log(notesCoords); 
+
+    // Asignar notas en relación a capítulos. Primero tendríamos que saber la cantidad de notas por capítulo
+    let notesPerChapter = [];
+    let npCh = 0; 
 
     for(let i = 0; i < marksort.length; i++){
+	for(let j = 0; j < notesCoords.length; j++){	    
+	    // Solamente se imprimen notas con más de dos caracteres
+	    if(marksort[i].length > 2 && marksort[i].slice(6, 7) != "0" && marksort[i].slice(4, 5) == (j+1).toString()){ // y si es distinto al índice de notas
+		notesPerChapter[j] = npCh;
+		npCh++; 
+	    }
+	}
+    }
 
+    //console.log(notesPerChapter); 
+    let finalNotesPerChapter = []; 
+    
+    for(let i = 0; i < notesPerChapter.length; i++){
+	if(i > 0){
+	    finalNotesPerChapter[i] = notesPerChapter[i] - notesPerChapter[i-1];
+	} else {
+	    finalNotesPerChapter[i] = notesPerChapter[i]; 
+	}
+    }
+    // console.log(finalNotesPerChapter); 
+
+    contCol = 0; 
+    
+    for(let i = 0; i < marksort.length; i++){
+	
 	for(let j = 0; j < notesCoords.length; j++){
 	
 	    // Solamente se imprimen notas con más de dos caracteres
 	    if(marksort[i].length > 2 && marksort[i].slice(6, 7) != "0" && marksort[i].slice(4, 5) == (j+1).toString()){ // y si es distinto al índice de notas
 		
 		var posX, posY, posZ;
-		posX = notesCoords[j].x*(Math.random()*14);
-		posY = notesCoords[j].y*(Math.random()*14);
-		posZ = notesCoords[j].z*(Math.random()*14); 
+		//var theta1 = Math.random() * (Math.PI*2);
+		//var theta2 = Math.random() * (Math.PI*2); 
+
+		//posX = notesCoords[j].x*(Math.random()*14);
+		//posY = notesCoords[j].y*(Math.random()*14);
+		//posZ = notesCoords[j].z*(Math.random()*14); 
+
+		const phi = Math.acos(-1+ (2 * contCol) / finalNotesPerChapter[j]);
+		const theta = Math.sqrt(finalNotesPerChapter[j] * Math.PI) * phi;
+		
+		const posX = Math.cos(theta) * Math.sin(phi);
+		const posY = Math.sin(theta) * Math.sin(phi);
+		const posZ = Math.cos(phi);   
 		
 		let norm = Math.sqrt(posX*posX + posY*posY+ posZ*posZ);
 		let vec = new THREE.Vector3((posX / norm)*2.5, (posY/norm)*2.5, (posZ/norm)*2.5); 
@@ -779,8 +818,14 @@ function saveNotes(){
 		const line = new THREE.Line( geometry, material );
 		
 		th.scene.add(line);
-		
-		// falta guardar la posición de notas y a partir de ahi construir el otro arbol 
+
+		contCol++; 
+		// falta guardar la posición de notas y a partir de ahi construir el otro arbol
+
+		if(contCol == finalNotesPerChapter[j]){
+		    contCol = 0;
+		    console.log("si"); 
+		}
 		
 	    }
 
