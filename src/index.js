@@ -189,7 +189,6 @@ function init(){
 	const archivo = new LoadFile(a.audioCtx, audioFile1);
 	});
 	*/
-
     // console.log(a.audioCtx); 
     raycaster = new THREE.Raycaster();
     document.addEventListener( 'mousemove', onPointerMove );
@@ -488,7 +487,7 @@ function change_uvs( geometry, unitx, unity, offsetx, offsety ) {
     for ( let i = 0; i < uvs.length; i += 2 ) {
 	uvs[ i ] = ( uvs[ i ] + offsetx ) * unitx;
 	uvs[ i + 1 ] = ( uvs[ i + 1 ] + offsety ) * unity;
-    }
+    }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
 }
 
 function onDocumentMouseMove( event ) {
@@ -687,7 +686,7 @@ function saveNotes(){
 
 	    let norm = Math.sqrt(posX*posX + posY*posY+ posZ*posZ); 
 	    
-	    let vec = new THREE.Vector3((posX / norm)*5, (posY/norm)*5, (posZ/norm)*5); 
+	    let vec = new THREE.Vector3((posX / norm)*10, (posY/norm)*10, (posZ/norm)*10); 
 	    notesCoords.push(vec); 
 
 	    let nwVec1 = new THREE.Vector3();	    
@@ -709,7 +708,7 @@ function saveNotes(){
 	    const material = new THREE.LineBasicMaterial( { color: 0xffffff} );
 	    const points = [];
 	    points.push( new THREE.Vector3(  0, 0, 0 ) );
-	    points.push( new THREE.Vector3( posX/norm*5, posY/norm*5, posZ/norm*5 ) );
+	    points.push( new THREE.Vector3( posX/norm*10, posY/norm*10, posZ/norm*10 ) );
 	    const geometry = new THREE.BufferGeometry().setFromPoints( points );
 	    const line = new THREE.Line( geometry, material );
 
@@ -720,8 +719,6 @@ function saveNotes(){
 	   
 	}
     }
-
-    console.log(notesCoords); 
 
     // Asignar notas en relación a capítulos. Primero tendríamos que saber la cantidad de notas por capítulo
     let notesPerChapter = [];
@@ -755,7 +752,7 @@ function saveNotes(){
     for(let j = 0; j < notesCoords.length; j++){
 	for(let i = 0; i < marksort.length; i++){
 	    // Solamente se imprimen notas con más de dos caracteres
-	    
+	   
 	    if(marksort[i].length > 2 && marksort[i].slice(6, 7) != "0" && marksort[i].slice(4, 5) == (j+1).toString() && j < 5){ // y si es distinto al índice de notas
 		
 		var posX, posY, posZ;
@@ -774,7 +771,7 @@ function saveNotes(){
 		const posZ = Math.cos(phi);   
 		
 		let norm = Math.sqrt(posX*posX + posY*posY+ posZ*posZ);
-		let vec = new THREE.Vector3((posX / norm)*2.5, (posY/norm)*2.5, (posZ/norm)*2.5); 
+		let vec = new THREE.Vector3((posX / norm)*4, (posY/norm)*4, (posZ/norm)*4); 
 
 		//console.log(marksort[i].length /1000);
 		const geoNotes = new THREE.BoxGeometry( marksort[i].length/7000,  marksort[i].length/7000,  marksort[i].length/7000 ); 
@@ -811,8 +808,8 @@ function saveNotes(){
 		}	
 	    }
 
-	    if(marksort[i].length > 2 && marksort[i].slice(6, 7) != "0" && marksort[i].slice(4, 5) == (j+2).toString() && j+2 > "5"){ // y si es distinto al índice de notas
-		
+	    if(marksort[i].length > 2 && marksort[i].slice(6, 7) != "0" && marksort[i].slice(4, 5) == (j+2).toString() && j > 4){ // y si es distinto al índice de notas
+
 		var posX, posY, posZ;
 		//var theta1 = Math.random() * (Math.PI*2);
 		//var theta2 = Math.random() * (Math.PI*2); 
@@ -821,8 +818,8 @@ function saveNotes(){
 		//posY = notesCoords[j].y*(Math.random()*14);
 		//posZ = notesCoords[j].z*(Math.random()*14); 
 
-		const phi = Math.acos(-1+ (2 * contCol) / finalNotesPerChapter[j+2]);
-		const theta = Math.sqrt(finalNotesPerChapter[j+2] * Math.PI) * phi;
+		const phi = Math.acos(-1+ (2 * contCol) / finalNotesPerChapter[j+1]);
+		const theta = Math.sqrt(finalNotesPerChapter[j+1] * Math.PI) * phi;
 		
 		const posX = Math.cos(theta) * Math.sin(phi);
 		const posY = Math.sin(theta) * Math.sin(phi);
@@ -837,7 +834,7 @@ function saveNotes(){
 		sphNotes[i] = new THREE.Mesh( geoNotes, matNotes );
 		// rTarget.setText();
 		sphNotes[i].userdata = {id:marksort[i].slice(4)};
-		
+		console.log(marksort[i].slice(4)); 
 		let nPosX = vec.x + notesCoords[j].x;
 		let nPosY = vec.y + notesCoords[j].y;
 		let nPosZ = vec.z + notesCoords[j].z;
@@ -862,7 +859,8 @@ function saveNotes(){
 
 		if(contCol == finalNotesPerChapter[j+1]){
 		    contCol = 0;
-		    console.log("si"); 
+		    console.log(finalNotesPerChapter[j+1]);
+		    
 		}	
 	    }
 	    
