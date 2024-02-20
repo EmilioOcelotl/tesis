@@ -201,22 +201,7 @@ function init(){
     //th.scene.background = hy.vit; 
     th.scene.background = new THREE.Color( 0x010101 );
 
-    /*
-    const light = new THREE.PointLight(  0xffffff, 1 );
-    light.position.set( 0, 0, 500 );
-    th.scene.add( light );
-
-    const light3 = new THREE.PointLight(  0xffffff, 1 );
-    light3.position.set( 0, 0, -50 );
-    th.scene.add( light3 );
-    
-    const light2 = new THREE.PointLight(  0xffffff, 2 );
-    light2.position.set( 0, 0, 50 );
-    th.scene.add( light2 );
-    */
-
     th.scene.add( new THREE.AmbientLight( 0xcccccc ) );
-
     
     //th.renderer2.outputColorSpace = THREE.LinearSRGBColorSpace;
     // th.renderer2.toneMapping = THREE.ReinhardToneMapping;
@@ -400,8 +385,7 @@ function animate(){
 		    //}
 		}; 
 	    }
-	    
-	    
+	    	    
 	    // la lectura de la fuente tiene que suceder en otro momento 
 	    // console.log(interStr);
 	    document.getElementById("instrucciones").innerHTML = interStr;
@@ -411,7 +395,6 @@ function animate(){
     } else {
 	
 	if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-
 	
 	//controls.autoRotate = true; 
 	//controls.autoRotateSpeed = 0.5; 
@@ -738,7 +721,7 @@ function saveNotes(){
 	}
     }
 
-    // console.log(notesCoords); 
+    console.log(notesCoords); 
 
     // Asignar notas en relación a capítulos. Primero tendríamos que saber la cantidad de notas por capítulo
     let notesPerChapter = [];
@@ -764,16 +747,16 @@ function saveNotes(){
 	    finalNotesPerChapter[i] = notesPerChapter[i]; 
 	}
     }
-    // console.log(finalNotesPerChapter); 
+    // console.log(finalNotesPerChapter);
+    console.log(notesCoords); 
 
     contCol = 0; 
     
-    for(let i = 0; i < marksort.length; i++){
-	
-	for(let j = 0; j < notesCoords.length; j++){
-	
+    for(let j = 0; j < notesCoords.length; j++){
+	for(let i = 0; i < marksort.length; i++){
 	    // Solamente se imprimen notas con más de dos caracteres
-	    if(marksort[i].length > 2 && marksort[i].slice(6, 7) != "0" && marksort[i].slice(4, 5) == (j+1).toString()){ // y si es distinto al índice de notas
+	    
+	    if(marksort[i].length > 2 && marksort[i].slice(6, 7) != "0" && marksort[i].slice(4, 5) == (j+1).toString() && j < 5){ // y si es distinto al índice de notas
 		
 		var posX, posY, posZ;
 		//var theta1 = Math.random() * (Math.PI*2);
@@ -792,12 +775,12 @@ function saveNotes(){
 		
 		let norm = Math.sqrt(posX*posX + posY*posY+ posZ*posZ);
 		let vec = new THREE.Vector3((posX / norm)*2.5, (posY/norm)*2.5, (posZ/norm)*2.5); 
-		
-		// console.log(marksort[i].slice(3));
-		const geoNotes = new THREE.BoxGeometry( 0.5, 0.125, 0.125 ); 
+
+		//console.log(marksort[i].length /1000);
+		const geoNotes = new THREE.BoxGeometry( marksort[i].length/7000,  marksort[i].length/7000,  marksort[i].length/7000 ); 
 		const matNotes = new THREE.MeshStandardMaterial( { color: colors[i%8], emissive: colors[i%8], roughness: 0.6 } ); 
 		sphNotes[i] = new THREE.Mesh( geoNotes, matNotes );
-		// rTarget.setText(); 
+		// rTarget.setText();
 		sphNotes[i].userdata = {id:marksort[i].slice(4)};
 		
 		let nPosX = vec.x + notesCoords[j].x;
@@ -825,12 +808,65 @@ function saveNotes(){
 		if(contCol == finalNotesPerChapter[j]){
 		    contCol = 0;
 		    console.log("si"); 
-		}
-		
+		}	
 	    }
 
-	}
-	
+	    if(marksort[i].length > 2 && marksort[i].slice(6, 7) != "0" && marksort[i].slice(4, 5) == (j+2).toString() && j+2 > "5"){ // y si es distinto al índice de notas
+		
+		var posX, posY, posZ;
+		//var theta1 = Math.random() * (Math.PI*2);
+		//var theta2 = Math.random() * (Math.PI*2); 
+
+		//posX = notesCoords[j].x*(Math.random()*14);
+		//posY = notesCoords[j].y*(Math.random()*14);
+		//posZ = notesCoords[j].z*(Math.random()*14); 
+
+		const phi = Math.acos(-1+ (2 * contCol) / finalNotesPerChapter[j+2]);
+		const theta = Math.sqrt(finalNotesPerChapter[j+2] * Math.PI) * phi;
+		
+		const posX = Math.cos(theta) * Math.sin(phi);
+		const posY = Math.sin(theta) * Math.sin(phi);
+		const posZ = Math.cos(phi);   
+		
+		let norm = Math.sqrt(posX*posX + posY*posY+ posZ*posZ);
+		let vec = new THREE.Vector3((posX / norm)*2.5, (posY/norm)*2.5, (posZ/norm)*2.5); 
+
+		//console.log(marksort[i].length /1000);
+		const geoNotes = new THREE.BoxGeometry( marksort[i].length/7000,  marksort[i].length/7000,  marksort[i].length/7000 ); 
+		const matNotes = new THREE.MeshStandardMaterial( { color: colors[i%8], emissive: colors[i%8], roughness: 0.6 } ); 
+		sphNotes[i] = new THREE.Mesh( geoNotes, matNotes );
+		// rTarget.setText();
+		sphNotes[i].userdata = {id:marksort[i].slice(4)};
+		
+		let nPosX = vec.x + notesCoords[j].x;
+		let nPosY = vec.y + notesCoords[j].y;
+		let nPosZ = vec.z + notesCoords[j].z;
+	    	    
+		sphNotes[i].position.x = nPosX; 
+		sphNotes[i].position.y = nPosY; 
+		sphNotes[i].position.z = nPosZ;
+		
+		th.scene.add( sphNotes[i] );
+		
+		const material = new THREE.LineBasicMaterial( { color: 0xffffff } );
+		const points = [];
+		points.push( notesCoords[j] );
+		points.push( new THREE.Vector3(nPosX, nPosY, nPosZ) );
+		const geometry = new THREE.BufferGeometry().setFromPoints( points );
+		const line = new THREE.Line( geometry, material );
+		
+		th.scene.add(line);
+
+		contCol++; 
+		// falta guardar la posición de notas y a partir de ahi construir el otro arbol
+
+		if(contCol == finalNotesPerChapter[j+1]){
+		    contCol = 0;
+		    console.log("si"); 
+		}	
+	    }
+	    
+	}	
     }
 
     //my_string="hello python world , i'm a beginner"
