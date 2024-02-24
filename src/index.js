@@ -11,10 +11,16 @@ import { Post } from '../js/avLib/Post.js';
 import { DbReader, dbParser, createDoc } from '../js/avLib/dbSetup2'; 
 import { OrbitControls } from '../static/jsm/controls/OrbitControls.js';
 import { TransformControls } from '../static/jsm/controls/TransformControls.js'; 
+import rake from 'rake-js'
 
 // quitar 
-import Text from 'markov-chains-text';
+// import Text from 'markov-chains-text';
 
+let salir = false;
+
+// addEventListener("click", (event) => { click = !click });
+// document.getElementById("instrucciones").innerHTML = interStr;
+	     
 const print = document.getElementById('print');
 print.addEventListener('click', printPDF );
 
@@ -72,7 +78,6 @@ const colors = [
     0x996633, // Mocha
     0x669966  // Sage Green
 ];
-
 
 ///////////////////////////////////////////////////
 // splines 
@@ -208,7 +213,7 @@ function init(){
     
     un = new UnrealBloom(th.scene, th.camera, th.renderer2); 
     // retro = new Feedback(th.scene, th.renderer2, 1080);
-    const geometry44 = new THREE.SphereGeometry( 20, 32, 32 ); 
+    const geometry44 = new THREE.SphereGeometry( 80, 32, 32 ); 
     const material44 = new THREE.MeshStandardMaterial( { color: 0xffffff, map: renderTarget.texture, roughness: 0.6 } ); 
     sphere44 = new THREE.Mesh( geometry44, material44 );
 
@@ -252,7 +257,19 @@ function init(){
     const ysize = 200 / ygrid;
     controls = new OrbitControls( th.camera, th.renderer2.domElement );
     controls.listenToKeyEvents( window ); // optional
+
+    const onKeyDown = function ( event ){
+	if(event.keyCode == 27){
+	    controls.enabled = true;
+	    document.getElementById("instrucciones").innerHTML = "";
+	    // document.getElementById("instrucciones").pointer-events = none;
+	    document.getElementById("instrucciones").style.pointerEvents = "none";
+
+	}
+    }
     
+    document.addEventListener( 'keydown', onKeyDown );
+
     //controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
     
     controls.enableDamping = true;
@@ -274,12 +291,12 @@ function onPointerMove( event ) {
 }
 
 function animate(){ 
-
+ 
     th.camera.lookAt(sphereP1); 
     
     var time1 = Date.now() * 0.00002;
     var time2 = Date.now() * 0.00001;
-    // if(lcbool){
+
     controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
 
     if(positions.length > 3){
@@ -354,7 +371,7 @@ function animate(){
     const intersects = raycaster.intersectObjects( th.scene.children, true );
  
     if ( intersects.length > 0 ) {
-	if ( INTERSECTED != intersects[ 0 ].object && intersects[0].object.material.emissive != undefined) { // si INTERSECTED es tal objeto entonces realiza tal cosa
+	if ( INTERSECTED!= intersects[ 0 ].object && intersects[0].object.material.emissive != undefined) { // si INTERSECTED es tal objeto entonces realiza tal cosa
 
 
 	    if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
@@ -374,10 +391,14 @@ function animate(){
 		    // Procesamiento antes de imprimir
 		    // INTERSECTED.material.color = 0x05ffa1 ;
 		    var markd = markdown[parseInt(INTERSECTED.userdata.id.slice(0, 4))];
-	
-		    
+
+		    controls.enabled = false;
+		    document.getElementById("instrucciones").style.pointerEvents = "auto";
+		    salir = true; 
 		    texto(markd);
-		    controls.target =INTERSECTED.position; 
+		    controls.target =INTERSECTED.position;
+		     document.getElementById("instrucciones").innerHTML = interStr;
+	     
 		    //if(lcbool){
 			//positions.push(INTERSECTED.position);
 			//curve(positions); 
@@ -387,8 +408,7 @@ function animate(){
 	    	    
 	    // la lectura de la fuente tiene que suceder en otro momento 
 	    // console.log(interStr);
-	    document.getElementById("instrucciones").innerHTML = interStr;
-	     
+	   
 	}
 	
     } else {
@@ -421,8 +441,10 @@ function animate(){
     
     th.renderer2.render( th.scene, th.camera );
     un.render2(delta);
-    requestAnimationFrame( animate );
 
+    requestAnimationFrame( animate );
+ 
+    
 }
     
 // ¿Esto también podría ir a otra parte?
@@ -643,11 +665,15 @@ function saveNotes(){
 
     for(let i = 0; i < db.postdb.length; i++){
 	markdown[i] = db.postdb[i].toString();
+	//const myKeywords = rake(markdown[i])
+	//console.log(myKeywords); 
+
     }
 
     marksort = markdown.sort();
 
-  
+
+    
     // aquí ya se leen las notas por fecha de modificación 
 
     // tendría que organizar las notas por capítulos
@@ -694,8 +720,8 @@ function saveNotes(){
 
 	    //console.log(nwVec1.subVectors(vec, nwVec2)); 
 	    //console.log(vec);
-	    const geoCap = new THREE.BoxGeometry( 2, 0.25, 0.25); 
-	    const matCap = new THREE.MeshStandardMaterial( { color: colors[contCol], emissive: colors[contCol], roughness: 0.4 } ); 
+	    const geoCap = new THREE.BoxGeometry( 1,1,1); 
+	    const matCap = new THREE.MeshStandardMaterial( { color: colors[0], emissive: colors[0], roughness: 0.4 } ); 
 	    sphCap[i] = new THREE.Mesh( geoCap, matCap );
 	    // rTarget.setText(); 
 	    sphCap[i].userdata = {id:marksort[i].slice(4)};
@@ -774,8 +800,8 @@ function saveNotes(){
 		let vec = new THREE.Vector3((posX / norm)*4, (posY/norm)*4, (posZ/norm)*4); 
 
 		//console.log(marksort[i].length /1000);
-		const geoNotes = new THREE.BoxGeometry( marksort[i].length/7000,  marksort[i].length/7000,  marksort[i].length/7000 ); 
-		const matNotes = new THREE.MeshStandardMaterial( { color: colors[i%8], emissive: colors[i%8], roughness: 0.6 } ); 
+		const geoNotes = new THREE.BoxGeometry( marksort[i].length/6000,  marksort[i].length/6000,  marksort[i].length/6000 ); 
+		const matNotes = new THREE.MeshStandardMaterial( { color: colors[1], emissive: colors[1], roughness: 0.6 } ); 
 		sphNotes[i] = new THREE.Mesh( geoNotes, matNotes );
 		// rTarget.setText();
 		sphNotes[i].userdata = {id:marksort[i].slice(4)};
@@ -829,8 +855,8 @@ function saveNotes(){
 		let vec = new THREE.Vector3((posX / norm)*2.5, (posY/norm)*2.5, (posZ/norm)*2.5); 
 
 		//console.log(marksort[i].length /1000);
-		const geoNotes = new THREE.BoxGeometry( marksort[i].length/7000,  marksort[i].length/7000,  marksort[i].length/7000 ); 
-		const matNotes = new THREE.MeshStandardMaterial( { color: colors[i%8], emissive: colors[i%8], roughness: 0.6 } ); 
+		const geoNotes = new THREE.BoxGeometry( marksort[i].length/6000,  marksort[i].length/6000,  marksort[i].length/6000 ); 
+		const matNotes = new THREE.MeshStandardMaterial( { color: colors[1], emissive: colors[1], roughness: 0.6 } ); 
 		sphNotes[i] = new THREE.Mesh( geoNotes, matNotes );
 		// rTarget.setText();
 		sphNotes[i].userdata = {id:marksort[i].slice(4)};

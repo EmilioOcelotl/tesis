@@ -37,6 +37,7 @@
     "parcel": "^2.8.3",
     "parcel-reporter-static-files-copy": "^1.5.0",
     "pdfkit": "^0.13.0",
+    "rake-js": "^0.1.1",
     "sql.js": "^1.8.0",
     "stringify": "^5.2.0",
     "three": "^0.150.1",

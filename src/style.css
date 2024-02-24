@@ -10,50 +10,56 @@ body {
 
 #info {
     position: absolute; 
-    top: 50px;
-    width: 100vw;
-    float: right; 
+    margin-top: 100px;
+    width: 100%;
+    float: center; 
     padding: 0px;
-    text-align: right; 
+    text-align: center; 
     box-sizing: border-box;
     vertical-align: right; 
     -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    
+    pointer-events: none;
+
     z-index: 0; /* TODO Solve this in HTML */
 }
 
 #instrucciones {
     /*border: 1px solid #ccc;*/ /* Borde para mayor claridad */
-   
+
     scrollbar-width: thin;          /* "auto" or "thin" */
     scrollbar-color: black gray;   /* scroll thumb and track */
     
     position: absolute; 
     margin-top: 50px;
+    margin-left: 10%; ; 
    
-    width: 50vw;
+    width: 40vw;
     height:94vh;
-
     
     overflow-x: auto; 
     overflow-y: auto;  /*Agrega la barra de desplazamiento vertical cuando sea necesario */
 
     padding: 0px;
-    float: center;
 
-    
-  
     text-align: left; 
     box-sizing: border-box;
+
+    /*
     vertical-align: top; 
     -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    z-index: 2; 
+   */
     pointer-events: none;
-    z-index: 2; /* TODO Solve this in HTML */
+
+    z-index: 1;
+
 }
 
 #container {
@@ -61,6 +67,7 @@ body {
     top: 0px;
     width: 100%;
     bottom: 0px;
+    z-index: 0;
 }
 
 #clickableAwesomeFont {
@@ -76,4 +83,9 @@ a {
 }
 
 p {
+    background: rgba(0,0,0,0.75);
+}
+
+h3 {
+    background: rgba(0,0,0,0.75);
 }
