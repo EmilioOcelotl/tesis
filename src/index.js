@@ -13,6 +13,7 @@ import { OrbitControls } from '../static/jsm/controls/OrbitControls.js';
 import { TransformControls } from '../static/jsm/controls/TransformControls.js'; 
 // import rake from 'rake-js'
 const keyword_extractor = require("keyword-extractor");
+const { map_range } = require('../js/avLib/utils.js');
 
 //console.log(extraction_result); 
 
@@ -283,7 +284,7 @@ function init(){
     //curve()
     animate();
 
-    txtToSeq(); 
+    //txtToSeq(); 
     
 }
 
@@ -391,18 +392,26 @@ function animate(){
 	    
 	    if( fBool){
 		onclick=function(){
-		   
+
+		    const TurndownService = require('turndown').default;	
+		    var turndownService = new TurndownService()
+
 		    // Procesamiento antes de imprimir
 		    // INTERSECTED.material.color = 0x05ffa1 ;
 		    var markd = markdown[parseInt(INTERSECTED.userdata.id.slice(0, 4))];
+		    let markNote = turndownService.turndown(interStr);
+
 
 		    controls.enabled = false;
 		    document.getElementById("instrucciones").style.pointerEvents = "auto";
 		    salir = true; 
-		    texto(markd);
+		    console.log(markNote);
+		    txtToSeq(markNote);
+		    // console.log(interStr); 
 		    controls.target =INTERSECTED.position;
-		     document.getElementById("instrucciones").innerHTML = interStr;
-	     
+		    document.getElementById("instrucciones").innerHTML = interStr;
+
+		    
 		    //if(lcbool){
 			//positions.push(INTERSECTED.position);
 			//curve(positions); 
@@ -1020,7 +1029,7 @@ function disposeLines(){
     positions = []; 
 }
 
-function txtToSeq(){
+function txtToSeq(txt){
     const sentence =
 	  "Quiere la boca exhausta vid, kiwi, piña y fugaz jamón. Fabio me exige, sin tapujos, que añada cerveza al whisky. Jovencillo emponzoñado de whisky, ¡qué figurota exhibes! La cigüeña tocaba cada vez mejor el saxofón y el búho pedía kiwi y queso. El jefe buscó el éxtasis en un imprevisto baño de whisky y gozó como un duque. Exhíbanse politiquillos zafios, con orejas kilométricas y uñas de gavilán. El cadáver de Wamba, rey godo de España, fue exhumado y trasladado en una caja de zinc que pesó un kilo. El pingüinoWenceslao hizo kilómetros bajo exhaustiva lluvia y frío, añoraba a su querido cachorro. El veloz murciélago hindú comía feliz cardillo y kiwi. La cigüeña tocaba el saxofón detrás del palenque de paja. Quiere la boca exhausta vid, kiwi, piña y fugaz jamón. Fabio me exige, sin tapujos, que añada cerveza al whisky. Jovencillo emponzoñado de whisky, ¡qué figurota exhibes! La cigüeña tocaba cada vez mejor el saxofón y el búho pedía kiwi yqueso. El jefe buscó el éxtasis en un imprevisto baño de whisky y gozó comoun duque. Exhíbanse politiquillos zafios, con orejas kilométricas y uñas de gavilán. El cadáver de Wamba, rey godo de España, fue exhumado y trasladado en una caja de zinc que pesó un kilo. El pingüino Wenceslao hizo kilómetros bajo exhaustiva lluvia y frío, añoraba a su querido cachorro. El veloz murciélago hindú comía feliz cardillo y kiwi. La cigüeña tocaba el saxofón detrás del palenque de paja. Quiere la boca exhausta vid, kiwi, piña y fugaz jamón. Fabio me exige, sin tapujos, que añada cerveza al whisky. Jovencillo emponzoñado de whisky, ¡qué figurota exhibes! La cigüeña tocaba cada vez mejor el saxofón y el búho pedía kiwi y queso. El jefe buscóel éxtasis en un imprevisto baño de whisky y gozó como un duque. Exhíbanse politiquillos zafios, con orejas kilométricas y uñas de gavilán. El cadáver de Wamba, rey godo de España, fue exhumado y trasladado en unacaja de zinc que pesó un kilo. El pingüino Wenceslao hizo kilómetros bajo exhaustiva lluvia y frío, añoraba a su querido cachorro. El veloz murciélago hindú comía feliz cardillo y kiwi. La cigüeña tocaba el saxofón detrás del palenque de paja. Quiere la boca exhausta vid, kiwi, piña y fugaz jamón. Fabio me exige, sin tapujos, que añada cerveza al whisky. Jovencillo emponzoñado de whisky, ¡qué figurota exhibes! La cigüeña tocaba cada vezmejor el saxofón y el búho pedía kiwi y queso. El jefe buscó el éxtasis en un imprevisto baño de whisky y gozó como un duque. Exhíbanse politiquillos zafios, con orejas kilométricas y uñas de gavilán. El cadáver de Wamba, rey godo de España, fue exhumado y trasladado en una caja de zinc que pesó un kilo. El pingüino Wenceslao hizo kilómetros bajo exhaustiva lluvia y frío, añoraba a su querido cachorro. El veloz murciélago hindú comía feliz cardilloy kiwi. La cigüeña tocaba el saxofón detrás del palenque de paja. Quiere la boca exhausta vid, kiwi, piña y fugaz jamón.Fabio me exige, sin tapujos, que añada cerveza al whisky. Jovencillo emponzoñado de whisky, ¡qué figurota exhibes! La cigüeña tocaba cada vezmejor el saxofón y el búho pedía kiwi y queso. El jefe buscó el éxtasis en un imprevisto baño de whisky y gozó como un duque. Exhíbanse politiquillos zafios, con orejas kilométricas y uñas de gavilán. El cadáver de Wamba, rey godo de España, fue exhumado y trasladado en una caja de zinc que pesó un kilo. El pingüino Wenceslao hizo kilómetros bajo exhaustiva lluvia y frío, añoraba a su querido cachorro."
 
@@ -1028,7 +1037,7 @@ function txtToSeq(){
 
     //  Extract the keywords
     const extraction_result =
-	  keyword_extractor.extract(sentence,{
+	  keyword_extractor.extract(txt,{
 	      language:"spanish",
 	      remove_digits: true,
 	      return_changed_case:true,
@@ -1036,7 +1045,7 @@ function txtToSeq(){
 	      
 	  });
 
-    console.log(extraction_result);
+    //console.log(extraction_result);
 
     let durs = [];
     let poss = []; 
@@ -1049,8 +1058,9 @@ function txtToSeq(){
 	    for(k = 0; k < ab.length; k++){
 		if(ab[k] == prov[j]){
 		    var index = ab.indexOf(ab[k]);
-		    console.log(index);
-		    poss[i] = poss[i] + ab.indexOf(ab[k])+",";
+		    //console.log(index);
+		    var mapR = map_range(ab.indexOf(ab[k]), 0, ab.length, 0, 1);
+		    poss[i] = poss[i] + mapR+" " ;
 		}
 	    }
 	}
