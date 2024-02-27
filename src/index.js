@@ -15,6 +15,8 @@ import { TransformControls } from '../static/jsm/controls/TransformControls.js';
 const keyword_extractor = require("keyword-extractor");
 const { map_range } = require('../js/avLib/utils.js');
 
+let mainPointer = [0, 0.5, 1];
+let mainDurss = [0.5]; 
 //console.log(extraction_result); 
 
 // quitar 
@@ -228,8 +230,8 @@ function init(){
     th.scene.add( sphere44 );
     // sphere44.position.z = -20;
 
-    const geoTres = new THREE.BoxGeometry( 2, 1, 1 ); 
-    const matTres = new THREE.MeshStandardMaterial( { color: 0xffffff, map: renderTarget.texture } ); 
+    const geoTres = new THREE.BoxGeometry( 2, 2, 2 ); 
+    const matTres = new THREE.MeshStandardMaterial( { color: colors[2], emissive: colors[2]} ); 
     sphTres = new THREE.Mesh( geoTres, matTres );
 
     // rTarget.setText(); 
@@ -401,17 +403,21 @@ function animate(){
 		    var markd = markdown[parseInt(INTERSECTED.userdata.id.slice(0, 4))];
 		    let markNote = turndownService.turndown(interStr);
 
-
 		    controls.enabled = false;
 		    document.getElementById("instrucciones").style.pointerEvents = "auto";
 		    salir = true; 
-		    console.log(markNote);
+		    // console.log(markNote);
 		    txtToSeq(markNote);
+		    if(boolCosa){
+			gloop.seqtime=mainDurss; 
+			gloop.seqpointer = mainPointer.flat();
+			// console.log(mainPointer.flat());
+			//console.log(mainDurss); 
+		    }
 		    // console.log(interStr); 
 		    controls.target =INTERSECTED.position;
 		    document.getElementById("instrucciones").innerHTML = interStr;
 
-		    
 		    //if(lcbool){
 			//positions.push(INTERSECTED.position);
 			//curve(positions); 
@@ -483,24 +489,25 @@ function change(){
 		document.getElementById("info").innerHTML = ""; // cuando tween termine 
 	    })
 	    .onComplete(() => {
+		// Pasar los datos de txtToSeq 
 		livecodeame(); 
 		const request = new XMLHttpRequest();
-		request.open('GET', 'snd/uxmal.wav', true);
+		request.open('GET', 'snd/metroCDMXorg.mp3', true);
 		request.responseType = 'arraybuffer';
 		self.buffer = 0; 
 		request.onload = function() {
 		    let audioData = request.response;
 		    a.audioCtx.decodeAudioData(audioData, function(buffer) {
 			// buffer = buffer2;
-			boolCosa = true; 
+			// boolCosa = true; 
 			cosa.set(buffer, Math.random(), 1, 1, 0.05, 0.6);
 			cosa.start();
-
-			gloop.seqpointer = [0.1, 0.3, 0.5];
-			gloop.seqfreqScale = [1, 0.5, 4, 2]; 
-			gloop.seqwindowSize = [1, 0.01, 2];
-			gloop.overlaps = [0.11, 2];
-			gloop.windowRandRatio = [0.5, 0.1, 0.5, 1, 0.21]; 
+			// console.log(mainPointer.flat()); 
+			gloop.seqpointer = [0, 0.5];
+			gloop.seqfreqScale = [1, 2, 4]; 
+			gloop.seqwindowSize = [0.5];
+			gloop.seqoverlaps = [0.1];
+			gloop.seqwindowRandRatio = [0]; 
 			gloop.start();
 			boolCosa = true;
 			
@@ -562,57 +569,7 @@ function livecodeame(){
     const ysize = 1000 / ygrid;
 
     let cCount = 0;
-    
-    /*
-   
-    for(let i = 0; i < xgrid; i++){
-	for (let j = 0; j < ygrid; j++){
 
-	    //const geometry22 = new THREE.SphereGeometry(1, 3, 4 );
-	    const geometry22 = new THREE.BoxGeometry(1.5, 1.5, 0.5); 
-	    change_uvs( geometry22, ux, uy, i, j );
-	    // podría no hacer referencia a hydra sino a otra cosa, por ejemplo podrían tener formas, colores y materiales distintos dependiendo del capítulo o del tipo de nota. 
-	    // materialslc = new THREE.MeshStandardMaterial( { color: 0x6a6a6a, roughness: 0.5, metalness:0.1 } );
-	    materialslc[ cCount ] = new THREE.MeshPhongMaterial( { color: 0xffffff,  map: renderTarget.texture } );
-	    // materials[ cubeCount ] = new THREE.MeshLambertMaterial( parameters );
-	    let material2lc = materialslc[ cCount ];
-	    
-	    cubos2[cCount] = new THREE.Mesh( geometry22, material2lc );
-	    
-	    var posX, posY, posZ;
-	    var theta1 = Math.random() * (Math.PI*2);
-	    var theta2 = Math.random() * (Math.PI*2); 
-	    	    
-	    posX = Math.cos(theta1) * Math.cos(theta2)*1;
-	    posY = Math.sin(theta1)*1;
-	    posZ = Math.cos(theta1) * Math.sin(theta2)*1;
-	    
-	    //posX = ( i - xgrid / 12 ) -6;
-	    //posY = ( j - ygrid / 5 ) -2.5;
-	    //posZ = (Math.random() * 1)-0.5;
-	    
-	    pX[cCount] = cCount*0.5 - (markdown.length/4); 
-	    // pX[cCount] = posX*(Math.random()*100);
-	    pY[cCount] = posY*(Math.random()*40);
-	    pZ[cCount] = posZ*(Math.random()*40); 
-	    cubos2[cCount].position.x = pX[cCount]  ; 
-	    cubos2[cCount].position.y = pY[cCount] ;
-	    cubos2[cCount].position.z = pZ[cCount]  ;
-	    cubos2[cCount].rotation.x = Math.random() * 360; 
-	    cubos2[cCount].rotation.y = Math.random() * 360; 
-	    cubos2[cCount].rotation.z = Math.random() * 360;
-	    cubos2[cCount].userdata = {id:[cCount]};
-	    // console.log(cubos2[cCount].userdata.id); 
-	    group.add(cubos2[cCount]); 
-	    // th.scene.add( cubos2[cCount] );
-	    cCount++;
-	}
-
-    }
-
-    th.scene.add(group); 
-
-    */
     
 }
 
@@ -670,7 +627,6 @@ function saveNotes(){
     for(let i = 0; i < db.postdb.length; i++){
 	markdown[i] = turndownService.turndown(db.postdb[i].toString());
     }
-
     
     marksort = markdown.sort();
 
@@ -685,12 +641,8 @@ function saveNotes(){
 
     marksort = markdown.sort();
 
-
-    
     // aquí ya se leen las notas por fecha de modificación 
-
     // tendría que organizar las notas por capítulos
-
     // let aclaraciones = [], introduccion, cap1=[],cap2=[],cap3=[], cap4=[], conclusiones=[],referencias=[];
 
     let notesCoords = []; 
@@ -712,7 +664,7 @@ function saveNotes(){
 
 	    /*
 	    posX = Math.cos(theta1) * Math.cos(theta2)*15;
-	    posY = Math.sin(theta1)*15;
+	    posY = Math.sin(theta1)*15;Tres Estudios Abiertos
 	    posZ = Math.cos(theta1) * Math.sin(theta2)*15;
 	    */
 
@@ -1030,9 +982,7 @@ function disposeLines(){
 }
 
 function txtToSeq(txt){
-    const sentence =
-	  "Quiere la boca exhausta vid, kiwi, piña y fugaz jamón. Fabio me exige, sin tapujos, que añada cerveza al whisky. Jovencillo emponzoñado de whisky, ¡qué figurota exhibes! La cigüeña tocaba cada vez mejor el saxofón y el búho pedía kiwi y queso. El jefe buscó el éxtasis en un imprevisto baño de whisky y gozó como un duque. Exhíbanse politiquillos zafios, con orejas kilométricas y uñas de gavilán. El cadáver de Wamba, rey godo de España, fue exhumado y trasladado en una caja de zinc que pesó un kilo. El pingüinoWenceslao hizo kilómetros bajo exhaustiva lluvia y frío, añoraba a su querido cachorro. El veloz murciélago hindú comía feliz cardillo y kiwi. La cigüeña tocaba el saxofón detrás del palenque de paja. Quiere la boca exhausta vid, kiwi, piña y fugaz jamón. Fabio me exige, sin tapujos, que añada cerveza al whisky. Jovencillo emponzoñado de whisky, ¡qué figurota exhibes! La cigüeña tocaba cada vez mejor el saxofón y el búho pedía kiwi yqueso. El jefe buscó el éxtasis en un imprevisto baño de whisky y gozó comoun duque. Exhíbanse politiquillos zafios, con orejas kilométricas y uñas de gavilán. El cadáver de Wamba, rey godo de España, fue exhumado y trasladado en una caja de zinc que pesó un kilo. El pingüino Wenceslao hizo kilómetros bajo exhaustiva lluvia y frío, añoraba a su querido cachorro. El veloz murciélago hindú comía feliz cardillo y kiwi. La cigüeña tocaba el saxofón detrás del palenque de paja. Quiere la boca exhausta vid, kiwi, piña y fugaz jamón. Fabio me exige, sin tapujos, que añada cerveza al whisky. Jovencillo emponzoñado de whisky, ¡qué figurota exhibes! La cigüeña tocaba cada vez mejor el saxofón y el búho pedía kiwi y queso. El jefe buscóel éxtasis en un imprevisto baño de whisky y gozó como un duque. Exhíbanse politiquillos zafios, con orejas kilométricas y uñas de gavilán. El cadáver de Wamba, rey godo de España, fue exhumado y trasladado en unacaja de zinc que pesó un kilo. El pingüino Wenceslao hizo kilómetros bajo exhaustiva lluvia y frío, añoraba a su querido cachorro. El veloz murciélago hindú comía feliz cardillo y kiwi. La cigüeña tocaba el saxofón detrás del palenque de paja. Quiere la boca exhausta vid, kiwi, piña y fugaz jamón. Fabio me exige, sin tapujos, que añada cerveza al whisky. Jovencillo emponzoñado de whisky, ¡qué figurota exhibes! La cigüeña tocaba cada vezmejor el saxofón y el búho pedía kiwi y queso. El jefe buscó el éxtasis en un imprevisto baño de whisky y gozó como un duque. Exhíbanse politiquillos zafios, con orejas kilométricas y uñas de gavilán. El cadáver de Wamba, rey godo de España, fue exhumado y trasladado en una caja de zinc que pesó un kilo. El pingüino Wenceslao hizo kilómetros bajo exhaustiva lluvia y frío, añoraba a su querido cachorro. El veloz murciélago hindú comía feliz cardilloy kiwi. La cigüeña tocaba el saxofón detrás del palenque de paja. Quiere la boca exhausta vid, kiwi, piña y fugaz jamón.Fabio me exige, sin tapujos, que añada cerveza al whisky. Jovencillo emponzoñado de whisky, ¡qué figurota exhibes! La cigüeña tocaba cada vezmejor el saxofón y el búho pedía kiwi y queso. El jefe buscó el éxtasis en un imprevisto baño de whisky y gozó como un duque. Exhíbanse politiquillos zafios, con orejas kilométricas y uñas de gavilán. El cadáver de Wamba, rey godo de España, fue exhumado y trasladado en una caja de zinc que pesó un kilo. El pingüino Wenceslao hizo kilómetros bajo exhaustiva lluvia y frío, añoraba a su querido cachorro."
-
+    
     let ab = "abcdefghijklmnñopqrstuvwxyz";  
 
     //  Extract the keywords
@@ -1051,7 +1001,7 @@ function txtToSeq(txt){
     let poss = []; 
 
     for(let i = 0; i < extraction_result.length; i++){
-	durs.push(1/extraction_result[i].length);
+	durs.push((1/extraction_result[i].length) * 16000); // Este número puede estar relacionado con el tamaño 
 	poss[i] = []; 
 	for(let j = 0; j < extraction_result[i].length; j++){
 	    let prov = extraction_result[i];
@@ -1060,13 +1010,19 @@ function txtToSeq(txt){
 		    var index = ab.indexOf(ab[k]);
 		    //console.log(index);
 		    var mapR = map_range(ab.indexOf(ab[k]), 0, ab.length, 0, 1);
-		    poss[i] = poss[i] + mapR+" " ;
+		    poss[i].push(mapR); 
 		}
 	    }
 	}
     }
 
+    mainPointer = poss;
+    mainDurss = durs; 
     console.log(durs);
-    console.log(poss); 
+    //console.log(poss.flat()); 
     
+}
+
+function requestAudio(){
+    // buscar en 
 }
