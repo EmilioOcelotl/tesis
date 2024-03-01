@@ -18,46 +18,10 @@ const { url, apiKey } = require('./config.js');
 
 // Realiza la solicitud GET a la API de Freesound
 
+audioRequest(); 
+
 const apiUrl = 'https://freesound.org/apiv2';
 let freeURL; 
-
-console.log(url);
-
-fetch(url)
-    .then(response => response.json())
-    .then(data => {
-	// Maneja la respuesta de la API aquí
-	//console.log(algo.previews);
-	//freeURL = 'https://freesound.org/apiv2/sounds/'+data.results[0].id+'/similar'; // la opción de obtener similares está muy buena!!!!
-	freeURL = 'https://freesound.org/apiv2/sounds/'+data.results[0].id; // la opción de obtener similares está muy buena!!!!
-	
-	//console.log(freeURL);
-	var xhr = new XMLHttpRequest();
-	xhr.open('GET', freeURL+'?format=json&token='+apiKey, true);
-	
-	xhr.onload = function () {
-	    //console.log('Status:', xhr.status);
-	    //console.log('Response headers:', xhr.getAllResponseHeaders());
-	    
-	    if (xhr.status >= 200 && xhr.status < 300) {
-		var jsonResponse = JSON.parse(xhr.responseText);
-		console.log(jsonResponse.previews['preview-lq-ogg']);
-	    } else {
-		console.error('Error en la solicitud:', xhr.statusText);
-	    }
-	};
-	
-	xhr.onerror = function () {
-	    console.error('Error de red o CORS');
-	};
-	
-	xhr.send();
-	
-    })
-    .catch(error => {
-	// Maneja los errores aquí
-	console.error('Error en la solicitud:', error);
-    });
 
 let mainPointer = [0, 0.5, 1];
 let mainDurss = [0.5];
@@ -1025,6 +989,67 @@ function txtToSeq(txt){
     
 }
 
-function requestAudio(){
-    // buscar en 
+function audioRequest(){
+    fetch(url)
+	.then(response => response.json())
+	.then(data => {
+	    // Maneja la respuesta de la API aquí
+	    //console.log(algo.previews);
+	    //freeURL = 'https://freesound.org/apiv2/sounds/'+data.results[0].id+'/similar'; // la opción de obtener similares está muy buena!!!!
+	    freeURL = 'https://freesound.org/apiv2/sounds/'+data.results[0].id; // la opción de obtener similares está muy buena!!!!	    
+	    //console.log(freeURL);
+	    var xhr = new XMLHttpRequest();
+	    xhr.open('GET', freeURL+'?format=json&token='+apiKey, true);
+	    
+	    xhr.onload = function () {
+		//console.log('Status:', xhr.status);
+		//console.log('Response headers:', xhr.getAllResponseHeaders());
+		
+		if (xhr.status >= 200 && xhr.status < 300) {
+		    var jsonResponse = JSON.parse(xhr.responseText);
+		    var audioPath = jsonResponse.previews['preview-lq-ogg'];
+		    //console.log(jsonResponse.previews['preview-lq-ogg']);
+		    
+		    // cargar el audio
+		    
+		    const request = new XMLHttpRequest();
+		    request.open('GET', audioPath, true);
+		    request.responseType = 'arraybuffer';
+		    // self.buffer = 0; 
+		    request.onload = function() {
+			let audioData = request.response;
+			a.audioCtx.decodeAudioData(audioData, function(buffer) {
+			    console.log(buffer); 
+			    // buffer = buffer2;
+			    // boolCosa = true; 
+			    //cosa.set(buffer, Math.random(), 1, 1, 0.05, 0.6);
+			    //cosa.start();
+			    // console.log(mainPointer.flat()); 
+			    //gloop.seqpointer = [0, 0.5];
+			    //gloop.seqfreqScale = [1, 2, 4]; 
+			    //gloop.seqwindowSize = [0.5];
+			    //gloop.seqoverlaps = [0.1];
+			    //gloop.seqwindowRandRatio = [0]; 
+			    //gloop.start();
+			    //boolCosa = true;		    
+			},
+						   function(e){"Error with decoding audio data" + e.error});
+		    }
+	    	    request.send();
+		    
+		    
+		    
+		} else {
+		    console.error('Error en la solicitud:', xhr.statusText);
+		}
+	    };
+	    xhr.onerror = function () {
+		console.error('Error de red o CORS');
+	    };
+	    xhr.send();
+	})
+	.catch(error => {
+	    // Maneja los errores aquí
+	    console.error('Error en la solicitud:', error);
+	});
 }
