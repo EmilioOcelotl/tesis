@@ -14,10 +14,54 @@ import { TransformControls } from '../static/jsm/controls/TransformControls.js';
 // import rake from 'rake-js'
 const keyword_extractor = require("keyword-extractor");
 const { map_range } = require('../js/avLib/utils.js');
+const { url, apiKey } = require('./config.js');
+
+// Realiza la solicitud GET a la API de Freesound
+
+const apiUrl = 'https://freesound.org/apiv2';
+let freeURL; 
+
+console.log(url);
+
+fetch(url)
+    .then(response => response.json())
+    .then(data => {
+	// Maneja la respuesta de la API aquí
+	//console.log(algo.previews);
+	//freeURL = 'https://freesound.org/apiv2/sounds/'+data.results[0].id+'/similar'; // la opción de obtener similares está muy buena!!!!
+	freeURL = 'https://freesound.org/apiv2/sounds/'+data.results[0].id; // la opción de obtener similares está muy buena!!!!
+	
+	//console.log(freeURL);
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', freeURL+'?format=json&token='+apiKey, true);
+	
+	xhr.onload = function () {
+	    //console.log('Status:', xhr.status);
+	    //console.log('Response headers:', xhr.getAllResponseHeaders());
+	    
+	    if (xhr.status >= 200 && xhr.status < 300) {
+		var jsonResponse = JSON.parse(xhr.responseText);
+		console.log(jsonResponse.previews['preview-lq-ogg']);
+	    } else {
+		console.error('Error en la solicitud:', xhr.statusText);
+	    }
+	};
+	
+	xhr.onerror = function () {
+	    console.error('Error de red o CORS');
+	};
+	
+	xhr.send();
+	
+    })
+    .catch(error => {
+	// Maneja los errores aquí
+	console.error('Error en la solicitud:', error);
+    });
 
 let mainPointer = [0, 0.5, 1];
-let mainDurss = [0.5]; 
-//console.log(extraction_result); 
+let mainDurss = [0.5];
+let sentiment = []; // Pendiente hacer que esto sea un arreglo por oraciones 
 
 // quitar 
 // import Text from 'markov-chains-text';
@@ -195,12 +239,7 @@ init(); // los elementos particulares de este init podrían ir en otro lado. En 
 function init(){
 
     loadFont();
-        /*
-    audioFile1.addEventListener("change", (event) => {
-	const archivo = new LoadFile(a.audioCtx, audioFile1);
-	});
-	*/
-    // console.log(a.audioCtx); 
+    
     raycaster = new THREE.Raycaster();
     document.addEventListener( 'mousemove', onPointerMove );
     
@@ -225,7 +264,6 @@ function init(){
 
     // rTarget.setText(); 
     sphere44.userdata = {id:'iniciar'};
-    //console.log(sphere44.userdata.id);
 
     th.scene.add( sphere44 );
     // sphere44.position.z = -20;
@@ -236,7 +274,6 @@ function init(){
 
     // rTarget.setText(); 
     sphTres.userdata = {id:'Tres Estudios Abiertos'};
-    //console.log(sphere44.userdata.id);
 
     th.scene.add( sphTres );
     
@@ -316,8 +353,7 @@ function animate(){
 	sphereP1.position.z = pos.z;
 	cosa.pointer = (pos.x+40)-20 / 20;
 	cosa.freqScale = (pos.y+40) -20 / 10 * 0.25;
-	// console.log(pos.x);
-	//console.log(curve1.getPointAt(path)); 
+	
     }
     
     th.camera.updateMatrixWorld();
@@ -338,35 +374,8 @@ function animate(){
 	// console.log(sphCap[0]); 
 	let cC = 0;
 
+    }
 	
-	// Revisar si estas modificaciones son relevantes
-	/*
-	for(let i = 0; i < xgrid; i++){
-	    for (let j = 0; j < ygrid; j++){
-		//cubos2[cC].position.x = 1+(pX[cC]* (Math.sin(time2+i)* 2));
-		//cubos2[cC].position.y = 1+(pY[cC]* (Math.sin(time2+j)* 1));
-		// podría haber una condicional para la distribución vertical u horizontal
-		//cubos2[cC].position.x = (pX[cC] * (Math.sin(time1+i+j)* 2));
-		//cubos2[cC].position.y = (pY[cC] * (Math.sin(time1+i+j)* 2));
-		//cubos2[cC].position.z = (pZ[cC] * (Math.sin(time1+i+j)* 2));
-		// cubos2[cC].rotation.x += Math.sin(time2+i)*0.002; 
-		cubos2[cC].scale.x = 1+Math.sin(time2+i+j)*4;
-		cubos2[cC].scale.y = 1+Math.sin(time2+i+j)*4;
-		// cubos2[cC].lookAt(0, 0, 0); 
-		cubos2[cC].lookAt(th.camera.position); 
-		cC++; 
-	    }
-	    }
-	    */
-	}
-	
-
-    /*
-    th.camera.position.x += ( mouseX - th.camera.position.x *0.5) * .5;
-    th.camera.position.y += ( - mouseY - th.camera.position.y ) * .5;
-    th.camera.lookAt( th.scene.position );
-    */
-
     // Esto se tiene que convertir en otra cosa
     if(boolCosa) {
 	//cosa.pointer = cursorX / 20;
@@ -409,8 +418,10 @@ function animate(){
 		    // console.log(markNote);
 		    txtToSeq(markNote);
 		    if(boolCosa){
+			//llamadas al cambio de audio
 			gloop.seqtime=mainDurss; 
 			gloop.seqpointer = mainPointer.flat();
+			console.log(sentiment); 
 			// console.log(mainPointer.flat());
 			//console.log(mainDurss); 
 		    }
@@ -544,25 +555,7 @@ function livecodeame(){
 
     lcbool = true; 
     console.log("lc");
-    controls.enabled = true; 
-    
-    // remover
-    // esto podría tener una rampa
-    // falta el dispose
-
-    // Estos cubos ya no existen creo
-
-    /*
-    for(let i = 0; i < menuC1str.length; i++){
-	th.scene.remove(cubos[i]); 
-    }
-
-    th.scene.remove(sphere44);
-    */
-    // agregarmesh.geometry.attributes.position.needsUpdate = true;
-
-    // Podrían conservarse estos elementos en las esferas desplegadas 
-    
+    controls.enabled = true;     
     const ux = 1 / xgrid;
     const uy = 1 / ygrid;
     const xsize = 1000 / xgrid;
@@ -640,6 +633,14 @@ function saveNotes(){
     }
 
     marksort = markdown.sort();
+
+    var natural = require('natural');
+    var tokenizer = new natural.WordTokenizer();
+    //console.log(tokenizer.tokenize("your dog has fleas."));
+    var Analyzer = require('natural').SentimentAnalyzer;
+    var stemmer = require('natural').PorterStemmer;
+    var analyzer = new Analyzer("Spanish", stemmer, "afinn");
+    // getSentiment expects an array of stringsw
 
     // aquí ya se leen las notas por fecha de modificación 
     // tendría que organizar las notas por capítulos
@@ -736,7 +737,6 @@ function saveNotes(){
 	}
     }
     // console.log(finalNotesPerChapter);
-    console.log(notesCoords); 
 
     contCol = 0; 
     
@@ -770,7 +770,10 @@ function saveNotes(){
 		sphNotes[i] = new THREE.Mesh( geoNotes, matNotes );
 		// rTarget.setText();
 		sphNotes[i].userdata = {id:marksort[i].slice(4)};
-		
+		var test = tokenizer.tokenize(marksort[i].slice(4));
+		sentiment.push(analyzer.getSentiment(test)); 
+		// console.log(analyzer.getSentiment(test));
+
 		let nPosX = vec.x + notesCoords[j].x;
 		let nPosY = vec.y + notesCoords[j].y;
 		let nPosZ = vec.z + notesCoords[j].z;
@@ -795,7 +798,7 @@ function saveNotes(){
 
 		if(contCol == finalNotesPerChapter[j]){
 		    contCol = 0;
-		    console.log("si"); 
+		    // console.log("si"); 
 		}	
 	    }
 
@@ -825,7 +828,7 @@ function saveNotes(){
 		sphNotes[i] = new THREE.Mesh( geoNotes, matNotes );
 		// rTarget.setText();
 		sphNotes[i].userdata = {id:marksort[i].slice(4)};
-		console.log(marksort[i].slice(4)); 
+		//console.log(marksort[i].slice(4)); 
 		let nPosX = vec.x + notesCoords[j].x;
 		let nPosY = vec.y + notesCoords[j].y;
 		let nPosZ = vec.z + notesCoords[j].z;
@@ -850,11 +853,9 @@ function saveNotes(){
 
 		if(contCol == finalNotesPerChapter[j+1]){
 		    contCol = 0;
-		    console.log(finalNotesPerChapter[j+1]);
-		    
+		    //console.log(finalNotesPerChapter[j+1]);
 		}	
 	    }
-	    
 	}	
     }
 
@@ -910,7 +911,8 @@ function saveNotes(){
     console.log(markdown.length);
     */
     // console.log(sphCap[0]); 
-    noteBool = true; 
+    noteBool = true;
+    // console.log(sentiment); 
 }
 
 function curve(positions){
@@ -970,8 +972,8 @@ function backgroundFunc(){
 function informationFunc(){
     infoBool = !infoBool; 
     console.log(infoBool); 
-    document.getElementById("instrucciones").innerHTML = "Clic en el cubo para iniciar.</br>El icono de impresora arroja la versión PDF de este documento.</br>También es posible activar una versión livecodeable y activar y desactivar la textura al fondo.";   
-}
+    document.getElementById("instrucciones").innerHTML = "Clic en  para iniciar.</br>El icono de impresora arroja la versión PDF de este documento.</br>También es posible activar una versión livecodeable y activar y desactivar la textura al fondo.";   
+w}
 
 function disposeLines(){
     // falta detener el movimiento de la esfera 
@@ -992,7 +994,7 @@ function txtToSeq(txt){
 	      remove_digits: true,
 	      return_changed_case:true,
 	      remove_duplicates: false
-	      
+	     
 	  });
 
     //console.log(extraction_result);
@@ -1018,7 +1020,7 @@ function txtToSeq(txt){
 
     mainPointer = poss;
     mainDurss = durs; 
-    console.log(durs);
+    // console.log(durs);
     //console.log(poss.flat()); 
     
 }
