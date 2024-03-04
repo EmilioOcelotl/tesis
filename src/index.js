@@ -18,7 +18,7 @@ const { url, apiKey } = require('./config.js');
 
 // Realiza la solicitud GET a la API de Freesound
 
-audioRequest(); 
+// audioRequest(); 
 
 const apiUrl = 'https://freesound.org/apiv2';
 let freeURL; 
@@ -465,7 +465,10 @@ function change(){
 	    })
 	    .onComplete(() => {
 		// Pasar los datos de txtToSeq 
-		livecodeame(); 
+		livecodeame();
+		audioRequest(); 
+
+		/*
 		const request = new XMLHttpRequest();
 		request.open('GET', 'snd/metroCDMXorg.mp3', true);
 		request.responseType = 'arraybuffer';
@@ -489,10 +492,10 @@ function change(){
 		    },
 					       function(e){"Error with decoding audio data" + e.error});
     }
-	    	request.send();
+    request.send();
+    */
 	    })
 
-	
 	//trambién hay onComplete
 	    .start() // Start the tween immediately. No poner alguna propiedad, supongo que sustituye el tiempo de inicio y llegada. 
     }
@@ -504,7 +507,7 @@ function change_uvs( geometry, unitx, unity, offsetx, offsety ) {
     for ( let i = 0; i < uvs.length; i += 2 ) {
 	uvs[ i ] = ( uvs[ i ] + offsetx ) * unitx;
 	uvs[ i + 1 ] = ( uvs[ i + 1 ] + offsety ) * unity;
-    }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
+    }
 }
 
 function onDocumentMouseMove( event ) {
@@ -593,7 +596,6 @@ function saveNotes(){
 	markdown[i] = db.postdb[i].toString();
 	//const myKeywords = rake(markdown[i])
 	//console.log(myKeywords); 
-
     }
 
     marksort = markdown.sort();
@@ -989,29 +991,26 @@ function txtToSeq(txt){
     
 }
 
-function audioRequest(){
+function audioRequest(){ // Aquí tengo que agregar algún tipo de información proveniente de la nota. 
     fetch(url)
 	.then(response => response.json())
 	.then(data => {
+	    console.log(data.results); 
 	    // Maneja la respuesta de la API aquí
 	    //console.log(algo.previews);
 	    //freeURL = 'https://freesound.org/apiv2/sounds/'+data.results[0].id+'/similar'; // la opción de obtener similares está muy buena!!!!
 	    freeURL = 'https://freesound.org/apiv2/sounds/'+data.results[0].id; // la opción de obtener similares está muy buena!!!!	    
 	    //console.log(freeURL);
 	    var xhr = new XMLHttpRequest();
-	    xhr.open('GET', freeURL+'?format=json&token='+apiKey, true);
-	    
+	    xhr.open('GET', freeURL+'?format=json&token='+apiKey, true);	    
 	    xhr.onload = function () {
 		//console.log('Status:', xhr.status);
 		//console.log('Response headers:', xhr.getAllResponseHeaders());
-		
 		if (xhr.status >= 200 && xhr.status < 300) {
 		    var jsonResponse = JSON.parse(xhr.responseText);
 		    var audioPath = jsonResponse.previews['preview-lq-ogg'];
 		    //console.log(jsonResponse.previews['preview-lq-ogg']);
-		    
 		    // cargar el audio
-		    
 		    const request = new XMLHttpRequest();
 		    request.open('GET', audioPath, true);
 		    request.responseType = 'arraybuffer';
@@ -1022,22 +1021,20 @@ function audioRequest(){
 			    console.log(buffer); 
 			    // buffer = buffer2;
 			    // boolCosa = true; 
-			    //cosa.set(buffer, Math.random(), 1, 1, 0.05, 0.6);
-			    //cosa.start();
+			    cosa.set(buffer, Math.random(), 1, 1, 0.05, 0.6);
+			    cosa.start();
 			    // console.log(mainPointer.flat()); 
-			    //gloop.seqpointer = [0, 0.5];
-			    //gloop.seqfreqScale = [1, 2, 4]; 
-			    //gloop.seqwindowSize = [0.5];
-			    //gloop.seqoverlaps = [0.1];
-			    //gloop.seqwindowRandRatio = [0]; 
-			    //gloop.start();
-			    //boolCosa = true;		    
+			    gloop.seqpointer = [0, 0.5];
+			    gloop.seqfreqScale = [1, 2, 4]; 
+			    gloop.seqwindowSize = [0.5];
+			    gloop.seqoverlaps = [0.1];
+			    gloop.seqwindowRandRatio = [0]; 
+			    gloop.start();
+			    boolCosa = true;		    
 			},
 						   function(e){"Error with decoding audio data" + e.error});
 		    }
 	    	    request.send();
-		    
-		    
 		    
 		} else {
 		    console.error('Error en la solicitud:', xhr.statusText);
