@@ -6,9 +6,11 @@ La presente investigación tiene lugar en una frontera donde el conocimiento y l
 
 El resultado publicado como página web se puede consultar en: [https://tres.ocelotl.cc/](https://tres.ocelotl.cc/)
 
+Este proyecto está complementado con un [repositorio](https://github.com/EmilioOcelotl/tres-back) que gestiona el trasfondo y que imprime el resultado de esta investigación como un archivo PDF jerarquizado.
+
 ## Recursos
 
-Este proyecto utilizó:
+Este proyecto utilizó principalmente:
 
 - [Trilium](https://github.com/zadam/trilium). Un proyecto para construir y montar una base personal de conocimiento en un servidor.
 
@@ -17,6 +19,12 @@ Este proyecto utilizó:
 - [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API). Para la el control del audio en el navegador.
 
 - [Hydra](https://hydra.ojack.xyz/). Para la generación de texturas por medio de OpenGL. 
+
+- [Freesound APIv2](https://freesound.org/docs/api/). Para la búsqueda de sonidos almacenados en un lugar distinto al servidor de la página y para la búsqueda de resultados similares. 
+
+- [tween.js](https://tweenjs.github.io/tween.js/). Para la generación de curvas de control y para la gestión de animaciones. 
+
+- [chiltepin](https://github.com/sptm-unam/chiltepin). Como inspiración pero también para gestionar y reflexionar sobre las expresiones regulares. 
 
 ## Ejecución
 
