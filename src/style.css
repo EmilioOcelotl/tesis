@@ -1,9 +1,10 @@
+
 body {
     margin: 0;
     background-color: black;
     overflow-y: hidden;
-    font-family: Source Code Pro;
-    font-size: 14px; 
+    font-family: jgs;
+    font-size: 18px; 
     color: #f7f8f9;
     line-height: 20px;
 }
@@ -57,7 +58,6 @@ body {
     z-index: 2; 
    */
     pointer-events: none;
-
     z-index: 1;
 
 }
@@ -75,7 +75,8 @@ body {
     position:absolute;
     right: 0px;
     top: 25px;
-   
+    margin-right: 10%; 
+      
 }
 
 a {
@@ -88,4 +89,9 @@ p {
 
 h3 {
     background: rgba(0,0,0,0.75);
+}
+
+@font-face {
+  font-family: 'jgs';
+  src: url('../static/fonts/jgs_Font.ttf');
 }

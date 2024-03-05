@@ -466,7 +466,7 @@ function change(){
 	    .onComplete(() => {
 		// Pasar los datos de txtToSeq 
 		livecodeame();
-		audioRequest(); 
+		audioRequest("texto"); 
 
 		/*
 		const request = new XMLHttpRequest();
@@ -495,11 +495,8 @@ function change(){
     request.send();
     */
 	    })
-
-	//trambién hay onComplete
-	    .start() // Start the tween immediately. No poner alguna propiedad, supongo que sustituye el tiempo de inicio y llegada. 
+	    .start() 
     }
-
 }
 
 function change_uvs( geometry, unitx, unity, offsetx, offsety ) {
@@ -530,21 +527,18 @@ function livecodeame(){
 
     let cCount = 0;
 
-    
-}
+    }
 
 function loadFont(){
     const loader = new FontLoader();
     const font = loader.load(
 	// resource URL
 	'fonts/Dela_Gothic_One_Regular.json',
-	
 	// onLoad callback
 	function ( font ) {
 	    fuente = font;
 	    // console.log(font);
 	    fBool = true; 
-    
 	})
 }
 
@@ -938,8 +932,9 @@ function backgroundFunc(){
 function informationFunc(){
     infoBool = !infoBool; 
     console.log(infoBool); 
-    document.getElementById("instrucciones").innerHTML = "Clic en  para iniciar.</br>El icono de impresora arroja la versión PDF de este documento.</br>También es posible activar una versión livecodeable y activar y desactivar la textura al fondo.";   
-w}
+    document.getElementById("instrucciones").innerHTML = "Clic en la esfera para iniciar.</br>El icono de impresora arroja la versión PDF de este documento.</br>También es posible activar una versión livecodeable y activar y desactivar la textura al fondo. </br>Clic para seleccionar una nota y leerla, ESC para recuperar el control del ratón. </br>Jgs font by Adel Faure. Distributed by velvetyne.fr.";   
+    document.getElementById("info").innerHTML = "";
+}
 
 function disposeLines(){
     // falta detener el movimiento de la esfera 
@@ -991,7 +986,8 @@ function txtToSeq(txt){
     
 }
 
-function audioRequest(){ // Aquí tengo que agregar algún tipo de información proveniente de la nota. 
+function audioRequest(string){ // Aquí tengo que agregar algún tipo de información proveniente de la nota.
+    console.log(string); 
     fetch(url)
 	.then(response => response.json())
 	.then(data => {
