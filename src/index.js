@@ -18,7 +18,7 @@ const { url, apiKey } = require('./config.js');
 
 // Realiza la solicitud GET a la API de Freesound
 
-// audioRequest(); 
+audioRequest("texto"); 
 
 const apiUrl = 'https://freesound.org/apiv2';
 let freeURL; 
@@ -353,7 +353,6 @@ function animate(){
     if ( intersects.length > 0 ) {
 	if ( INTERSECTED!= intersects[ 0 ].object && intersects[0].object.material.emissive != undefined) { // si INTERSECTED es tal objeto entonces realiza tal cosa
 
-
 	    if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
 	    
 	    INTERSECTED = intersects[ 0 ].object;
@@ -381,11 +380,18 @@ function animate(){
 		    salir = true; 
 		    // console.log(markNote);
 		    txtToSeq(markNote);
+		    // Hay una contradicción de bool cosa encontrar algún audio que sea placeholder 
 		    if(boolCosa){
 			//llamadas al cambio de audio
+			audioRequest("texto");
 			gloop.seqtime=mainDurss; 
 			gloop.seqpointer = mainPointer.flat();
-			console.log(sentiment); 
+			console.log(INTERSECTED.userdata['dur']); // dur funciona, el asunto es que arroja dos elementos menos que el otro arreglo
+			console.log(mainDurss); // otro arreglo  
+			//gloop.seqpointer = INTERSECTED.userdata.pos.flat;
+			// gloop.seqwindowRandRatio = INTERSECTED.userdata.sentiment; 
+			
+			// console.log(sentiment); 
 			// console.log(mainPointer.flat());
 			//console.log(mainDurss); 
 		    }
@@ -398,11 +404,7 @@ function animate(){
 			//curve(positions); 
 		    //}
 		}; 
-	    }
-	    	    
-	    // la lectura de la fuente tiene que suceder en otro momento 
-	    // console.log(interStr);
-	   
+	    }	   
 	}
 	
     } else {
@@ -466,34 +468,7 @@ function change(){
 	    .onComplete(() => {
 		// Pasar los datos de txtToSeq 
 		livecodeame();
-		audioRequest("texto"); 
-
-		/*
-		const request = new XMLHttpRequest();
-		request.open('GET', 'snd/metroCDMXorg.mp3', true);
-		request.responseType = 'arraybuffer';
-		self.buffer = 0; 
-		request.onload = function() {
-		    let audioData = request.response;
-		    a.audioCtx.decodeAudioData(audioData, function(buffer) {
-			// buffer = buffer2;
-			// boolCosa = true; 
-			cosa.set(buffer, Math.random(), 1, 1, 0.05, 0.6);
-			cosa.start();
-			// console.log(mainPointer.flat()); 
-			gloop.seqpointer = [0, 0.5];
-			gloop.seqfreqScale = [1, 2, 4]; 
-			gloop.seqwindowSize = [0.5];
-			gloop.seqoverlaps = [0.1];
-			gloop.seqwindowRandRatio = [0]; 
-			gloop.start();
-			boolCosa = true;
-			
-		    },
-					       function(e){"Error with decoding audio data" + e.error});
-    }
-    request.send();
-    */
+		// audioRequest("texto"); 
 	    })
 	    .start() 
     }
@@ -609,7 +584,8 @@ function saveNotes(){
     let notesCoords = []; 
     
     let sphNotes = [];
-    let contCol = 0; 
+    let contCol = 0;
+    // let contTotal = 0; 
 
     // Filtrar capítulos 
     
@@ -650,7 +626,17 @@ function saveNotes(){
 	    const matCap = new THREE.MeshStandardMaterial( { color: colors[0], emissive: colors[0], roughness: 0.4 } ); 
 	    sphCap[i] = new THREE.Mesh( geoCap, matCap );
 	    // rTarget.setText(); 
-	    sphCap[i].userdata = {id:marksort[i].slice(4)};
+	    //sphCap[i].userdata = {id: marksort[i].slice(4)};
+	    var test = tokenizer.tokenize(marksort[i].slice(4));
+	    sentiment.push(analyzer.getSentiment(test)); 
+	    // console.log(analyzer.getSentiment(test));
+
+	    var localdur = dur(marksort[i].slice(4));
+	    var localpos = pos(marksort[i].slice(4)); 
+	    // sphCap[i].userdata = {sentiment: analyzer.getSentiment(test)};
+	    sphCap[i].userdata = {id: marksort[i].slice(4), sentiment: analyzer.getSentiment(test), dur: localdur, pos: localpos};
+	    // sphCap[i].userdata = {num: contTotal};
+	    // console.log(sphCap[i].userdata.pos); 
 	    sphCap[i].position.x = vec.x; 
 	    sphCap[i].position.y = vec.y; 
 	    sphCap[i].position.z = vec.z; 
@@ -666,7 +652,8 @@ function saveNotes(){
 
 	    th.scene.add(line);
 
-	    contCol++; 
+	    contCol++;
+	    // contTotal++; 
 	   
 	   
 	}
@@ -707,12 +694,6 @@ function saveNotes(){
 	    if(marksort[i].length > 2 && marksort[i].slice(6, 7) != "0" && marksort[i].slice(4, 5) == (j+1).toString() && j < 5){ // y si es distinto al índice de notas
 		
 		var posX, posY, posZ;
-		//var theta1 = Math.random() * (Math.PI*2);
-		//var theta2 = Math.random() * (Math.PI*2); 
-
-		//posX = notesCoords[j].x*(Math.random()*14);
-		//posY = notesCoords[j].y*(Math.random()*14);
-		//posZ = notesCoords[j].z*(Math.random()*14); 
 
 		const phi = Math.acos(-1+ (2 * contCol) / finalNotesPerChapter[j]);
 		const theta = Math.sqrt(finalNotesPerChapter[j] * Math.PI) * phi;
@@ -729,11 +710,20 @@ function saveNotes(){
 		const matNotes = new THREE.MeshStandardMaterial( { color: colors[1], emissive: colors[1], roughness: 0.6 } ); 
 		sphNotes[i] = new THREE.Mesh( geoNotes, matNotes );
 		// rTarget.setText();
-		sphNotes[i].userdata = {id:marksort[i].slice(4)};
+		// sphNotes[i].userdata = {id:marksort[i].slice(4)};
+		// sphNotes[i].userdata = {num:contTotal};
 		var test = tokenizer.tokenize(marksort[i].slice(4));
 		sentiment.push(analyzer.getSentiment(test)); 
 		// console.log(analyzer.getSentiment(test));
+		//sphNotes[i].userdata = {id: marksort[i].slice(4), sentiment: analyzer.getSentiment(test)};
+		
 
+		var localdur = dur(marksort[i].slice(4));
+		var localpos = pos(marksort[i].slice(4)); 
+		// sphCap[i].userdata = {sentiment: analyzer.getSentiment(test)};
+		sphNotes[i].userdata = {id: marksort[i].slice(4), sentiment: analyzer.getSentiment(test), dur: localdur, pos: localpos};
+		// console.log(sphNotes[i].userdata);
+		// console.log(sphNotes[i].userdata.sentiment); 
 		let nPosX = vec.x + notesCoords[j].x;
 		let nPosY = vec.y + notesCoords[j].y;
 		let nPosZ = vec.z + notesCoords[j].z;
@@ -753,7 +743,8 @@ function saveNotes(){
 		
 		th.scene.add(line);
 
-		contCol++; 
+		contCol++;
+		// contTotal++; 
 		// falta guardar la posición de notas y a partir de ahi construir el otro arbol
 
 		if(contCol == finalNotesPerChapter[j]){
@@ -821,7 +812,6 @@ function saveNotes(){
 
     //my_string="hello python world , i'm a beginner"
     // console.log(db.postdb[4].split("root",1)[1])
-
 
     /*
     
@@ -944,6 +934,69 @@ function disposeLines(){
     positions = []; 
 }
 
+// todo esto se puede ir a una función que exista dentro del bloque que agrega las notas con todo e información en userdata
+
+
+function dur(txt){
+
+    let ab = "abcdefghijklmnñopqrstuvwxyz";  
+    
+    //  Extract the keywords
+    const extraction_result =
+	  keyword_extractor.extract(txt,{
+	      language:"spanish",
+	      remove_digits: true,
+	      return_changed_case:true,
+	      remove_duplicates: false
+	      
+	  });
+
+    var result = [];
+
+    for(let i = 0; i < extraction_result.length; i++){
+	result.push(1/extraction_result[i].length) * 2000; 
+    }
+
+    return result; 
+    
+}
+
+function pos(txt){
+
+    let ab = "abcdefghijklmnñopqrstuvwxyz";  
+    
+    //  Extract the keywords
+    const extraction_result =
+	  keyword_extractor.extract(txt,{
+	      language:"spanish",
+	      remove_digits: true,
+	      return_changed_case:true,
+	      remove_duplicates: false
+	      
+	  });
+
+    var result = [];
+
+    for(let i = 0; i < extraction_result.length; i++){
+	// result.push(1/extraction_result[i].length) * 2000;
+	result[i] = []; 
+	for(let j = 0; j < extraction_result[i].length; j++){
+	    let prov = extraction_result[i];
+	    for(k = 0; k < ab.length; k++){
+		if(ab[k] == prov[j]){
+		    var index = ab.indexOf(ab[k]);
+		    //console.log(index);
+		    var mapR = map_range(ab.indexOf(ab[k]), 0, ab.length, 0, 1);
+		    result[i].push(mapR); 
+		}
+	    }
+	}
+    }
+
+    return result; 
+    
+}
+
 function txtToSeq(txt){
     
     let ab = "abcdefghijklmnñopqrstuvwxyz";  
@@ -964,7 +1017,7 @@ function txtToSeq(txt){
     let poss = []; 
 
     for(let i = 0; i < extraction_result.length; i++){
-	durs.push((1/extraction_result[i].length) * 16000); // Este número puede estar relacionado con el tamaño 
+	durs.push((1/extraction_result[i].length) * 32000); // Este número puede estar relacionado con el tamaño 
 	poss[i] = []; 
 	for(let j = 0; j < extraction_result[i].length; j++){
 	    let prov = extraction_result[i];
@@ -991,11 +1044,12 @@ function audioRequest(string){ // Aquí tengo que agregar algún tipo de informa
     fetch(url)
 	.then(response => response.json())
 	.then(data => {
-	    console.log(data.results); 
+	    let randata = Math.floor(Math.random() * data.results.length); 
+	    console.log(randata); 
 	    // Maneja la respuesta de la API aquí
 	    //console.log(algo.previews);
 	    //freeURL = 'https://freesound.org/apiv2/sounds/'+data.results[0].id+'/similar'; // la opción de obtener similares está muy buena!!!!
-	    freeURL = 'https://freesound.org/apiv2/sounds/'+data.results[0].id; // la opción de obtener similares está muy buena!!!!	    
+	    freeURL = 'https://freesound.org/apiv2/sounds/'+data.results[randata].id; // la opción de obtener similares está muy buena!!!!	    
 	    //console.log(freeURL);
 	    var xhr = new XMLHttpRequest();
 	    xhr.open('GET', freeURL+'?format=json&token='+apiKey, true);	    
@@ -1018,13 +1072,15 @@ function audioRequest(string){ // Aquí tengo que agregar algún tipo de informa
 			    // buffer = buffer2;
 			    // boolCosa = true; 
 			    cosa.set(buffer, Math.random(), 1, 1, 0.05, 0.6);
-			    cosa.start();
+			    cosa.start();		    
+			    gloop.seqtime= [1000]; 
+			    gloop.seqpointer = [0];
 			    // console.log(mainPointer.flat()); 
-			    gloop.seqpointer = [0, 0.5];
-			    gloop.seqfreqScale = [1, 2, 4]; 
+			    // gloop.seqpointer = [0, 0.5];
+			    gloop.seqfreqScale = [0.95, 1, 1.05]; 
 			    gloop.seqwindowSize = [0.5];
 			    gloop.seqoverlaps = [0.1];
-			    gloop.seqwindowRandRatio = [0]; 
+			    gloop.seqwindowRandRatio = [0.5]; 
 			    gloop.start();
 			    boolCosa = true;		    
 			},
