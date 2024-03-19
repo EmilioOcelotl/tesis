@@ -10,6 +10,8 @@ import {EffectComposer} from '../../static/jsm/postprocessing/EffectComposer.js'
 import {RenderPass} from '../../static/jsm/postprocessing/RenderPass.js';
 import {UnrealBloomPass} from '../../static/jsm/postprocessing/UnrealBloomPass.js';
 import { FlyControls } from '../../static/jsm/controls/FlyControls.js';
+import { ShaderPass } from '../../static/jsm/postprocessing/ShaderPass.js';
+import { FXAAShader } from '../../static/jsm/shaders/FXAAShader.js';
 
 function VideoSetup(){
 
@@ -20,7 +22,7 @@ function VideoSetup(){
 	self.scene = new THREE.Scene();
 	self.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 6000 );
 	// self.camera.position.set(0, 0, -40);
-	self.renderer2 = new THREE.WebGLRenderer( { antialias: true, alpha:true } );
+	self.renderer2 = new THREE.WebGLRenderer( { antialias: true } );
 	self.renderer2.setPixelRatio( window.devicePixelRatio );
 	self.renderer2.setSize( window.innerWidth, window.innerHeight );
 	// container.appendChild( renderer.domElement ); // esto realmente tiene que ir en index pero lo dejo para acordarme 
@@ -272,12 +274,18 @@ function UnrealBloom (scene, camera, renderer){
     self.renderer = renderer; 
     
     const renderScene = new RenderPass( self.scene, self.camera );
-
-    const bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 0.75, 1, 0.1 );
-    
+    const bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 0.65, 1.1, 0.5 );
     const composer = new EffectComposer( self.renderer );
+    const fxaaPass = new ShaderPass( FXAAShader );
+
+    const pixelRatio = self.renderer.getPixelRatio();
+    
+    fxaaPass.material.uniforms[ 'resolution' ].value.x = 1 / ( window.innerWidth * pixelRatio );
+    fxaaPass.material.uniforms[ 'resolution' ].value.y = 1 / ( window.innerHeight * pixelRatio );
+
     composer.addPass( renderScene );
     composer.addPass( bloomPass );
+    composer.addPass( fxaaPass );
 
     self.render2 = function (delta){
 	  composer.render(delta);

@@ -222,7 +222,7 @@ function init(){
     
     un = new UnrealBloom(th.scene, th.camera, th.renderer2); 
     // retro = new Feedback(th.scene, th.renderer2, 1080);
-    const geometry44 = new THREE.SphereGeometry( 80, 32, 32 ); 
+    const geometry44 = new THREE.SphereGeometry( 80, 64, 64 ); 
     const material44 = new THREE.MeshStandardMaterial( { color: 0xffffff, map: renderTarget.texture, roughness: 0.6 } ); 
     sphere44 = new THREE.Mesh( geometry44, material44 );
 
@@ -232,12 +232,12 @@ function init(){
     th.scene.add( sphere44 );
     // sphere44.position.z = -20;
 
-    const geoTres = new THREE.BoxGeometry( 2, 2, 2 ); 
+    const geoTres = new THREE.SphereGeometry( 2, 32, 32 ); 
     const matTres = new THREE.MeshStandardMaterial( { color: colors[2], emissive: colors[2]} ); 
     sphTres = new THREE.Mesh( geoTres, matTres );
 
     // rTarget.setText(); 
-    sphTres.userdata = {id:'Tres Estudios Abiertos'};
+    sphTres.userdata = {id:'Tres Estudios Abiertos</br>Explicar controles'};
 
     th.scene.add( sphTres );
     
@@ -587,6 +587,12 @@ function saveNotes(){
     let contCol = 0;
     // let contTotal = 0; 
 
+    const points = [];
+    let linecap; 
+    //points.push( new THREE.Vector3(  0, 0, 0 ) );
+    //points.push( new THREE.Vector3( posX/norm*10, posY/norm*10, posZ/norm*10 ) );
+
+    points.push( new THREE.Vector3(  0, 0, 0) );
     // Filtrar capítulos 
     
     for(let i = 0; i < marksort.length; i++){	
@@ -622,7 +628,7 @@ function saveNotes(){
 
 	    //console.log(nwVec1.subVectors(vec, nwVec2)); 
 	    //console.log(vec);
-	    const geoCap = new THREE.BoxGeometry( 1,1,1); 
+	    const geoCap = new THREE.SphereGeometry( 1,32,32); 
 	    const matCap = new THREE.MeshStandardMaterial( { color: colors[0], emissive: colors[0], roughness: 0.4 } ); 
 	    sphCap[i] = new THREE.Mesh( geoCap, matCap );
 	    // rTarget.setText(); 
@@ -644,20 +650,23 @@ function saveNotes(){
 	    th.scene.add( sphCap[i] );
 
 	    const material = new THREE.LineBasicMaterial( { color: 0xffffff} );
-	    const points = [];
-	    points.push( new THREE.Vector3(  0, 0, 0 ) );
-	    points.push( new THREE.Vector3( posX/norm*10, posY/norm*10, posZ/norm*10 ) );
-	    const geometry = new THREE.BufferGeometry().setFromPoints( points );
-	    const line = new THREE.Line( geometry, material );
+	    points.push( new THREE.Vector3( posX/norm*10, posY/norm*10, posZ/norm*10) );	   
+	    
+	    // console.log(points); 
+	    const curve = new THREE.CatmullRomCurve3( points );
+	    const curvePoints = curve.getPoints( 500 );
 
-	    th.scene.add(line);
-
+	    const geometry = new THREE.BufferGeometry().setFromPoints( curvePoints );
+	    linecap = new THREE.Line( geometry, material );
 	    contCol++;
 	    // contTotal++; 
 	   
 	   
 	}
     }
+
+    th.scene.add(linecap); 
+    
 
     // Asignar notas en relación a capítulos. Primero tendríamos que saber la cantidad de notas por capítulo
     let notesPerChapter = [];
@@ -685,9 +694,13 @@ function saveNotes(){
     }
     // console.log(finalNotesPerChapter);
 
-    contCol = 0; 
+    contCol = 0
     
     for(let j = 0; j < notesCoords.length; j++){
+	const points2 = [];
+	let linenote = 0; 
+    
+ 	points2.push( notesCoords[j] );
 	for(let i = 0; i < marksort.length; i++){
 	    // Solamente se imprimen notas con más de dos caracteres
 	   
@@ -703,10 +716,10 @@ function saveNotes(){
 		const posZ = Math.cos(phi);   
 		
 		let norm = Math.sqrt(posX*posX + posY*posY+ posZ*posZ);
-		let vec = new THREE.Vector3((posX / norm)*4, (posY/norm)*4, (posZ/norm)*4); 
+		let vec = new THREE.Vector3((posX / norm)*6, (posY/norm)*6, (posZ/norm)*6); 
 
 		//console.log(marksort[i].length /1000);
-		const geoNotes = new THREE.BoxGeometry( marksort[i].length/6000,  marksort[i].length/6000,  marksort[i].length/6000 ); 
+		const geoNotes = new THREE.SphereGeometry( marksort[i].length/6000,  32, 32 ); 
 		const matNotes = new THREE.MeshStandardMaterial( { color: colors[1], emissive: colors[1], roughness: 0.6 } ); 
 		sphNotes[i] = new THREE.Mesh( geoNotes, matNotes );
 		// rTarget.setText();
@@ -717,7 +730,6 @@ function saveNotes(){
 		// console.log(analyzer.getSentiment(test));
 		//sphNotes[i].userdata = {id: marksort[i].slice(4), sentiment: analyzer.getSentiment(test)};
 		
-
 		var localdur = dur(marksort[i].slice(4));
 		var localpos = pos(marksort[i].slice(4)); 
 		// sphCap[i].userdata = {sentiment: analyzer.getSentiment(test)};
@@ -735,13 +747,18 @@ function saveNotes(){
 		th.scene.add( sphNotes[i] );
 		
 		const material = new THREE.LineBasicMaterial( { color: 0xffffff } );
-		const points = [];
-		points.push( notesCoords[j] );
-		points.push( new THREE.Vector3(nPosX, nPosY, nPosZ) );
-		const geometry = new THREE.BufferGeometry().setFromPoints( points );
-		const line = new THREE.Line( geometry, material );
+		points2.push( new THREE.Vector3(nPosX, nPosY, nPosZ) );
+
+		console.log(points2); 
+		const curve = new THREE.CatmullRomCurve3( points2 );
+		curve.closed = true; 
+		const curvePoints = curve.getPoints( 250 );
 		
-		th.scene.add(line);
+
+		const geometry = new THREE.BufferGeometry().setFromPoints( curvePoints );
+		linenote = new THREE.Line( geometry, material );
+		
+		//th.scene.add(line);
 
 		contCol++;
 		// contTotal++; 
@@ -750,7 +767,7 @@ function saveNotes(){
 		if(contCol == finalNotesPerChapter[j]){
 		    contCol = 0;
 		    // console.log("si"); 
-		}	
+		}
 	    }
 
 	    if(marksort[i].length > 2 && marksort[i].slice(6, 7) != "0" && marksort[i].slice(4, 5) == (j+2).toString() && j > 4){ // y si es distinto al índice de notas
@@ -771,10 +788,10 @@ function saveNotes(){
 		const posZ = Math.cos(phi);   
 		
 		let norm = Math.sqrt(posX*posX + posY*posY+ posZ*posZ);
-		let vec = new THREE.Vector3((posX / norm)*2.5, (posY/norm)*2.5, (posZ/norm)*2.5); 
+		let vec = new THREE.Vector3((posX / norm)*6, (posY/norm)*6, (posZ/norm)*6); 
 
 		//console.log(marksort[i].length /1000);
-		const geoNotes = new THREE.BoxGeometry( marksort[i].length/6000,  marksort[i].length/6000,  marksort[i].length/6000 ); 
+		const geoNotes = new THREE.SphereGeometry( marksort[i].length/6000,  32, 32 ); 
 		const matNotes = new THREE.MeshStandardMaterial( { color: colors[1], emissive: colors[1], roughness: 0.6 } ); 
 		sphNotes[i] = new THREE.Mesh( geoNotes, matNotes );
 		// rTarget.setText();
@@ -791,13 +808,19 @@ function saveNotes(){
 		th.scene.add( sphNotes[i] );
 		
 		const material = new THREE.LineBasicMaterial( { color: 0xffffff } );
-		const points = [];
-		points.push( notesCoords[j] );
-		points.push( new THREE.Vector3(nPosX, nPosY, nPosZ) );
-		const geometry = new THREE.BufferGeometry().setFromPoints( points );
-		const line = new THREE.Line( geometry, material );
+		//const points = [];
+		//points.push( notesCoords[j] );
+		points2.push( new THREE.Vector3(nPosX, nPosY, nPosZ) );
+
+		const curve = new THREE.CatmullRomCurve3( points2 );
+		curve.closed = true;
 		
-		th.scene.add(line);
+		const curvePoints = curve.getPoints( 250 );
+		
+		const geometry = new THREE.BufferGeometry().setFromPoints( curvePoints );
+		linenote = new THREE.Line( geometry, material );
+		
+		//th.scene.add(line);
 
 		contCol++; 
 		// falta guardar la posición de notas y a partir de ahi construir el otro arbol
@@ -807,7 +830,10 @@ function saveNotes(){
 		    //console.log(finalNotesPerChapter[j+1]);
 		}	
 	    }
-	}	
+	  
+	}
+	   
+	th.scene.add(linenote);
     }
 
     //my_string="hello python world , i'm a beginner"
