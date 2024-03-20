@@ -20,7 +20,7 @@ Este proyecto utilizó principalmente:
 
 - [Hydra](https://hydra.ojack.xyz/). Para la generación de texturas por medio de OpenGL. 
 
-- [Freesound APIv2](https://freesound.org/docs/api/). Para la búsqueda de sonidos almacenados en un lugar distinto al servidor de la página y para la búsqueda de resultados similares. 
+- [Freesound APIv2](https://freesound.org/docs/api/). Para la búsqueda de sonidos almacenados en un lugar distinto al servidor de la página y para la búsqueda de resultados similares. Para echar a andar la API de Freesound es necesario generar un token. [Más info](https://freesound.org/docs/api/)
 
 - [tween.js](https://tweenjs.github.io/tween.js/). Para la generación de curvas de control y para la gestión de animaciones. 
 

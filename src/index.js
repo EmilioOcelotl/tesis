@@ -2,16 +2,15 @@ import * as THREE from 'three';
 import { VideoSetup, GLTFLd, Feedback, UnrealBloom } from "../js/avLib/videoSetup"
 import { HydraTex } from '../js/avLib/hydraSetup'
 import { AudioSetup, Analyser, Grain, UploadFile, Load } from '../js/avLib/audioSetup'
-import { ImprovedNoise } from '../static/jsm/math/ImprovedNoise.js';
+//import { ImprovedNoise } from '../static/jsm/math/ImprovedNoise.js'; // esto podría funcionar para el futuro 
 import { EditorParser} from '../js/avLib/editorParser'
 import * as TWEEN from 'tween'; 
 import { FontLoader } from '../static/jsm/loaders/FontLoader.js';
-import { Player } from '../js/avLib/Player.js'; 
-import { Post } from '../js/avLib/Post.js';
+//import { Player } from '../js/avLib/Player.js'; 
+//import { Post } from '../js/avLib/Post.js';
 import { DbReader, dbParser, createDoc } from '../js/avLib/dbSetup2'; 
 import { OrbitControls } from '../static/jsm/controls/OrbitControls.js';
-import { TransformControls } from '../static/jsm/controls/TransformControls.js'; 
-// import rake from 'rake-js'
+//import { TransformControls } from '../static/jsm/controls/TransformControls.js'; 
 const keyword_extractor = require("keyword-extractor");
 const { map_range } = require('../js/avLib/utils.js');
 const { url, apiKey } = require('./config.js');
@@ -20,7 +19,7 @@ const { url, apiKey } = require('./config.js');
 
 audioRequest("texto"); 
 
-const apiUrl = 'https://freesound.org/apiv2';
+//const apiUrl = 'https://freesound.org/apiv2';
 let freeURL; 
 
 let mainPointer = [0, 0.5, 1];
@@ -30,7 +29,7 @@ let sentiment = []; // Pendiente hacer que esto sea un arreglo por oraciones
 // quitar 
 // import Text from 'markov-chains-text';
 
-let salir = false;
+//let salir = false;
 
 // addEventListener("click", (event) => { click = !click });
 // document.getElementById("instrucciones").innerHTML = interStr;
@@ -62,9 +61,9 @@ disposeButton.addEventListener('click', disposeLines);
 
 let notas = []; 
 let sphCap = [];
-let noteBool = false; 
+//let noteBool = false; 
 
-const par = new EditorParser();     
+//const par = new EditorParser();     
 const a = new AudioSetup(); 
 const th = new VideoSetup(); 
 const hy = new HydraTex();
@@ -95,9 +94,10 @@ const colors = [
 
 ///////////////////////////////////////////////////
 // splines 
+// Parece que todo lo que está abajo hace referencia a las trayectorias. Esto se podría retomar después para las versiones remixeadas entre rolas. 
 
 let positions = []; 
-const ARC_SEGMENTS = 200;
+//const ARC_SEGMENTS = 200;
 // const splines = {};
 let geometryCurve = new THREE.LineBasicMaterial();
 let materialCurve = new THREE.LineBasicMaterial(); 
@@ -110,6 +110,7 @@ const sphereP1 = new THREE.Mesh( geometryP1, materialP1 );
 
 ///////////////////////////////////////////////////
 // render target
+// demasiado costoso de mantener. Podría servir para impermanent otros proyectos pero mientras tanto se puede deshechar 
 
 const rtWidth = 1920*2;
 const rtHeight = 1080*2;
@@ -127,6 +128,8 @@ rtScene.background = hy.vit;
 let fuente;
 let text = new THREE.Mesh();
 
+// Evidencia de que ya no se usa
+
 const materialrt = new THREE.MeshBasicMaterial({
     color: 0xffffff,
     map: renderTarget.texture,
@@ -137,10 +140,10 @@ const materialrt = new THREE.MeshBasicMaterial({
 
 ///////////////////////////////////////////////////
 
-const group = new THREE.Group();
+//const group = new THREE.Group();
 let lcbool = false; 
 
-const mouse = [.5, .5]
+//const mouse = [.5, .5]
 //const audioFile1 = document.getElementById('audio_file1') // onload que lo decodifique 
 
 // const rTarget = new RTarget(); 
@@ -152,10 +155,10 @@ const gloop = new GLoop({grain: cosa});
 let boolCosa; 
 
 // let twC; 
-let tween;
-let tweenBool = false; 
+//let tween;
+//let tweenBool = false; 
 //const avButton = avButton.addEventListener('click', renderAV);
-let cubos2 = []; 
+//let cubos2 = []; 
 let interStr = ''; 
 
 document.getElementById("container").onclick = change;
@@ -164,35 +167,41 @@ document.getElementById("container").onclick = change;
 //pdfButton.addEventListener('click', printPDF );
 
 // Importante: resolver el problema de la iteración doble y la cantidad total de notas
-const meshes = [],materials = [],xgrid = 11, ygrid = 11;
-let material, mesh;
-let an;
+//const meshes = [],materials = [];
+
+const xgrid = 11, ygrid = 11; // según es el contexto de render target. Puede funcionar para otras cosas 
+//let material, mesh;
+//let an;
 
 let windowHalfX = window.innerWidth / 2;
 let windowHalfY = window.innerHeight / 2;
 
-let materialslc = []; 
+//let materialslc = []; 
 
-let mouseX = 0, mouseY = 0; 
+//let mouseX = 0, mouseY = 0; 
 document.addEventListener( 'mousemove', onDocumentMouseMove );
 
 function printPDF(){
-      window.open("https://ocelotl.cc/tres", "_blank");
+	 window.open("https://ocelotl.cc/tres", "_blank");
 }
 
 const clock = new THREE.Clock();
 
-let cubos = [];
-let geometry; 
+//let cubos = [];
+//let geometry; 
 
-let pX = [], pY = [], pZ = []; 
+//let pX = [], pY = [], pZ = []; 
 
-let sphere; 
+//let sphere; 
+
+// preguntarse si puede estar de otra manera que como variable global 
+
 let raycaster;
 let INTERSECTED
 const pointer = new THREE.Vector2();
  
-let menuC1str = ['regresar', '+ info', 'auto', 'live-codeame', 'imprimir']; 
+
+// let menuC1str = ['regresar', '+ info', 'auto', 'live-codeame', 'imprimir']; // ahora usamos userid asignado directamente a los objetos. Este menú ya no existe 
 // const group = new THREE.Group();
 
 var cursorX;
@@ -257,11 +266,12 @@ function init(){
     container = document.getElementById( 'container' );
     container.appendChild(th.renderer2.domElement); 
     cubeCount = 0;
-    let ox, oy, geometryTex;
-    const ux = 1 / xgrid;
-    const uy = 1 / ygrid;
-    const xsize = 200 / xgrid;
-    const ysize = 200 / ygrid;
+	// las siguientes variables se usaban en el contexto de la fragmentación 
+    //let ox, oy, geometryTex;
+    //const ux = 1 / xgrid;
+    //const uy = 1 / ygrid;
+    //const xsize = 200 / xgrid;
+    //const ysize = 200 / ygrid;
     controls = new OrbitControls( th.camera, th.renderer2.domElement );
     controls.listenToKeyEvents( window ); // optional
 
@@ -271,6 +281,8 @@ function init(){
 	    document.getElementById("instrucciones").innerHTML = "";
 	    // document.getElementById("instrucciones").pointer-events = none;
 	    document.getElementById("instrucciones").style.pointerEvents = "none";
+		document.getElementById("instrucciones").style.display = "none";
+
 	}
     }
     
@@ -332,13 +344,14 @@ function animate(){
 	sphere44.rotation.y -= 0.002; 
     }
 
-    
+	/*
     if(lcbool == true){
 
 	// console.log(sphCap[0]); 
-	let cC = 0;
+	let cC = 0; // se usaba en iteraciones de cubos
 
     }
+	*/
 	
     // Esto se tiene que convertir en otra cosa
     if(boolCosa) {
@@ -377,6 +390,8 @@ function animate(){
 
 		    controls.enabled = false;
 		    document.getElementById("instrucciones").style.pointerEvents = "auto";
+			document.getElementById("instrucciones").style.display = "block";
+
 		    salir = true; 
 		    // console.log(markNote);
 		    txtToSeq(markNote);
@@ -417,6 +432,7 @@ function animate(){
 	INTERSECTED = null;
 	document.getElementById("container").style.cursor = "default";
 	interStr = '';
+	// Lo siguiente parece redundante
 	if(!infoBool){
 	    //document.getElementById("instrucciones").innerHTML = "";
 	} 
@@ -425,7 +441,7 @@ function animate(){
     TWEEN.update();
    
     hy.vit.needsUpdate = true; 
-    const delta = clock.getDelta();
+    const delta = clock.getDelta(); 
 
     renderTarget.flipY = true;
     renderTarget.needsUpdate = true;
@@ -464,6 +480,8 @@ function change(){
 	    })  
 	    .onStart(() => {
 		document.getElementById("info").innerHTML = ""; // cuando tween termine 
+		document.getElementById("info").style.display = "none"; // quitarlo completamente
+
 	    })
 	    .onComplete(() => {
 		// Pasar los datos de txtToSeq 
@@ -596,7 +614,7 @@ function saveNotes(){
     // Filtrar capítulos 
     
     for(let i = 0; i < marksort.length; i++){	
-	   // Solamente se imprimen notas con más de dos caracteres
+	// Solamente se imprimen notas con más de dos caracteres
 	if(marksort[i].length > 2 && marksort[i].slice(6, 7) == "0"){
 
 	    var posX, posY, posZ;
@@ -1065,6 +1083,8 @@ function txtToSeq(txt){
     
 }
 
+// esto funciona para obtener todas las muestras que tengo en mi perfil. 
+
 function audioRequest(string){ // Aquí tengo que agregar algún tipo de información proveniente de la nota.
     console.log(string); 
     fetch(url)
@@ -1075,7 +1095,7 @@ function audioRequest(string){ // Aquí tengo que agregar algún tipo de informa
 	    // Maneja la respuesta de la API aquí
 	    //console.log(algo.previews);
 	    //freeURL = 'https://freesound.org/apiv2/sounds/'+data.results[0].id+'/similar'; // la opción de obtener similares está muy buena!!!!
-	    freeURL = 'https://freesound.org/apiv2/sounds/'+data.results[randata].id; // la opción de obtener similares está muy buena!!!!	    
+	    freeURL = 'https://freesound.org/apiv2/sounds/'+data.results[randata].id; // la opción de obtener similares está muy buena!!!!	  
 	    //console.log(freeURL);
 	    var xhr = new XMLHttpRequest();
 	    xhr.open('GET', freeURL+'?format=json&token='+apiKey, true);	    
@@ -1113,7 +1133,6 @@ function audioRequest(string){ // Aquí tengo que agregar algún tipo de informa
 						   function(e){"Error with decoding audio data" + e.error});
 		    }
 	    	    request.send();
-		    
 		} else {
 		    console.error('Error en la solicitud:', xhr.statusText);
 		}
@@ -1128,3 +1147,47 @@ function audioRequest(string){ // Aquí tengo que agregar algún tipo de informa
 	    console.error('Error en la solicitud:', error);
 	});
 }
+
+// api key
+
+// Función para realizar la búsqueda
+async function buscarEnFreeSound(query, page = 1, resultsPerPage = 20, maxDur = 1) {
+  try {
+      // Construir la URL de la solicitud de búsqueda
+      const url = `https://freesound.org/apiv2/search/text/?query=${query}&token=${apiKey}&page=${page}&page_size=${resultsPerPage}`;
+    
+    // Realizar la solicitud GET utilizando fetch()
+    const response = await fetch(url);
+    
+    // Verificar si la respuesta es exitosa
+    if (!response.ok) {
+      throw new Error('No se pudo realizar la solicitud');
+    }
+    
+      // Convertir la respuesta a formato JSON
+      const data = await response.json();
+      
+      const totalResults = data.count;
+      const totalPages = Math.ceil(totalResults / resultsPerPage);
+
+      // Devolver los resultados de la búsqueda
+      return { resultados: data.results, totalPaginas: totalPages };
+      
+  } catch (error) {
+    console.error('Error al realizar la búsqueda:', error);
+    return []; // Devolver un array vacío en caso de error
+  }
+}
+
+const query = 'percussion kick'; // Query de búsqueda
+buscarEnFreeSound(query, 5)
+    .then(resultados => {
+	console.log('Resultados de la búsqueda:', resultados);
+	// Es necesario al menos dos instrumentos percusivos
+	// Las notas pueden estar divididas temáticamente y cada tema puede corresponder aproximadamente a un capítulo.
+	// Pienso que cada capítulo podría tener un motivo general y ese motivo podría inscribirse en algo así como un prompt con palabras clave que pudieran usarse más adelante para profundizar una selección de samples, una modificación de parámetros independientes del valor de sentiment o de la sonificación y una secuencia o secuencia de sequencias que pudiera dar lugar a una rola. Entonces, de manera general los capítulos podrían reproducirse como piezas completas e integradas y las selecciones fuera de de estos grupos podrían ser versiones mezcladas de las rolas.
+	// Una muy buena idea que mencionó Rossana fue grabar extractos de mi voz para poderlas subir y utilizarlas como recursos. Podrían ser las voces de alguien más (parecido a lo que sucedía en anti) lecturas de extractos selectos que pudieran intervenir en la rola. 
+    })
+    .catch(error => {
+	console.error('Error al buscar en FreeSound:', error);
+    });

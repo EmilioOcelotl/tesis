@@ -1,9 +1,8 @@
-
 body {
     margin: 0;
     background-color: black;
     overflow-y: hidden;
-    font-family: jgs;
+    font-family: Alegreya Sans;
     font-size: 18px; 
     color: #f7f8f9;
     line-height: 15px;
@@ -26,20 +25,28 @@ body {
     pointer-events: none;
 
     z-index: 0; /* TODO Solve this in HTML */
+
+    background: rgba(0,0,0,0.25); /* Fondo semi-transparente */
+    color: white; /* Color del texto */
+    padding: 10px; /* Espacio entre el borde del contenedor y su contenido */
 }
 
+/* En otras circunstancias esto va del lado derecho, siento que estorba menos */ 
+
 #instrucciones {
+
     /*border: 1px solid #ccc;*/ /* Borde para mayor claridad */
 
+    display: none;
     scrollbar-width: thin;          /* "auto" or "thin" */
     scrollbar-color: black gray;   /* scroll thumb and track */
     
     position: absolute; 
-    margin-top: 50px;
+    margin-top: 56px;
     margin-left: 10%; 
    
     width: 40vw;
-    height:94vh;
+    height: 50vh;
     
     overflow-x: auto; 
     overflow-y: auto;  /*Agrega la barra de desplazamiento vertical cuando sea necesario */
@@ -60,6 +67,9 @@ body {
     pointer-events: none;
     z-index: 1;
 
+    background: rgba(0,0,0,0.5); /* Fondo semi-transparente */
+    color: white; /* Color del texto */
+    padding: 0px; /* Espacio entre el borde del contenedor y su contenido */
 }
 
 #container {
@@ -81,14 +91,6 @@ body {
 
 a {
   color: white;
-}
-
-p {
-    background: rgba(0,0,0,0.75);
-}
-
-h3 {
-    background: rgba(0,0,0,0.75);
 }
 
 @font-face {
