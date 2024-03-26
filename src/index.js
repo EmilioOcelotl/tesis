@@ -6,7 +6,7 @@ import { AudioSetup, Analyser, Grain, UploadFile, Load } from '../js/avLib/audio
 import { EditorParser} from '../js/avLib/editorParser'
 import * as TWEEN from 'tween'; 
 import { FontLoader } from '../static/jsm/loaders/FontLoader.js';
-//import { Player } from '../js/avLib/Player.js'; 
+import { Sequencer } from '../js/avLib/Sequencer.js'; 
 //import { Post } from '../js/avLib/Post.js';
 import { DbReader, dbParser, createDoc } from '../js/avLib/dbSetup2'; 
 import { OrbitControls } from '../static/jsm/controls/OrbitControls.js';
@@ -317,7 +317,7 @@ function animate(){
     var time1 = Date.now() * 0.00002;
     var time2 = Date.now() * 0.00001;
 
-    controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
+    controls.update();
 
     if(positions.length > 3){
 
@@ -1116,7 +1116,9 @@ function audioRequest(string){ // Aquí tengo que agregar algún tipo de informa
 			a.audioCtx.decodeAudioData(audioData, function(buffer) {
 			    console.log(buffer); 
 			    // buffer = buffer2;
-			    // boolCosa = true; 
+			    // boolCosa = true;
+			    let seqbd = new Sequencer(a.audioCtx, buffer);
+			    console.log(seqbd); 
 			    cosa.set(buffer, Math.random(), 1, 1, 0.05, 0.6);
 			    cosa.start();		    
 			    gloop.seqtime= [1000]; 
@@ -1151,7 +1153,7 @@ function audioRequest(string){ // Aquí tengo que agregar algún tipo de informa
 // api key
 
 // Función para realizar la búsqueda
-async function buscarEnFreeSound(query, page = 1, resultsPerPage = 20, maxDur = 1) {
+async function buscarEnFreeSound(query, page = 1, resultsPerPage = 40  ) {
   try {
       // Construir la URL de la solicitud de búsqueda
       const url = `https://freesound.org/apiv2/search/text/?query=${query}&token=${apiKey}&page=${page}&page_size=${resultsPerPage}`;
@@ -1168,10 +1170,10 @@ async function buscarEnFreeSound(query, page = 1, resultsPerPage = 20, maxDur = 
       const data = await response.json();
       
       const totalResults = data.count;
-      const totalPages = Math.ceil(totalResults / resultsPerPage);
+      //const totalPages = Math.ceil(totalResults / resultsPerPage);
 
       // Devolver los resultados de la búsqueda
-      return { resultados: data.results, totalPaginas: totalPages };
+      return { resultados: data.results };
       
   } catch (error) {
     console.error('Error al realizar la búsqueda:', error);
@@ -1179,8 +1181,10 @@ async function buscarEnFreeSound(query, page = 1, resultsPerPage = 20, maxDur = 
   }
 }
 
-const query = 'percussion kick'; // Query de búsqueda
-buscarEnFreeSound(query, 5)
+// valdría la pena subir mis propios samples para no depender de la existencia o no de packetes 
+
+const query = 'elektron sidstation'; // Query de búsqueda
+buscarEnFreeSound(query, 1)
     .then(resultados => {
 	console.log('Resultados de la búsqueda:', resultados);
 	// Es necesario al menos dos instrumentos percusivos
@@ -1191,3 +1195,23 @@ buscarEnFreeSound(query, 5)
     .catch(error => {
 	console.error('Error al buscar en FreeSound:', error);
     });
+
+
+// audio request lo hace es sustituir el sinte granular principal
+
+// Necesito otro bloque de código para un bd, snare y hi 
+
+/* la pregunta es si deberé generar tracks para cada uno de los grupos de notas (capítulos) de forma tal que estos puedan ser "audioReactivos). En total son 7 sin referencias.
+
+   1. bd
+   2. sn
+   3. hi
+   4. smpl1
+   5. perc
+   6. bass
+   7. smpl2
+
+   Esto quiere decir además que tal vez voy a tener 7 rolas abiertas- 
+
+*/
+
