@@ -1,0 +1,8 @@
+
+class Search{
+
+    constructor(query, page = 1; resultsPerPage = 40, type='search'){
+    }
+
+}
+

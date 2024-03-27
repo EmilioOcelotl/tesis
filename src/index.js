@@ -6,7 +6,8 @@ import { AudioSetup, Analyser, Grain, UploadFile, Load } from '../js/avLib/audio
 import { EditorParser} from '../js/avLib/editorParser'
 import * as TWEEN from 'tween'; 
 import { FontLoader } from '../static/jsm/loaders/FontLoader.js';
-import { Sequencer } from '../js/avLib/Sequencer.js'; 
+import { Sequencer } from '../js/avLib/Sequencer.js';
+import { buscarEnFreeSound } from '../js/avLib/Search.js'; 
 //import { Post } from '../js/avLib/Post.js';
 import { DbReader, dbParser, createDoc } from '../js/avLib/dbSetup2'; 
 import { OrbitControls } from '../static/jsm/controls/OrbitControls.js';
@@ -1091,7 +1092,7 @@ function audioRequest(string){ // Aquí tengo que agregar algún tipo de informa
 	.then(response => response.json())
 	.then(data => {
 	    let randata = Math.floor(Math.random() * data.results.length); 
-	    console.log(randata); 
+	    console.log(randata+" hola"); 
 	    // Maneja la respuesta de la API aquí
 	    //console.log(algo.previews);
 	    //freeURL = 'https://freesound.org/apiv2/sounds/'+data.results[0].id+'/similar'; // la opción de obtener similares está muy buena!!!!
@@ -1150,47 +1151,37 @@ function audioRequest(string){ // Aquí tengo que agregar algún tipo de informa
 	});
 }
 
-// api key
-
-// Función para realizar la búsqueda
-async function buscarEnFreeSound(query, page = 1, resultsPerPage = 40  ) {
-  try {
-      // Construir la URL de la solicitud de búsqueda
-      const url = `https://freesound.org/apiv2/search/text/?query=${query}&token=${apiKey}&page=${page}&page_size=${resultsPerPage}`;
-    
-    // Realizar la solicitud GET utilizando fetch()
-    const response = await fetch(url);
-    
-    // Verificar si la respuesta es exitosa
-    if (!response.ok) {
-      throw new Error('No se pudo realizar la solicitud');
-    }
-    
-      // Convertir la respuesta a formato JSON
-      const data = await response.json();
-      
-      const totalResults = data.count;
-      //const totalPages = Math.ceil(totalResults / resultsPerPage);
-
-      // Devolver los resultados de la búsqueda
-      return { resultados: data.results };
-      
-  } catch (error) {
-    console.error('Error al realizar la búsqueda:', error);
-    return []; // Devolver un array vacío en caso de error
-  }
-}
-
-// valdría la pena subir mis propios samples para no depender de la existencia o no de packetes 
-
-const query = 'elektron sidstation'; // Query de búsqueda
-buscarEnFreeSound(query, 1)
+const query = 'elektron sidstation bd' // Query de búsqueda
+buscarEnFreeSound(query, 1, 40, apiKey)
     .then(resultados => {
-	console.log('Resultados de la búsqueda:', resultados);
+	let res = resultados.resultados[Math.floor(Math.random() * resultados.resultados.length)];
+	let srchURL = 'https://freesound.org/apiv2/sounds/'+res.id; // la opción de obtener similares está muy buena!!!!
+	console.log("liga:"+srchURL);
+	//console.log(freeURL);
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', srchURL+'?format=json&token='+apiKey, true);	    
+	    xhr.onload = function () {
+		//console.log('Status:', xhr.status);
+		//console.log('Response headers:', xhr.getAllResponseHeaders());
+		if (xhr.status >= 200 && xhr.status < 300) {
+		    var jsonResponse = JSON.parse(xhr.responseText);
+		    var audioPath = jsonResponse.previews['preview-lq-ogg'];
+		   
+		    // console.log("audio path");
+		    // Aquí tiene que ir 
+		}
+	    }
+	
+	xhr.onerror = function () {
+	    console.error('Error de red o CORS');
+	};
+	xhr.send();
+	
 	// Es necesario al menos dos instrumentos percusivos
 	// Las notas pueden estar divididas temáticamente y cada tema puede corresponder aproximadamente a un capítulo.
 	// Pienso que cada capítulo podría tener un motivo general y ese motivo podría inscribirse en algo así como un prompt con palabras clave que pudieran usarse más adelante para profundizar una selección de samples, una modificación de parámetros independientes del valor de sentiment o de la sonificación y una secuencia o secuencia de sequencias que pudiera dar lugar a una rola. Entonces, de manera general los capítulos podrían reproducirse como piezas completas e integradas y las selecciones fuera de de estos grupos podrían ser versiones mezcladas de las rolas.
-	// Una muy buena idea que mencionó Rossana fue grabar extractos de mi voz para poderlas subir y utilizarlas como recursos. Podrían ser las voces de alguien más (parecido a lo que sucedía en anti) lecturas de extractos selectos que pudieran intervenir en la rola. 
+	// Una muy buena idea que mencionó Rossana fue grabar extractos de mi voz para poderlas subir y utilizarlas como recursos. Podrían ser las voces de alguien más (parecido a lo que sucedía en anti) lecturas de extractos selectos que pudieran intervenir en la rola.
+	// return resultados[Math.floor(Math.random()*resultados.length)].name; 
     })
     .catch(error => {
 	console.error('Error al buscar en FreeSound:', error);
@@ -1203,15 +1194,14 @@ buscarEnFreeSound(query, 1)
 
 /* la pregunta es si deberé generar tracks para cada uno de los grupos de notas (capítulos) de forma tal que estos puedan ser "audioReactivos). En total son 7 sin referencias.
 
-   1. bd
+   1. bd 
    2. sn
    3. hi
-   4. smpl1
-   5. perc
-   6. bass
-   7. smpl2
+   4. gr
+   5. vc
+   6. bs
+   7. sm
 
    Esto quiere decir además que tal vez voy a tener 7 rolas abiertas- 
 
 */
-
