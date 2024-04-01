@@ -3,13 +3,13 @@ import { VideoSetup, GLTFLd, Feedback, UnrealBloom } from "../js/avLib/videoSetu
 import { HydraTex } from '../js/avLib/hydraSetup'
 import { AudioSetup, Analyser, Grain, UploadFile, Load } from '../js/avLib/audioSetup'
 //import { ImprovedNoise } from '../static/jsm/math/ImprovedNoise.js'; // esto podría funcionar para el futuro 
-import { EditorParser} from '../js/avLib/editorParser'
-import * as TWEEN from 'tween'; 
+import { EditorParser } from '../js/avLib/editorParser'
+import * as TWEEN from 'tween';
 import { FontLoader } from '../static/jsm/loaders/FontLoader.js';
 import { Sequencer } from '../js/avLib/Sequencer.js';
-import { buscarEnFreeSound } from '../js/avLib/Search.js'; 
+import { buscarEnFreeSound } from '../js/avLib/Search.js';
 //import { Post } from '../js/avLib/Post.js';
-import { DbReader, dbParser, createDoc } from '../js/avLib/dbSetup2'; 
+import { DbReader, dbParser, createDoc } from '../js/avLib/dbSetup2';
 import { OrbitControls } from '../static/jsm/controls/OrbitControls.js';
 //import { TransformControls } from '../static/jsm/controls/TransformControls.js'; 
 const keyword_extractor = require("keyword-extractor");
@@ -18,10 +18,10 @@ const { url, apiKey } = require('./config.js');
 
 // Realiza la solicitud GET a la API de Freesound
 
-audioRequest("texto"); 
+audioRequest("texto");
 
 //const apiUrl = 'https://freesound.org/apiv2';
-let freeURL; 
+let freeURL;
 
 let mainPointer = [0, 0.5, 1];
 let mainDurss = [0.5];
@@ -34,88 +34,83 @@ let sentiment = []; // Pendiente hacer que esto sea un arreglo por oraciones
 
 // addEventListener("click", (event) => { click = !click });
 // document.getElementById("instrucciones").innerHTML = interStr;
-	     
-const print = document.getElementById('print');
-print.addEventListener('click', printPDF );
 
-const editorP = document.getElementById('codeEditor');
-editorP.addEventListener('click', codeEditorFunc );
+const print = document.getElementById('print');
+print.addEventListener('click', printPDF);
+root@161.35.239.123
 // editorP.style.display = 'none';
 
 const ed = document.getElementById('editor');
-ed.style.display = 'none';     
+ed.style.display = 'none';
 
-let codeBool = false; 
+let codeBool = false;
 
 const backHy = document.getElementById('backgroundHy');
-backHy.addEventListener('click', backgroundFunc );
+backHy.addEventListener('click', backgroundFunc);
 
-let backBool = false; 
+let backBool = false;
 
 const infoButton = document.getElementById('information');
-infoButton.addEventListener('click', informationFunc );
+infoButton.addEventListener('click', informationFunc);
 
-let infoBool = false; 
+let infoBool = false;
 
 const disposeButton = document.getElementById("delete");
-disposeButton.addEventListener('click', disposeLines); 
+disposeButton.addEventListener('click', disposeLines);
 
-let notas = []; 
+let notas = [];
 let sphCap = [];
 //let noteBool = false; 
 
 //const par = new EditorParser();     
-const a = new AudioSetup(); 
-const th = new VideoSetup(); 
+const a = new AudioSetup();
+const th = new VideoSetup();
 const hy = new HydraTex();
 const db = new DbReader()
 
 a.initAudio();
 
 const { Grain } = require('../js/avLib/Grain')
-const { GLoop } = require('../js/avLib/GLoop'); 
+const { GLoop } = require('../js/avLib/GLoop');
 import { map_range } from '../js/avLib/utils.js';
 
 db.read("./sql/document.db");
 
 let markdown = [];
 let controls;
-let controlsBool = true; 
 
 const colors = [
-    0x993366, // Dusty Rose
-    0x3399CC, // Steel Blue
-    0x996633, // Mocha
-    0x669966,  // Sage Green
-    0x993366, // Dusty Rose
-    0x3399CC, // Steel Blue
-    0x996633, // Mocha
-    0x669966  // Sage Green
+	0x993366, // Dusty Rose
+	0x3399CC, // Steel Blue
+	0x996633, // Mocharoot@161.35.239.123
+	0x3399CC, // Steel Blue
+	0x996633, // Mocha
+	0x669966  // Sage Green
 ];
 
 ///////////////////////////////////////////////////
 // splines 
 // Parece que todo lo que está abajo hace referencia a las trayectorias. Esto se podría retomar después para las versiones remixeadas entre rolas. 
 
-let positions = []; 
+let positions = [];
 //const ARC_SEGMENTS = 200;
 // const splines = {};
 let geometryCurve = new THREE.LineBasicMaterial();
-let materialCurve = new THREE.LineBasicMaterial(); 
-let curveObject = new THREE.Line(); 
-let curve1 = new THREE.CatmullRomCurve3(); 
+let materialCurve = new THREE.LineBasicMaterial();
+let curveObject = new THREE.Line();
+let curve1 = new THREE.CatmullRomCurve3();
 
-const geometryP1 = new THREE.SphereGeometry( 0.5, 32, 16 ); 
-const materialP1 = new THREE.MeshBasicMaterial( { color:  0x05ffa1 } ); 
-const sphereP1 = new THREE.Mesh( geometryP1, materialP1 );
+const geometryP1 = new THREE.SphereGeometry(0.5, 32, 16);
+const materialP1 = new THREE.MeshBasicMaterial({ color: 0x05ffa1 });
+const sphereP1 = new THREE.Mesh(geometryP1, materialP1);
 
 ///////////////////////////////////////////////////
 // render target
 // demasiado costoso de mantener. Podría servir para impermanent otros proyectos pero mientras tanto se puede deshechar 
 
-const rtWidth = 1920*2;
-const rtHeight = 1080*2;
-const renderTarget = new THREE.WebGLRenderTarget(rtWidth, rtHeight, { format: THREE.RGBAFormat } );
+const rtWidth = 1920 * 2;
+const rtHeight = 1080 * 2;
+const renderTarget = new THREE.WebGLRenderTarget(rtWidth, rtHeight, { format: THREE.RGBAFormat });
 const rtFov = 75;
 const rtAspect = rtWidth / rtHeight;
 const rtNear = 0.1;
@@ -125,24 +120,26 @@ rtCamera.position.z = 4;
 const rtScene = new THREE.Scene();
 //rtScene.background = 0x000000; 
 //rtScene.background = new THREE.Color( 0x000000 );
-rtScene.background = hy.vit; 
+rtScene.background = hy.vit;
 let fuente;
 let text = new THREE.Mesh();
 
-// Evidencia de que ya no se usa
+// Render target. Esto puede funcionar después. Queda comentado
 
+/*
 const materialrt = new THREE.MeshBasicMaterial({
-    color: 0xffffff,
-    map: renderTarget.texture,
-    transparent: true,
-    //roughness: 0.4,
-    //metalness: 0.2
+	color: 0xffffff,
+	map: renderTarget.texture,
+	transparent: true,
+	//roughness: 0.4,
+	//metalness: 0.2
 });
+*/
 
 ///////////////////////////////////////////////////
 
 //const group = new THREE.Group();
-let lcbool = false; 
+let lcbool = false;
 
 //const mouse = [.5, .5]
 //const audioFile1 = document.getElementById('audio_file1') // onload que lo decodifique 
@@ -151,16 +148,16 @@ let lcbool = false;
 // rTarget.setText(); 
 
 let cosa = new Grain(a.audioCtx);
-const gloop = new GLoop({grain: cosa});  
+const gloop = new GLoop({ grain: cosa });
 
-let boolCosa; 
+let boolCosa;
 
 // let twC; 
 //let tween;
 //let tweenBool = false; 
 //const avButton = avButton.addEventListener('click', renderAV);
 //let cubos2 = []; 
-let interStr = ''; 
+let interStr = '';
 
 document.getElementById("container").onclick = change;
 
@@ -180,10 +177,10 @@ let windowHalfY = window.innerHeight / 2;
 //let materialslc = []; 
 
 //let mouseX = 0, mouseY = 0; 
-document.addEventListener( 'mousemove', onDocumentMouseMove );
+document.addEventListener('mousemove', onDocumentMouseMove);
 
-function printPDF(){
-	 window.open("https://ocelotl.cc/tres", "_blank");
+function printPDF() {
+	window.open("https://ocelotl.cc/tres", "_blank");
 }
 
 const clock = new THREE.Clock();
@@ -200,992 +197,1002 @@ const clock = new THREE.Clock();
 let raycaster;
 let INTERSECTED
 const pointer = new THREE.Vector2();
- 
+
 
 // let menuC1str = ['regresar', '+ info', 'auto', 'live-codeame', 'imprimir']; // ahora usamos userid asignado directamente a los objetos. Este menú ya no existe 
 // const group = new THREE.Group();
 
 var cursorX;
 var cursorY;
-let fBool = false; 
+let fBool = false;
 
 init(); // los elementos particulares de este init podrían ir en otro lado. En todo caso podría delimitar la escena que antes se detonaba con esta función.     
-function init(){
+function init() {
 
-    loadFont();
-    
-    raycaster = new THREE.Raycaster();
-    document.addEventListener( 'mousemove', onPointerMove );
-    
-    // documentinde.body.style.cursor = 'none';
-    th.initVideo();
-    th.camera.position.z = 200;
-    //th.scene.background = renderTarget.texture; 
-    //th.scene.background = hy.vit; 
-    th.scene.background = new THREE.Color( 0x010101 );
+	loadFont();
 
-    th.scene.add( new THREE.AmbientLight( 0xcccccc ) );
-    
-    //th.renderer2.outputColorSpace = THREE.LinearSRGBColorSpace;
-    // th.renderer2.toneMapping = THREE.ReinhardToneMapping;
-    th.renderer2.toneMappingExposure = Math.pow(1, 4 )
-    
-    un = new UnrealBloom(th.scene, th.camera, th.renderer2); 
-    // retro = new Feedback(th.scene, th.renderer2, 1080);
-    const geometry44 = new THREE.SphereGeometry( 80, 64, 64 ); 
-    const material44 = new THREE.MeshStandardMaterial( { color: 0xffffff, map: renderTarget.texture, roughness: 0.6 } ); 
-    sphere44 = new THREE.Mesh( geometry44, material44 );
+	raycaster = new THREE.Raycaster();
+	document.addEventListener('mousemove', onPointerMove);
 
-    // rTarget.setText(); 
-    sphere44.userdata = {id:'iniciar'};
+	// documentinde.body.style.cursor = 'none';
+	th.initVideo();
+	th.camera.position.z = 200;
+	//th.scene.background = renderTarget.texture; 
+	//th.scene.background = hy.vit; 
+	th.scene.background = new THREE.Color(0x010101);
 
-    th.scene.add( sphere44 );
-    // sphere44.position.z = -20;
+	th.scene.add(new THREE.AmbientLight(0xcccccc));
 
-    const geoTres = new THREE.SphereGeometry( 2, 32, 32 ); 
-    const matTres = new THREE.MeshStandardMaterial( { color: colors[2], emissive: colors[2]} ); 
-    sphTres = new THREE.Mesh( geoTres, matTres );
+	//th.renderer2.outputColorSpace = THREE.LinearSRGBColorSpace;
+	// th.renderer2.toneMapping = THREE.ReinhardToneMapping;
+	th.renderer2.toneMappingExposure = Math.pow(1, 4)
 
-    // rTarget.setText(); 
-    sphTres.userdata = {id:'Tres Estudios Abiertos</br>Explicar controles'};
+	un = new UnrealBloom(th.scene, th.camera, th.renderer2);
+	// retro = new Feedback(th.scene, th.renderer2, 1080);
+	const geometry44 = new THREE.SphereGeometry(80, 64, 64);
+	const material44 = new THREE.MeshStandardMaterial({ color: 0xffffff, map: renderTarget.texture, roughness: 0.6 });
+	sphere44 = new THREE.Mesh(geometry44, material44);
 
-    th.scene.add( sphTres );
-    
-    document.onmousemove = function(e){
-	cursorX = e.pageX;
-	cursorY = e.pageY;
-    }
+	// rTarget.setText(); 
+	sphere44.userdata = { id: 'iniciar' };
 
-    osc(()=>cursorY* 0.01, ()=>cursorX*0.001, 0 ).color(0.3, 0.1, 0.5).rotate(0.1, 0.1, 0.5).mult(osc(0.1, 1)).modulateScrollX(o0, 0.99).out(o0);
+	th.scene.add(sphere44);
+	// sphere44.position.z = -20;
 
-    /*
-    osc(6, 0, 0.8)  .color(1, 0.1,.90)
-	.rotate(0.92, 0.3)  .mult(osc(4, 0.03).thresh(0.4).rotate(0, -0.02))
-	.modulateRotate(osc(20, 0).thresh(0.3, 0.6), [1,2,3,4].smooth())  .out(o0)
-    */
-    
-    container = document.getElementById( 'container' );
-    container.appendChild(th.renderer2.domElement); 
-    cubeCount = 0;
-	// las siguientes variables se usaban en el contexto de la fragmentación 
-    //let ox, oy, geometryTex;
-    //const ux = 1 / xgrid;
-    //const uy = 1 / ygrid;
-    //const xsize = 200 / xgrid;
-    //const ysize = 200 / ygrid;
-    controls = new OrbitControls( th.camera, th.renderer2.domElement );
-    controls.listenToKeyEvents( window ); // optional
+	const geoTres = new THREE.SphereGeometry(2, 32, 32);
+	const matTres = new THREE.MeshStandardMaterial({ color: colors[2], emissive: colors[2] });
+	sphTres = new THREE.Mesh(geoTres, matTres);
 
-    const onKeyDown = function ( event ){
-	if(event.keyCode == 27){
-	    controls.enabled = true;
-	    document.getElementById("instrucciones").innerHTML = "";
-	    // document.getElementById("instrucciones").pointer-events = none;
-	    document.getElementById("instrucciones").style.pointerEvents = "none";
-		document.getElementById("instrucciones").style.display = "none";
+	// rTarget.setText(); 
+	sphTres.userdata = { id: 'Tres Estudios Abiertos</br>Explicar controles' };
 
+	th.scene.add(sphTres);
+
+	document.onmousemove = function (e) {
+		cursorX = e.pageX;
+		cursorY = e.pageY;
 	}
-    }
-    
-    document.addEventListener( 'keydown', onKeyDown );
 
-    //controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
-    
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.screenSpacePanning = false;
-    controls.enabled = false; 
-    //controls.minDistance = 100;
-    //controls.maxDistance = 500;
-    //curve()
-    animate();
-
-    //txtToSeq(); 
-    
-}
-
-function onPointerMove( event ) {
-    
-    pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-    pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-    
-}
-
-function animate(){ 
- 
-    th.camera.lookAt(sphereP1); 
-    
-    var time1 = Date.now() * 0.00002;
-    var time2 = Date.now() * 0.00001;
-
-    controls.update();
-
-    if(positions.length > 3){
-
-	curveObject.geometry.attributes.position.needsUpdate = true;
-	let path = (time1*10) % 1;
-	let pos = curve1.getPointAt(path); 
-	sphereP1.position.x = pos.x;
-	sphereP1.position.y = pos.y;
-	sphereP1.position.z = pos.z;
-	cosa.pointer = (pos.x+40)-20 / 20;
-	cosa.freqScale = (pos.y+40) -20 / 10 * 0.25;
-	
-    }
-    
-    th.camera.updateMatrixWorld();
-
-    // si esta activado el modo lc 
-
-    text.position.x = Math.sin(time2*20) * 4; 
-    text.position.y = Math.cos(time2*15) * 2; 
-
-    if(!lcbool){
-	sphere44.rotation.x += 0.001;
-	sphere44.rotation.y -= 0.002; 
-    }
+	osc(() => cursorY * 0.01, () => cursorX * 0.001, 0).color(0.3, 0.1, 0.5).rotate(0.1, 0.1, 0.5).mult(osc(0.1, 1)).modulateScrollX(o0, 0.99).out(o0);
 
 	/*
-    if(lcbool == true){
+	osc(6, 0, 0.8)  .color(1, 0.1,.90)
+	.rotate(0.92, 0.3)  .mult(osc(4, 0.03).thresh(0.4).rotate(0, -0.02))
+	.modulateRotate(osc(20, 0).thresh(0.3, 0.6), [1,2,3,4].smooth())  .out(o0)
+	*/
+
+	container = document.getElementById('container');
+	container.appendChild(th.renderer2.domElement);
+	cubeCount = 0;
+	// las siguientes variables se usaban en el contexto de la fragmentación 
+	//let ox, oy, geometryTex;
+	//const ux = 1 / xgrid;
+	//const uy = 1 / ygrid;
+	//const xsize = 200 / xgrid;
+	//const ysize = 200 / ygrid;
+	controls = new OrbitControls(th.camera, th.renderer2.domElement);
+	controls.listenToKeyEvents(window); // optional
+
+	const onKeyDown = function (event) {
+		if (event.keyCode == 27) {
+			controls.enabled = true;
+			document.getElementById("instrucciones").innerHTML = "";
+			// document.getElementById("instrucciones").pointer-events = none;
+			document.getElementById("instrucciones").style.pointerEvents = "none";
+			document.getElementById("instrucciones").style.display = "none";
+
+		}
+	}
+
+	document.addEventListener('keydown', onKeyDown);
+
+	//controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
+
+	controls.enableDamping = true;
+	controls.dampingFactor = 0.05;
+	controls.screenSpacePanning = false;
+	controls.enabled = false;
+	//controls.minDistance = 100;
+	//controls.maxDistance = 500;
+	//curve()
+	animate();
+
+	//txtToSeq(); 
+
+}
+
+function onPointerMove(event) {
+
+	pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+	pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+}
+
+function animate() {
+
+	th.camera.lookAt(sphereP1);
+
+	var time1 = Date.now() * 0.00002;
+	var time2 = Date.now() * 0.00001;
+
+	controls.update();
+
+	if (positions.length > 3) {
+
+		curveObject.geometry.attributes.position.needsUpdate = true;
+		let path = (time1 * 10) % 1;
+		let pos = curve1.getPointAt(path);
+		sphereP1.position.x = pos.x;
+		sphereP1.position.y = pos.y;
+		sphereP1.position.z = pos.z;
+		cosa.pointer = (pos.x + 40) - 20 / 20;
+		cosa.freqScale = (pos.y + 40) - 20 / 10 * 0.25;
+
+	}
+
+	th.camera.updateMatrixWorld();
+
+	// si esta activado el modo lc 
+
+	text.position.x = Math.sin(time2 * 20) * 4;
+	text.position.y = Math.cos(time2 * 15) * 2;
+
+	if (!lcbool) {
+		sphere44.rotation.x += 0.001;
+		sphere44.rotation.y -= 0.002;
+	}
+
+	/*
+	if(lcbool == true){
 
 	// console.log(sphCap[0]); 
 	let cC = 0; // se usaba en iteraciones de cubos
 
-    }
+	}
 	*/
-	
-    // Esto se tiene que convertir en otra cosa
-    if(boolCosa) {
-	//cosa.pointer = cursorX / 20;
-	//cosa.freqScale =  (cursorY/100)-2.2;
-	gloop.update(); 
-    }    
 
-    raycaster.setFromCamera( pointer, th.camera );
-    const intersects = raycaster.intersectObjects( th.scene.children, true );
- 
-    if ( intersects.length > 0 ) {
-	if ( INTERSECTED!= intersects[ 0 ].object && intersects[0].object.material.emissive != undefined) { // si INTERSECTED es tal objeto entonces realiza tal cosa
-
-	    if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-	    
-	    INTERSECTED = intersects[ 0 ].object;
-	    INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-	    INTERSECTED.material.emissive.setHex( 0xb967ff );
-	    /// primer nivel 
-	    document.getElementById("container").style.cursor = "pointer";
-	    infoBool = false; 
-	    //controls.autoRotate = false; 
-	    interStr = INTERSECTED.userdata.id;
-	    
-	    if( fBool){
-		onclick=function(){
-
-		    const TurndownService = require('turndown').default;	
-		    var turndownService = new TurndownService()
-
-		    // Procesamiento antes de imprimir
-		    // INTERSECTED.material.color = 0x05ffa1 ;
-		    var markd = markdown[parseInt(INTERSECTED.userdata.id.slice(0, 4))];
-		    let markNote = turndownService.turndown(interStr);
-
-		    controls.enabled = false;
-		    document.getElementById("instrucciones").style.pointerEvents = "auto";
-			document.getElementById("instrucciones").style.display = "block";
-
-		    salir = true; 
-		    // console.log(markNote);
-		    txtToSeq(markNote);
-		    // Hay una contradicción de bool cosa encontrar algún audio que sea placeholder 
-		    if(boolCosa){
-			//llamadas al cambio de audio
-			audioRequest("texto");
-			gloop.seqtime=mainDurss; 
-			gloop.seqpointer = mainPointer.flat();
-			console.log(INTERSECTED.userdata['dur']); // dur funciona, el asunto es que arroja dos elementos menos que el otro arreglo
-			console.log(mainDurss); // otro arreglo  
-			//gloop.seqpointer = INTERSECTED.userdata.pos.flat;
-			// gloop.seqwindowRandRatio = INTERSECTED.userdata.sentiment; 
-			
-			// console.log(sentiment); 
-			// console.log(mainPointer.flat());
-			//console.log(mainDurss); 
-		    }
-		    // console.log(interStr); 
-		    controls.target =INTERSECTED.position;
-		    document.getElementById("instrucciones").innerHTML = interStr;
-
-		    //if(lcbool){
-			//positions.push(INTERSECTED.position);
-			//curve(positions); 
-		    //}
-		}; 
-	    }	   
+	// Esto se tiene que convertir en otra cosa
+	if (boolCosa) {
+		//cosa.pointer = cursorX / 20;
+		//cosa.freqScale =  (cursorY/100)-2.2;
+		gloop.update();
 	}
-	
-    } else {
-	
-	if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-	
-	//controls.autoRotate = true; 
-	//controls.autoRotateSpeed = 0.5; 
-	
-	INTERSECTED = null;
-	document.getElementById("container").style.cursor = "default";
-	interStr = '';
-	// Lo siguiente parece redundante
-	if(!infoBool){
-	    //document.getElementById("instrucciones").innerHTML = "";
-	} 
-    } 
-    
-    TWEEN.update();
-   
-    hy.vit.needsUpdate = true; 
-    const delta = clock.getDelta(); 
 
-    renderTarget.flipY = true;
-    renderTarget.needsUpdate = true;
-    th.renderer2.setRenderTarget(renderTarget);
-    
-    th.renderer2.setClearColor(0x000000, 0);
-    th.renderer2.render(rtScene, rtCamera);
-    th.renderer2.setRenderTarget(null);
-    
-    th.renderer2.render( th.scene, th.camera );
-    un.render2(delta);
+	raycaster.setFromCamera(pointer, th.camera);
+	const intersects = raycaster.intersectObjects(th.scene.children, true);
 
-    requestAnimationFrame( animate );
- 
-    
-}
-    
-// ¿Esto también podría ir a otra parte?
-function change(){
-    
-    if(interStr == 'imprimir'){
-	printPDF(); 
-    }
- 
-    if(interStr == 'iniciar'){
-	saveNotes(); 
-	const coords = {x: th.camera.position.x,
-			y: th.camera.position.y,
-			z: th.camera.position.z} // Start at (0, 0)
-	
-	tween = new TWEEN.Tween(coords, false) // Create a new tween that modifies 'coords'.
-	    .to({x: 0, y: 0, z: 20}, 2000) // Move to (300, 200) in 1 second.
-	    .easing(TWEEN.Easing.Quadratic.InOut) 
-	    .onUpdate(() => {
-		th.camera.position.z=coords.z;
-	    })  
-	    .onStart(() => {
-		document.getElementById("info").innerHTML = ""; // cuando tween termine 
-		document.getElementById("info").style.display = "none"; // quitarlo completamente
+	if (intersects.length > 0) {
+		if (INTERSECTED != intersects[0].object && intersects[0].object.material.emissive != undefined) { // si INTERSECTED es tal objeto entonces realiza tal cosa
 
-	    })
-	    .onComplete(() => {
-		// Pasar los datos de txtToSeq 
-		livecodeame();
-		// audioRequest("texto"); 
-	    })
-	    .start() 
-    }
-}
+			if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
 
-function change_uvs( geometry, unitx, unity, offsetx, offsety ) {
-    const uvs = geometry.attributes.uv.array;
-    for ( let i = 0; i < uvs.length; i += 2 ) {
-	uvs[ i ] = ( uvs[ i ] + offsetx ) * unitx;
-	uvs[ i + 1 ] = ( uvs[ i + 1 ] + offsety ) * unity;
-    }
-}
+			INTERSECTED = intersects[0].object;
+			INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+			INTERSECTED.material.emissive.setHex(0xb967ff);
+			/// primer nivel 
+			document.getElementById("container").style.cursor = "pointer";
+			infoBool = false;
+			//controls.autoRotate = false; 
+			interStr = INTERSECTED.userdata.id;
 
-function onDocumentMouseMove( event ) {
-    mouseX = ( event.clientX - windowHalfX ) / 100;
-    mouseY = ( event.clientY - windowHalfY ) / 100;
-}
+			if (fBool) {
+				onclick = function () {
 
-function livecodeame(){
+					const TurndownService = require('turndown').default;
+					var turndownService = new TurndownService()
 
-    th.scene.remove( sphere44 );  
-    th.scene.add( sphereP1 );
+					// Procesamiento antes de imprimir
+					// INTERSECTED.material.color = 0x05ffa1 ;
+					var markd = markdown[parseInt(INTERSECTED.userdata.id.slice(0, 4))];
+					let markNote = turndownService.turndown(interStr);
 
-    lcbool = true; 
-    console.log("lc");
-    controls.enabled = true;     
-    const ux = 1 / xgrid;
-    const uy = 1 / ygrid;
-    const xsize = 1000 / xgrid;
-    const ysize = 1000 / ygrid;
+					controls.enabled = false;
+					document.getElementById("instrucciones").style.pointerEvents = "auto";
+					document.getElementById("instrucciones").style.display = "block";
 
-    let cCount = 0;
+					salir = true;
+					// console.log(markNote);
+					txtToSeq(markNote);
+					// Hay una contradicción de bool cosa encontrar algún audio que sea placeholder 
+					if (boolCosa) {
+						//llamadas al cambio de audio
+						audioRequest("texto");
+						gloop.seqtime = mainDurss;
+						gloop.seqpointer = mainPointer.flat();
+						console.log(INTERSECTED.userdata['dur']); // dur funciona, el asunto es que arroja dos elementos menos que el otro arreglo
+						console.log(mainDurss); // otro arreglo  
+						//gloop.seqpointer = INTERSECTED.userdata.pos.flat;
+						// gloop.seqwindowRandRatio = INTERSECTED.userdata.sentiment; 
 
-    }
+						// console.log(sentiment); 
+						// console.log(mainPointer.flat());
+						//console.log(mainDurss); 
+					}
+					// console.log(interStr); 
+					controls.target = INTERSECTED.position;
+					document.getElementById("instrucciones").innerHTML = interStr;
 
-function loadFont(){
-    const loader = new FontLoader();
-    const font = loader.load(
-	// resource URL
-	'fonts/Dela_Gothic_One_Regular.json',
-	// onLoad callback
-	function ( font ) {
-	    fuente = font;
-	    // console.log(font);
-	    fBool = true; 
-	})
-}
-
-function texto( mensaje ){
-    //const materialT = new THREE.MeshStandardMaterial({color: 0xffffff, metalnenss: 0.8, roughness: 0.2, flatShading: true});
-
-    const materialT = new THREE.MeshBasicMaterial({color: 0xffffff});
-    text.material = materialT; 
-    const shapes = fuente.generateShapes( mensaje, 0.5 );
-    const geometry = new THREE.ShapeGeometry( shapes );
-    // textGeoClon = geometry.clone(); // para modificar
-    text.geometry.dispose(); 
-    text.geometry= geometry;
-    geometry.computeBoundingBox();
-    geometry.computeVertexNormals(); 
-    const xMid = - 0.5 * ( geometry.boundingBox.max.x - geometry.boundingBox.min.x );
-    const yMid = 0.5 * ( geometry.boundingBox.max.y - geometry.boundingBox.min.y );
-    geometry.translate( xMid, yMid, 0 );
-    //geometry.rotation.x = Math.PI*2;
-    text.geometry= geometry;
-    text.rotation = Math.PI * time; 
-    rtScene.add(text);
-    text.rotation.y = Math.PI * 2
-    //text.rotation.z = Math.PI *2
-    
-    //text.position.y = 0;
-    //text.position.x = -4; 
-    //let lineasSelectas = [];
-    
-}
-
-function saveNotes(){
-
-    /*
-    const TurndownService = require('turndown').default;	
-    var turndownService = new TurndownService()
-    
-    let markdown = []; 
-    
-    for(let i = 0; i < db.postdb.length; i++){
-	markdown[i] = turndownService.turndown(db.postdb[i].toString());
-    }
-    
-    marksort = markdown.sort();
-
-    */
-
-    for(let i = 0; i < db.postdb.length; i++){
-	markdown[i] = db.postdb[i].toString();
-	//const myKeywords = rake(markdown[i])
-	//console.log(myKeywords); 
-    }
-
-    marksort = markdown.sort();
-
-    var natural = require('natural');
-    var tokenizer = new natural.WordTokenizer();
-    //console.log(tokenizer.tokenize("your dog has fleas."));
-    var Analyzer = require('natural').SentimentAnalyzer;
-    var stemmer = require('natural').PorterStemmer;
-    var analyzer = new Analyzer("Spanish", stemmer, "afinn");
-    // getSentiment expects an array of stringsw
-
-    // aquí ya se leen las notas por fecha de modificación 
-    // tendría que organizar las notas por capítulos
-    // let aclaraciones = [], introduccion, cap1=[],cap2=[],cap3=[], cap4=[], conclusiones=[],referencias=[];
-
-    let notesCoords = []; 
-    
-    let sphNotes = [];
-    let contCol = 0;
-    // let contTotal = 0; 
-
-    const points = [];
-    let linecap; 
-    //points.push( new THREE.Vector3(  0, 0, 0 ) );
-    //points.push( new THREE.Vector3( posX/norm*10, posY/norm*10, posZ/norm*10 ) );
-
-    points.push( new THREE.Vector3(  0, 0, 0) );
-    // Filtrar capítulos 
-    
-    for(let i = 0; i < marksort.length; i++){	
-	// Solamente se imprimen notas con más de dos caracteres
-	if(marksort[i].length > 2 && marksort[i].slice(6, 7) == "0"){
-
-	    var posX, posY, posZ;
-	    var theta1 = Math.random() * (Math.PI*2);
-	    var theta2 = Math.random() * (Math.PI*2); 
-
-	    // guardar estas posiciones en algún lado, serán el eje de rotación de otras esferas
-
-	    /*
-	    posX = Math.cos(theta1) * Math.cos(theta2)*15;
-	    posY = Math.sin(theta1)*15;Tres Estudios Abiertos
-	    posZ = Math.cos(theta1) * Math.sin(theta2)*15;
-	    */
-
-	    const phi = Math.acos(-1+ (2 * contCol) / 8);
-	    const theta = Math.sqrt(8 * Math.PI) * phi;
-
-	    const posX = Math.cos(theta) * Math.sin(phi);
-	    const posY = Math.sin(theta) * Math.sin(phi);
-	    const posZ = Math.cos(phi);   
-
-	    let norm = Math.sqrt(posX*posX + posY*posY+ posZ*posZ); 
-	    
-	    let vec = new THREE.Vector3((posX / norm)*10, (posY/norm)*10, (posZ/norm)*10); 
-	    notesCoords.push(vec); 
-
-	    let nwVec1 = new THREE.Vector3();	    
-	    let nwVec2 = new THREE.Vector3(0, 0, 0);
-
-	    //console.log(nwVec1.subVectors(vec, nwVec2)); 
-	    //console.log(vec);
-	    const geoCap = new THREE.SphereGeometry( 1,32,32); 
-	    const matCap = new THREE.MeshStandardMaterial( { color: colors[0], emissive: colors[0], roughness: 0.4 } ); 
-	    sphCap[i] = new THREE.Mesh( geoCap, matCap );
-	    // rTarget.setText(); 
-	    //sphCap[i].userdata = {id: marksort[i].slice(4)};
-	    var test = tokenizer.tokenize(marksort[i].slice(4));
-	    sentiment.push(analyzer.getSentiment(test)); 
-	    // console.log(analyzer.getSentiment(test));
-
-	    var localdur = dur(marksort[i].slice(4));
-	    var localpos = pos(marksort[i].slice(4)); 
-	    // sphCap[i].userdata = {sentiment: analyzer.getSentiment(test)};
-	    sphCap[i].userdata = {id: marksort[i].slice(4), sentiment: analyzer.getSentiment(test), dur: localdur, pos: localpos};
-	    // sphCap[i].userdata = {num: contTotal};
-	    // console.log(sphCap[i].userdata.pos); 
-	    sphCap[i].position.x = vec.x; 
-	    sphCap[i].position.y = vec.y; 
-	    sphCap[i].position.z = vec.z; 
-
-	    th.scene.add( sphCap[i] );
-
-	    const material = new THREE.LineBasicMaterial( { color: 0xffffff} );
-	    points.push( new THREE.Vector3( posX/norm*10, posY/norm*10, posZ/norm*10) );	   
-	    
-	    // console.log(points); 
-	    const curve = new THREE.CatmullRomCurve3( points );
-	    const curvePoints = curve.getPoints( 500 );
-
-	    const geometry = new THREE.BufferGeometry().setFromPoints( curvePoints );
-	    linecap = new THREE.Line( geometry, material );
-	    contCol++;
-	    // contTotal++; 
-	   
-	   
-	}
-    }
-
-    th.scene.add(linecap); 
-    
-
-    // Asignar notas en relación a capítulos. Primero tendríamos que saber la cantidad de notas por capítulo
-    let notesPerChapter = [];
-    let npCh = 0; 
-
-    for(let i = 0; i < marksort.length; i++){
-	for(let j = 0; j < notesCoords.length; j++){	    
-	    // Solamente se imprimen notas con más de dos caracteres
-	    if(marksort[i].length > 2 && marksort[i].slice(6, 7) != "0" && marksort[i].slice(4, 5) == (j+1).toString()){ // y si es distinto al índice de notas
-		notesPerChapter[j] = npCh;
-		npCh++; 
-	    }
-	}
-    }
-
-    //console.log(notesPerChapter); 
-    let finalNotesPerChapter = []; 
-    
-    for(let i = 0; i < notesPerChapter.length; i++){
-	if(i > 0){
-	    finalNotesPerChapter[i] = notesPerChapter[i] - notesPerChapter[i-1];
-	} else {
-	    finalNotesPerChapter[i] = notesPerChapter[i]; 
-	}
-    }
-    // console.log(finalNotesPerChapter);
-
-    contCol = 0
-    
-    for(let j = 0; j < notesCoords.length; j++){
-	const points2 = [];
-	let linenote = 0; 
-    
- 	points2.push( notesCoords[j] );
-	for(let i = 0; i < marksort.length; i++){
-	    // Solamente se imprimen notas con más de dos caracteres
-	   
-	    if(marksort[i].length > 2 && marksort[i].slice(6, 7) != "0" && marksort[i].slice(4, 5) == (j+1).toString() && j < 5){ // y si es distinto al índice de notas
-		
-		var posX, posY, posZ;
-
-		const phi = Math.acos(-1+ (2 * contCol) / finalNotesPerChapter[j]);
-		const theta = Math.sqrt(finalNotesPerChapter[j] * Math.PI) * phi;
-		
-		const posX = Math.cos(theta) * Math.sin(phi);
-		const posY = Math.sin(theta) * Math.sin(phi);
-		const posZ = Math.cos(phi);   
-		
-		let norm = Math.sqrt(posX*posX + posY*posY+ posZ*posZ);
-		let vec = new THREE.Vector3((posX / norm)*6, (posY/norm)*6, (posZ/norm)*6); 
-
-		//console.log(marksort[i].length /1000);
-		const geoNotes = new THREE.SphereGeometry( marksort[i].length/6000,  32, 32 ); 
-		const matNotes = new THREE.MeshStandardMaterial( { color: colors[1], emissive: colors[1], roughness: 0.6 } ); 
-		sphNotes[i] = new THREE.Mesh( geoNotes, matNotes );
-		// rTarget.setText();
-		// sphNotes[i].userdata = {id:marksort[i].slice(4)};
-		// sphNotes[i].userdata = {num:contTotal};
-		var test = tokenizer.tokenize(marksort[i].slice(4));
-		sentiment.push(analyzer.getSentiment(test)); 
-		// console.log(analyzer.getSentiment(test));
-		//sphNotes[i].userdata = {id: marksort[i].slice(4), sentiment: analyzer.getSentiment(test)};
-		
-		var localdur = dur(marksort[i].slice(4));
-		var localpos = pos(marksort[i].slice(4)); 
-		// sphCap[i].userdata = {sentiment: analyzer.getSentiment(test)};
-		sphNotes[i].userdata = {id: marksort[i].slice(4), sentiment: analyzer.getSentiment(test), dur: localdur, pos: localpos};
-		// console.log(sphNotes[i].userdata);
-		// console.log(sphNotes[i].userdata.sentiment); 
-		let nPosX = vec.x + notesCoords[j].x;
-		let nPosY = vec.y + notesCoords[j].y;
-		let nPosZ = vec.z + notesCoords[j].z;
-	    	    
-		sphNotes[i].position.x = nPosX; 
-		sphNotes[i].position.y = nPosY; 
-		sphNotes[i].position.z = nPosZ;
-		
-		th.scene.add( sphNotes[i] );
-		
-		const material = new THREE.LineBasicMaterial( { color: 0xffffff } );
-		points2.push( new THREE.Vector3(nPosX, nPosY, nPosZ) );
-
-		console.log(points2); 
-		const curve = new THREE.CatmullRomCurve3( points2 );
-		curve.closed = true; 
-		const curvePoints = curve.getPoints( 250 );
-		
-
-		const geometry = new THREE.BufferGeometry().setFromPoints( curvePoints );
-		linenote = new THREE.Line( geometry, material );
-		
-		//th.scene.add(line);
-
-		contCol++;
-		// contTotal++; 
-		// falta guardar la posición de notas y a partir de ahi construir el otro arbol
-
-		if(contCol == finalNotesPerChapter[j]){
-		    contCol = 0;
-		    // console.log("si"); 
+					//if(lcbool){
+					//positions.push(INTERSECTED.position);
+					//curve(positions); 
+					//}
+				};
+			}
 		}
-	    }
 
-	    if(marksort[i].length > 2 && marksort[i].slice(6, 7) != "0" && marksort[i].slice(4, 5) == (j+2).toString() && j > 4){ // y si es distinto al índice de notas
+	} else {
 
-		var posX, posY, posZ;
-		//var theta1 = Math.random() * (Math.PI*2);
-		//var theta2 = Math.random() * (Math.PI*2); 
+		if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
 
-		//posX = notesCoords[j].x*(Math.random()*14);
-		//posY = notesCoords[j].y*(Math.random()*14);
-		//posZ = notesCoords[j].z*(Math.random()*14); 
+		//controls.autoRotate = true; 
+		//controls.autoRotateSpeed = 0.5; 
 
-		const phi = Math.acos(-1+ (2 * contCol) / finalNotesPerChapter[j+1]);
-		const theta = Math.sqrt(finalNotesPerChapter[j+1] * Math.PI) * phi;
-		
-		const posX = Math.cos(theta) * Math.sin(phi);
-		const posY = Math.sin(theta) * Math.sin(phi);
-		const posZ = Math.cos(phi);   
-		
-		let norm = Math.sqrt(posX*posX + posY*posY+ posZ*posZ);
-		let vec = new THREE.Vector3((posX / norm)*6, (posY/norm)*6, (posZ/norm)*6); 
-
-		//console.log(marksort[i].length /1000);
-		const geoNotes = new THREE.SphereGeometry( marksort[i].length/6000,  32, 32 ); 
-		const matNotes = new THREE.MeshStandardMaterial( { color: colors[1], emissive: colors[1], roughness: 0.6 } ); 
-		sphNotes[i] = new THREE.Mesh( geoNotes, matNotes );
-		// rTarget.setText();
-		sphNotes[i].userdata = {id:marksort[i].slice(4)};
-		//console.log(marksort[i].slice(4)); 
-		let nPosX = vec.x + notesCoords[j].x;
-		let nPosY = vec.y + notesCoords[j].y;
-		let nPosZ = vec.z + notesCoords[j].z;
-	    	    
-		sphNotes[i].position.x = nPosX; 
-		sphNotes[i].position.y = nPosY; 
-		sphNotes[i].position.z = nPosZ;
-		
-		th.scene.add( sphNotes[i] );
-		
-		const material = new THREE.LineBasicMaterial( { color: 0xffffff } );
-		//const points = [];
-		//points.push( notesCoords[j] );
-		points2.push( new THREE.Vector3(nPosX, nPosY, nPosZ) );
-
-		const curve = new THREE.CatmullRomCurve3( points2 );
-		curve.closed = true;
-		
-		const curvePoints = curve.getPoints( 250 );
-		
-		const geometry = new THREE.BufferGeometry().setFromPoints( curvePoints );
-		linenote = new THREE.Line( geometry, material );
-		
-		//th.scene.add(line);
-
-		contCol++; 
-		// falta guardar la posición de notas y a partir de ahi construir el otro arbol
-
-		if(contCol == finalNotesPerChapter[j+1]){
-		    contCol = 0;
-		    //console.log(finalNotesPerChapter[j+1]);
-		}	
-	    }
-	  
+		INTERSECTED = null;
+		document.getElementById("container").style.cursor = "default";
+		interStr = '';
+		// Lo siguiente parece redundante
+		if (!infoBool) {
+			//document.getElementById("instrucciones").innerHTML = "";
+		}
 	}
-	   
-	th.scene.add(linenote);
-    }
 
-    //my_string="hello python world , i'm a beginner"
-    // console.log(db.postdb[4].split("root",1)[1])
+	TWEEN.update();
 
-    /*
-    
-    //console.log(db.postdb[93].split("data-note-path=\"root").pop());
-    let unosss = db.postdb[4].split('data-note-path=\"root').pop().split('\"')[0];
-    let dossss = db.postdb[93].split('data-note-path=\"root').pop().split('\"')[1]; 
+	hy.vit.needsUpdate = true;
+	const delta = clock.getDelta();
 
-    console.log(unosss); // returns 'two'
-    console.log(dossss); 
+	renderTarget.flipY = true;
+	renderTarget.needsUpdate = true;
+	th.renderer2.setRenderTarget(renderTarget);
 
-    */
-    //let nwregex = /root(.*)\n/g
-    
-    //console.log(index); 
-    
-    //console.log(regexText.test(db.postdb[4])); 
-    
-    // si dos notas coniciden en lo que está entre root y un espacio entonces hay una conexión entre dos puntos 
+	th.renderer2.setClearColor(0x000000, 0);
+	th.renderer2.render(rtScene, rtCamera);
+	th.renderer2.setRenderTarget(null);
 
-    let contNota = 0;
+	th.renderer2.render(th.scene, th.camera);
+	un.render2(delta);
 
-    // Sustituir esto 
-    
-    for(let i = 0; i < db.postdb.length; i++){
-	if(db.postdb[i].length > 2){
-	    notas[contNota] = db.postdb[i];
-	    contNota++; 
+	requestAnimationFrame(animate);
+
+
+}
+
+// ¿Esto también podría ir a otra parte?
+function change() {
+
+	if (interStr == 'imprimir') {
+		printPDF();
 	}
-    }
-    
-    /*
-    // console.log(notas.join(" "));
-    const fakeText = new Text(notas.join(" "));
-    //console.log(fakeText); 
-    const sentence = fakeText.makeSentence();
-    console.log(sentence);
-    */
 
-    /*
-    for(let i = 0; i < notas.length; i++){
+	if (interStr == 'iniciar') {
+		saveNotes();
+		const coords = {
+			x: th.camera.position.x,
+			y: th.camera.position.y,
+			z: th.camera.position.z
+		} // Start at (0, 0)
+
+		tween = new TWEEN.Tween(coords, false) // Create a new tween that modifies 'coords'.
+			.to({ x: 0, y: 0, z: 20 }, 2000) // Move to (300, 200) in 1 second.
+			.easing(TWEEN.Easing.Quadratic.InOut)
+			.onUpdate(() => {
+				th.camera.position.z = coords.z;
+			})
+			.onStart(() => {
+				document.getElementById("info").innerHTML = ""; // cuando tween termine 
+				document.getElementById("info").style.display = "none"; // quitarlo completamente
+
+			})
+			.onComplete(() => {
+				// Pasar los datos de txtToSeq 
+				livecodeame();
+				// audioRequest("texto"); 
+			})
+			.start()
+	}
+}
+
+function change_uvs(geometry, unitx, unity, offsetx, offsety) {
+	const uvs = geometry.attributes.uv.array;
+	for (let i = 0; i < uvs.length; i += 2) {
+		uvs[i] = (uvs[i] + offsetx) * unitx;
+		uvs[i + 1] = (uvs[i + 1] + offsety) * unity;
+	}
+}
+
+function onDocumentMouseMove(event) {
+	mouseX = (event.clientX - windowHalfX) / 100;
+	mouseY = (event.clientY - windowHalfY) / 100;
+}
+
+function livecodeame() {
+
+	th.scene.remove(sphere44);
+	th.scene.add(sphereP1);
+
+	lcbool = true;
+	console.log("lc");
+	controls.enabled = true;
+	const ux = 1 / xgrid;
+	const uy = 1 / ygrid;
+	const xsize = 1000 / xgrid;
+	const ysize = 1000 / ygrid;
+
+	let cCount = 0;
+
+}
+
+function loadFont() {
+	const loader = new FontLoader();
+	const font = loader.load(
+		// resource URL
+		'fonts/Dela_Gothic_One_Regular.json',
+		// onLoad callback
+		function (font) {
+			fuente = font;
+			// console.log(font);
+			fBool = true;
+		})
+}
+
+function texto(mensaje) {
+	//const materialT = new THREE.MeshStandardMaterial({color: 0xffffff, metalnenss: 0.8, roughness: 0.2, flatShading: true});
+
+	const materialT = new THREE.MeshBasicMaterial({ color: 0xffffff });
+	text.material = materialT;
+	const shapes = fuente.generateShapes(mensaje, 0.5);
+	const geometry = new THREE.ShapeGeometry(shapes);
+	// textGeoClon = geometry.clone(); // para modificar
+	text.geometry.dispose();
+	text.geometry = geometry;
+	geometry.computeBoundingBox();
+	geometry.computeVertexNormals();
+	const xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+	const yMid = 0.5 * (geometry.boundingBox.max.y - geometry.boundingBox.min.y);
+	geometry.translate(xMid, yMid, 0);
+	//geometry.rotation.x = Math.PI*2;
+	text.geometry = geometry;
+	text.rotation = Math.PI * time;
+	rtScene.add(text);
+	text.rotation.y = Math.PI * 2
+	//text.rotation.z = Math.PI *2
+
+	//text.position.y = 0;
+	//text.position.x = -4; 
+	//let lineasSelectas = [];
+
+}
+
+function saveNotes() {
+
+	/*
+	const TurndownService = require('turndown').default;	
+	var turndownService = new TurndownService()
+    
+	let markdown = []; 
+    
+	for(let i = 0; i < db.postdb.length; i++){
+	markdown[i] = turndownService.turndown(db.postdb[i].toString());
+	}
+    
+	marksort = markdown.sort();
+
+	*/
+
+	for (let i = 0; i < db.postdb.length; i++) {
+		markdown[i] = db.postdb[i].toString();
+		//const myKeywords = rake(markdown[i])
+		//console.log(myKeywords); 
+	}
+
+	marksort = markdown.sort();
+
+	var natural = require('natural');
+	var tokenizer = new natural.WordTokenizer();
+	//console.log(tokenizer.tokenize("your dog has fleas."));
+	var Analyzer = require('natural').SentimentAnalyzer;
+	var stemmer = require('natural').PorterStemmer;
+	var analyzer = new Analyzer("Spanish", stemmer, "afinn");
+	// getSentiment expects an array of stringsw
+
+	// aquí ya se leen las notas por fecha de modificación 
+	// tendría que organizar las notas por capítulos
+	// let aclaraciones = [], introduccion, cap1=[],cap2=[],cap3=[], cap4=[], conclusiones=[],referencias=[];
+
+	let notesCoords = [];
+
+	let sphNotes = [];
+	let contCol = 0;
+	// let contTotal = 0; 
+
+	const points = [];
+	let linecap;
+	//points.push( new THREE.Vector3(  0, 0, 0 ) );
+	//points.push( new THREE.Vector3( posX/norm*10, posY/norm*10, posZ/norm*10 ) );
+
+	points.push(new THREE.Vector3(0, 0, 0));
+	// Filtrar capítulos 
+
+	for (let i = 0; i < marksort.length; i++) {
+		// Solamente se imprimen notas con más de dos caracteres
+		if (marksort[i].length > 2 && marksort[i].slice(6, 7) == "0") {
+
+			var posX, posY, posZ;
+			var theta1 = Math.random() * (Math.PI * 2);
+			var theta2 = Math.random() * (Math.PI * 2);
+
+			// guardar estas posiciones en algún lado, serán el eje de rotación de otras esferas
+
+			/*
+			posX = Math.cos(theta1) * Math.cos(theta2)*15;
+			posY = Math.sin(theta1)*15;Tres Estudios Abiertos
+			posZ = Math.cos(theta1) * Math.sin(theta2)*15;
+			*/
+
+			const phi = Math.acos(-1 + (2 * contCol) / 8);
+			const theta = Math.sqrt(8 * Math.PI) * phi;
+
+			const posX = Math.cos(theta) * Math.sin(phi);
+			const posY = Math.sin(theta) * Math.sin(phi);
+			const posZ = Math.cos(phi);
+
+			let norm = Math.sqrt(posX * posX + posY * posY + posZ * posZ);
+
+			let vec = new THREE.Vector3((posX / norm) * 10, (posY / norm) * 10, (posZ / norm) * 10);
+			notesCoords.push(vec);
+
+			let nwVec1 = new THREE.Vector3();
+			let nwVec2 = new THREE.Vector3(0, 0, 0);
+
+			//console.log(nwVec1.subVectors(vec, nwVec2)); 
+			//console.log(vec);
+			const geoCap = new THREE.SphereGeometry(1, 32, 32);
+			const matCap = new THREE.MeshStandardMaterial({ color: colors[0], emissive: colors[0], roughness: 0.4 });
+			sphCap[i] = new THREE.Mesh(geoCap, matCap);
+			// rTarget.setText(); 
+			//sphCap[i].userdata = {id: marksort[i].slice(4)};
+			var test = tokenizer.tokenize(marksort[i].slice(4));
+			sentiment.push(analyzer.getSentiment(test));
+			// console.log(analyzer.getSentiment(test));
+
+			var localdur = dur(marksort[i].slice(4));
+			var localpos = pos(marksort[i].slice(4));
+			// sphCap[i].userdata = {sentiment: analyzer.getSentiment(test)};
+			sphCap[i].userdata = { id: marksort[i].slice(4), sentiment: analyzer.getSentiment(test), dur: localdur, pos: localpos };
+			// sphCap[i].userdata = {num: contTotal};
+			// console.log(sphCap[i].userdata.pos); 
+			sphCap[i].position.x = vec.x;
+			sphCap[i].position.y = vec.y;
+			sphCap[i].position.z = vec.z;
+
+			th.scene.add(sphCap[i]);
+
+			const material = new THREE.LineBasicMaterial({ color: 0xffffff });
+			points.push(new THREE.Vector3(posX / norm * 10, posY / norm * 10, posZ / norm * 10));
+
+			// console.log(points); 
+			const curve = new THREE.CatmullRomCurve3(points);
+			const curvePoints = curve.getPoints(500);
+
+			const geometry = new THREE.BufferGeometry().setFromPoints(curvePoints);
+			linecap = new THREE.Line(geometry, material);
+			contCol++;
+			// contTotal++; 
+
+
+		}
+	}
+
+	th.scene.add(linecap);
+
+
+	// Asignar notas en relación a capítulos. Primero tendríamos que saber la cantidad de notas por capítulo
+	let notesPerChapter = [];
+	let npCh = 0;
+
+	for (let i = 0; i < marksort.length; i++) {
+		for (let j = 0; j < notesCoords.length; j++) {
+			// Solamente se imprimen notas con más de dos caracteres
+			if (marksort[i].length > 2 && marksort[i].slice(6, 7) != "0" && marksort[i].slice(4, 5) == (j + 1).toString()) { // y si es distinto al índice de notas
+				notesPerChapter[j] = npCh;
+				npCh++;
+			}
+		}
+	}
+
+	//console.log(notesPerChapter); 
+	let finalNotesPerChapter = [];
+
+	for (let i = 0; i < notesPerChapter.length; i++) {
+		if (i > 0) {
+			finalNotesPerChapter[i] = notesPerChapter[i] - notesPerChapter[i - 1];
+		} else {
+			finalNotesPerChapter[i] = notesPerChapter[i];
+		}
+	}
+	// console.log(finalNotesPerChapter);
+
+	contCol = 0
+
+	for (let j = 0; j < notesCoords.length; j++) {
+		const points2 = [];
+		let linenote = 0;
+
+		points2.push(notesCoords[j]);
+		for (let i = 0; i < marksort.length; i++) {
+			// Solamente se imprimen notas con más de dos caracteres
+
+			if (marksort[i].length > 2 && marksort[i].slice(6, 7) != "0" && marksort[i].slice(4, 5) == (j + 1).toString() && j < 5) { // y si es distinto al índice de notas
+
+				var posX, posY, posZ;
+
+				const phi = Math.acos(-1 + (2 * contCol) / finalNotesPerChapter[j]);
+				const theta = Math.sqrt(finalNotesPerChapter[j] * Math.PI) * phi;
+
+				const posX = Math.cos(theta) * Math.sin(phi);
+				const posY = Math.sin(theta) * Math.sin(phi);
+				const posZ = Math.cos(phi);
+
+				let norm = Math.sqrt(posX * posX + posY * posY + posZ * posZ);
+				let vec = new THREE.Vector3((posX / norm) * 6, (posY / norm) * 6, (posZ / norm) * 6);
+
+				//console.log(marksort[i].length /1000);
+				const geoNotes = new THREE.SphereGeometry(marksort[i].length / 6000, 32, 32);
+				const matNotes = new THREE.MeshStandardMaterial({ color: colors[1], emissive: colors[1], roughness: 0.6 });
+				sphNotes[i] = new THREE.Mesh(geoNotes, matNotes);
+				// rTarget.setText();
+				// sphNotes[i].userdata = {id:marksort[i].slice(4)};
+				// sphNotes[i].userdata = {num:contTotal};
+				var test = tokenizer.tokenize(marksort[i].slice(4));
+				sentiment.push(analyzer.getSentiment(test));
+				// console.log(analyzer.getSentiment(test));
+				//sphNotes[i].userdata = {id: marksort[i].slice(4), sentiment: analyzer.getSentiment(test)};
+
+				var localdur = dur(marksort[i].slice(4));
+				var localpos = pos(marksort[i].slice(4));
+				// sphCap[i].userdata = {sentiment: analyzer.getSentiment(test)};
+				sphNotes[i].userdata = { id: marksort[i].slice(4), sentiment: analyzer.getSentiment(test), dur: localdur, pos: localpos };
+				// console.log(sphNotes[i].userdata);
+				// console.log(sphNotes[i].userdata.sentiment); 
+				let nPosX = vec.x + notesCoords[j].x;
+				let nPosY = vec.y + notesCoords[j].y;
+				let nPosZ = vec.z + notesCoords[j].z;
+
+				sphNotes[i].position.x = nPosX;
+				sphNotes[i].position.y = nPosY;
+				sphNotes[i].position.z = nPosZ;
+
+				th.scene.add(sphNotes[i]);
+
+				const material = new THREE.LineBasicMaterial({ color: 0xffffff });
+				points2.push(new THREE.Vector3(nPosX, nPosY, nPosZ));
+
+				console.log(points2);
+				const curve = new THREE.CatmullRomCurve3(points2);
+				curve.closed = true;
+				const curvePoints = curve.getPoints(250);
+
+
+				const geometry = new THREE.BufferGeometry().setFromPoints(curvePoints);
+				linenote = new THREE.Line(geometry, material);
+
+				//th.scene.add(line);
+
+				contCol++;
+				// contTotal++; 
+				// falta guardar la posición de notas y a partir de ahi construir el otro arbol
+
+				if (contCol == finalNotesPerChapter[j]) {
+					contCol = 0;
+					// console.log("si"); 
+				}
+			}
+
+			if (marksort[i].length > 2 && marksort[i].slice(6, 7) != "0" && marksort[i].slice(4, 5) == (j + 2).toString() && j > 4) { // y si es distinto al índice de notas
+
+				var posX, posY, posZ;
+				//var theta1 = Math.random() * (Math.PI*2);
+				//var theta2 = Math.random() * (Math.PI*2); 
+
+				//posX = notesCoords[j].x*(Math.random()*14);
+				//posY = notesCoords[j].y*(Math.random()*14);
+				//posZ = notesCoords[j].z*(Math.random()*14); 
+
+				const phi = Math.acos(-1 + (2 * contCol) / finalNotesPerChapter[j + 1]);
+				const theta = Math.sqrt(finalNotesPerChapter[j + 1] * Math.PI) * phi;
+
+				const posX = Math.cos(theta) * Math.sin(phi);
+				const posY = Math.sin(theta) * Math.sin(phi);
+				const posZ = Math.cos(phi);
+
+				let norm = Math.sqrt(posX * posX + posY * posY + posZ * posZ);
+				let vec = new THREE.Vector3((posX / norm) * 6, (posY / norm) * 6, (posZ / norm) * 6);
+
+				//console.log(marksort[i].length /1000);
+				const geoNotes = new THREE.SphereGeometry(marksort[i].length / 6000, 32, 32);
+				const matNotes = new THREE.MeshStandardMaterial({ color: colors[1], emissive: colors[1], roughness: 0.6 });
+				sphNotes[i] = new THREE.Mesh(geoNotes, matNotes);
+				// rTarget.setText();
+				sphNotes[i].userdata = { id: marksort[i].slice(4) };
+				//console.log(marksort[i].slice(4)); 
+				let nPosX = vec.x + notesCoords[j].x;
+				let nPosY = vec.y + notesCoords[j].y;
+				let nPosZ = vec.z + notesCoords[j].z;
+
+				sphNotes[i].position.x = nPosX;
+				sphNotes[i].position.y = nPosY;
+				sphNotes[i].position.z = nPosZ;
+
+				th.scene.add(sphNotes[i]);
+
+				const material = new THREE.LineBasicMaterial({ color: 0xffffff });
+				//const points = [];
+				//points.push( notesCoords[j] );
+				points2.push(new THREE.Vector3(nPosX, nPosY, nPosZ));
+
+				const curve = new THREE.CatmullRomCurve3(points2);
+				curve.closed = true;
+
+				const curvePoints = curve.getPoints(250);
+
+				const geometry = new THREE.BufferGeometry().setFromPoints(curvePoints);
+				linenote = new THREE.Line(geometry, material);
+
+				//th.scene.add(line);
+
+				contCol++;
+				// falta guardar la posición de notas y a partir de ahi construir el otro arbol
+
+				if (contCol == finalNotesPerChapter[j + 1]) {
+					contCol = 0;
+					//console.log(finalNotesPerChapter[j+1]);
+				}
+			}
+
+		}
+
+		th.scene.add(linenote);
+	}
+
+	//my_string="hello python world , i'm a beginner"
+	// console.log(db.postdb[4].split("root",1)[1])
+
+	/*
+    
+	//console.log(db.postdb[93].split("data-note-path=\"root").pop());
+	let unosss = db.postdb[4].split('data-note-path=\"root').pop().split('\"')[0];
+	let dossss = db.postdb[93].split('data-note-path=\"root').pop().split('\"')[1]; 
+
+	console.log(unosss); // returns 'two'
+	console.log(dossss); 
+
+	*/
+	//let nwregex = /root(.*)\n/g
+
+	//console.log(index); 
+
+	//console.log(regexText.test(db.postdb[4])); 
+
+	// si dos notas coniciden en lo que está entre root y un espacio entonces hay una conexión entre dos puntos 
+
+	let contNota = 0;
+
+	// Sustituir esto 
+
+	for (let i = 0; i < db.postdb.length; i++) {
+		if (db.postdb[i].length > 2) {
+			notas[contNota] = db.postdb[i];
+			contNota++;
+		}
+	}
+
+	/*
+	// console.log(notas.join(" "));
+	const fakeText = new Text(notas.join(" "));
+	//console.log(fakeText); 
+	const sentence = fakeText.makeSentence();
+	console.log(sentence);
+	*/
+
+	/*
+	for(let i = 0; i < notas.length; i++){
 	markdown[i] = turndownService.turndown(notas[i].toString());
 	markdown[i] = markdown[i].split(".").join("\n"); 
 	}
    
 
-    // queda pendiente eliminar indices 
-    console.log(markdown.length);
-    */
-    // console.log(sphCap[0]); 
-    noteBool = true;
-    // console.log(sentiment); 
+	// queda pendiente eliminar indices 
+	console.log(markdown.length);
+	*/
+	// console.log(sphCap[0]); 
+	noteBool = true;
+	// console.log(sentiment); 
 }
 
-function curve(positions){
+function curve(positions) {
 
-    th.scene.remove(curveObject); 
-    geometryCurve.dispose();
-    materialCurve.dispose(); 
-    //Create a closed wavey loop
-    curve1 = new THREE.CatmullRomCurve3( positions );
+	th.scene.remove(curveObject);
+	geometryCurve.dispose();
+	materialCurve.dispose();
+	//Create a closed wavey loop
+	curve1 = new THREE.CatmullRomCurve3(positions);
 
-    curve1.closed = true; 
-    
-    const points = curve1.getPoints( 50 );
+	curve1.closed = true;
 
-    geometryCurve = new THREE.BufferGeometry().setFromPoints( points );
+	const points = curve1.getPoints(50);
 
-    // console.log(geometryCurve); 
+	geometryCurve = new THREE.BufferGeometry().setFromPoints(points);
 
-    materialCurve = new THREE.LineBasicMaterial( { color: 0x05ffa1, linewidth: 5 } );
-    // Create the final object to add to the scene
-    curveObject = new THREE.Line( geometryCurve, materialCurve );
- 
-    curveObject.geometry.attributes.position.needsUpdate = true;
-    
-    // console.log(geometryCurve);
-    th.scene.add(curveObject); 
-}
- 
-function codeEditorFunc(){
+	// console.log(geometryCurve); 
 
-    codeBool = !codeBool;
+	materialCurve = new THREE.LineBasicMaterial({ color: 0x05ffa1, linewidth: 5 });
+	// Create the final object to add to the scene
+	curveObject = new THREE.Line(geometryCurve, materialCurve);
 
-    console.log(codeBool); 
-    if(codeBool){
-	ed.style.display = 'block';     
-    } else {
-	ed.style.display = 'none';     
-    }
-    
+	curveObject.geometry.attributes.position.needsUpdate = true;
+
+	// console.log(geometryCurve);
+	th.scene.add(curveObject);
 }
 
-function backgroundFunc(){
+function codeEditorFunc() {
 
-    backBool = !backBool;
-    console.log(backBool); 
+	codeBool = !codeBool;
 
-    if(backBool){
-	//th.scene.background = renderTarget.texture; 
-	th.scene.background = hy.vit; 
-	// th.scene.background = new THREE.Color( 0x000000 );
-    } else {
-	th.scene.background = new THREE.Color( 0x000000 );
-    }
-    
+	console.log(codeBool);
+	if (codeBool) {
+		ed.style.display = 'block';
+	} else {
+		ed.style.display = 'none';
+	}
+
 }
 
-function informationFunc(){
-    infoBool = !infoBool; 
-    console.log(infoBool); 
-    document.getElementById("instrucciones").innerHTML = "Clic en la esfera para iniciar.</br>El icono de impresora arroja la versión PDF de este documento.</br>También es posible activar una versión livecodeable y activar y desactivar la textura al fondo. </br>Clic para seleccionar una nota y leerla, ESC para recuperar el control del ratón. </br>Jgs font by Adel Faure. Distributed by velvetyne.fr.";   
-    document.getElementById("info").innerHTML = "";
+function backgroundFunc() {
+
+	backBool = !backBool;
+	console.log(backBool);
+
+	if (backBool) {
+		//th.scene.background = renderTarget.texture; 
+		th.scene.background = hy.vit;
+		// th.scene.background = new THREE.Color( 0x000000 );
+	} else {
+		th.scene.background = new THREE.Color(0x000000);
+	}
+
 }
 
-function disposeLines(){
-    // falta detener el movimiento de la esfera 
-    th.scene.remove(curveObject); 
-    geometryCurve.dispose();
-    materialCurve.dispose();
-    positions = []; 
+function informationFunc() {
+	infoBool = !infoBool;
+	console.log(infoBool);
+	document.getElementById("instrucciones").innerHTML = "Clic en la esfera para iniciar.</br>El icono de impresora arroja la versión PDF de este documento.</br>También es posible activar una versión livecodeable y activar y desactivar la textura al fondo. </br>Clic para seleccionar una nota y leerla, ESC para recuperar el control del ratón. </br>Jgs font by Adel Faure. Distributed by velvetyne.fr.";
+	document.getElementById("info").innerHTML = "";
+}
+
+function disposeLines() {
+	// falta detener el movimiento de la esfera 
+	th.scene.remove(curveObject);
+	geometryCurve.dispose();
+	materialCurve.dispose();
+	positions = [];
 }
 
 // todo esto se puede ir a una función que exista dentro del bloque que agrega las notas con todo e información en userdata
 
 
-function dur(txt){
+function dur(txt) {
 
-    let ab = "abcdefghijklmnñopqrstuvwxyz";  
-    
-    //  Extract the keywords
-    const extraction_result =
-	  keyword_extractor.extract(txt,{
-	      language:"spanish",
-	      remove_digits: true,
-	      return_changed_case:true,
-	      remove_duplicates: false
-	      
-	  });
+	let ab = "abcdefghijklmnñopqrstuvwxyz";
 
-    var result = [];
+	//  Extract the keywords
+	const extraction_result =
+		keyword_extractor.extract(txt, {
+			language: "spanish",
+			remove_digits: true,
+			return_changed_case: true,
+			remove_duplicates: false
 
-    for(let i = 0; i < extraction_result.length; i++){
-	result.push(1/extraction_result[i].length) * 2000; 
-    }
+		});
 
-    return result; 
-    
+	var result = [];
+
+	for (let i = 0; i < extraction_result.length; i++) {
+		result.push(1 / extraction_result[i].length) * 2000;
+	}
+
+	return result;
+
 }
 
-function pos(txt){
+function pos(txt) {
 
-    let ab = "abcdefghijklmnñopqrstuvwxyz";  
-    
-    //  Extract the keywords
-    const extraction_result =
-	  keyword_extractor.extract(txt,{
-	      language:"spanish",
-	      remove_digits: true,
-	      return_changed_case:true,
-	      remove_duplicates: false
-	      
-	  });
+	let ab = "abcdefghijklmnñopqrstuvwxyz";
 
-    var result = [];
+	//  Extract the keywords
+	const extraction_result =
+		keyword_extractor.extract(txt, {
+			language: "spanish",
+			remove_digits: true,
+			return_changed_case: true,
+			remove_duplicates: false
 
-    for(let i = 0; i < extraction_result.length; i++){
-	// result.push(1/extraction_result[i].length) * 2000;
-	result[i] = []; 
-	for(let j = 0; j < extraction_result[i].length; j++){
-	    let prov = extraction_result[i];
-	    for(k = 0; k < ab.length; k++){
-		if(ab[k] == prov[j]){
-		    var index = ab.indexOf(ab[k]);
-		    //console.log(index);
-		    var mapR = map_range(ab.indexOf(ab[k]), 0, ab.length, 0, 1);
-		    result[i].push(mapR); 
+		});
+
+	var result = [];
+
+	for (let i = 0; i < extraction_result.length; i++) {
+		// result.push(1/extraction_result[i].length) * 2000;
+		result[i] = [];
+		for (let j = 0; j < extraction_result[i].length; j++) {
+			let prov = extraction_result[i];
+			for (k = 0; k < ab.length; k++) {
+				if (ab[k] == prov[j]) {
+					var index = ab.indexOf(ab[k]);
+					//console.log(index);
+					var mapR = map_range(ab.indexOf(ab[k]), 0, ab.length, 0, 1);
+					result[i].push(mapR);
+				}
+			}
 		}
-	    }
 	}
-    }
 
-    return result; 
-    
+	return result;
+
 }
 
-function txtToSeq(txt){
-    
-    let ab = "abcdefghijklmnñopqrstuvwxyz";  
+function txtToSeq(txt) {
 
-    //  Extract the keywords
-    const extraction_result =
-	  keyword_extractor.extract(txt,{
-	      language:"spanish",
-	      remove_digits: true,
-	      return_changed_case:true,
-	      remove_duplicates: false
-	     
-	  });
+	let ab = "abcdefghijklmnñopqrstuvwxyz";
 
-    //console.log(extraction_result);
+	//  Extract the keywords
+	const extraction_result =
+		keyword_extractor.extract(txt, {
+			language: "spanish",
+			remove_digits: true,
+			return_changed_case: true,
+			remove_duplicates: false
 
-    let durs = [];
-    let poss = []; 
+		});
 
-    for(let i = 0; i < extraction_result.length; i++){
-	durs.push((1/extraction_result[i].length) * 32000); // Este número puede estar relacionado con el tamaño 
-	poss[i] = []; 
-	for(let j = 0; j < extraction_result[i].length; j++){
-	    let prov = extraction_result[i];
-	    for(k = 0; k < ab.length; k++){
-		if(ab[k] == prov[j]){
-		    var index = ab.indexOf(ab[k]);
-		    //console.log(index);
-		    var mapR = map_range(ab.indexOf(ab[k]), 0, ab.length, 0, 1);
-		    poss[i].push(mapR); 
+	//console.log(extraction_result);
+
+	let durs = [];
+	let poss = [];
+
+	for (let i = 0; i < extraction_result.length; i++) {
+		durs.push((1 / extraction_result[i].length) * 32000); // Este número puede estar relacionado con el tamaño 
+		poss[i] = [];
+		for (let j = 0; j < extraction_result[i].length; j++) {
+			let prov = extraction_result[i];
+			for (k = 0; k < ab.length; k++) {
+				if (ab[k] == prov[j]) {
+					var index = ab.indexOf(ab[k]);
+					//console.log(index);
+					var mapR = map_range(ab.indexOf(ab[k]), 0, ab.length, 0, 1);
+					poss[i].push(mapR);
+				}
+			}
 		}
-	    }
 	}
-    }
 
-    mainPointer = poss;
-    mainDurss = durs; 
-    // console.log(durs);
-    //console.log(poss.flat()); 
-    
+	mainPointer = poss;
+	mainDurss = durs;
+	// console.log(durs);
+	//console.log(poss.flat()); 
+
 }
 
 // esto funciona para obtener todas las muestras que tengo en mi perfil. 
 
-function audioRequest(string){ // Aquí tengo que agregar algún tipo de información proveniente de la nota.
-    console.log(string); 
-    fetch(url)
-	.then(response => response.json())
-	.then(data => {
-	    let randata = Math.floor(Math.random() * data.results.length); 
-	    console.log(randata+" hola"); 
-	    // Maneja la respuesta de la API aquí
-	    //console.log(algo.previews);
-	    //freeURL = 'https://freesound.org/apiv2/sounds/'+data.results[0].id+'/similar'; // la opción de obtener similares está muy buena!!!!
-	    freeURL = 'https://freesound.org/apiv2/sounds/'+data.results[randata].id; // la opción de obtener similares está muy buena!!!!	  
-	    //console.log(freeURL);
-	    var xhr = new XMLHttpRequest();
-	    xhr.open('GET', freeURL+'?format=json&token='+apiKey, true);	    
-	    xhr.onload = function () {
-		//console.log('Status:', xhr.status);
-		//console.log('Response headers:', xhr.getAllResponseHeaders());
-		if (xhr.status >= 200 && xhr.status < 300) {
-		    var jsonResponse = JSON.parse(xhr.responseText);
-		    var audioPath = jsonResponse.previews['preview-lq-ogg'];
-		    //console.log(jsonResponse.previews['preview-lq-ogg']);
-		    // cargar el audio
-		    const request = new XMLHttpRequest();
-		    request.open('GET', audioPath, true);
-		    request.responseType = 'arraybuffer';
-		    // self.buffer = 0; 
-		    request.onload = function() {
-			let audioData = request.response;
-			a.audioCtx.decodeAudioData(audioData, function(buffer) {
-			    console.log(buffer); 
-			    // buffer = buffer2;
-			    // boolCosa = true;
-			    let seqbd = new Sequencer(a.audioCtx, buffer);
-			    console.log(seqbd); 
-			    cosa.set(buffer, Math.random(), 1, 1, 0.05, 0.6);
-			    cosa.start();		    
-			    gloop.seqtime= [1000]; 
-			    gloop.seqpointer = [0];
-			    // console.log(mainPointer.flat()); 
-			    // gloop.seqpointer = [0, 0.5];
-			    gloop.seqfreqScale = [0.95, 1, 1.05]; 
-			    gloop.seqwindowSize = [0.5];
-			    gloop.seqoverlaps = [0.1];
-			    gloop.seqwindowRandRatio = [0.5]; 
-			    gloop.start();
-			    boolCosa = true;		    
-			},
-						   function(e){"Error with decoding audio data" + e.error});
-		    }
-	    	    request.send();
-		} else {
-		    console.error('Error en la solicitud:', xhr.statusText);
-		}
-	    };
-	    xhr.onerror = function () {
-		console.error('Error de red o CORS');
-	    };
-	    xhr.send();
-	})
-	.catch(error => {
-	    // Maneja los errores aquí
-	    console.error('Error en la solicitud:', error);
-	});
+function audioRequest(string) { // Aquí tengo que agregar algún tipo de información proveniente de la nota.
+	console.log(string);
+	fetch(url)
+		.then(response => response.json())
+		.then(data => {
+			let randata = Math.floor(Math.random() * data.results.length);
+			console.log(randata + " hola");
+			// Maneja la respuesta de la API aquí
+			//console.log(algo.previews);
+			//freeURL = 'https://freesound.org/apiv2/sounds/'+data.results[0].id+'/similar'; // la opción de obtener similares está muy buena!!!!
+			freeURL = 'https://freesound.org/apiv2/sounds/' + data.results[randata].id; // la opción de obtener similares está muy buena!!!!	  
+			//console.log(freeURL);
+			var xhr = new XMLHttpRequest();
+			xhr.open('GET', freeURL + '?format=json&token=' + apiKey, true);
+			xhr.onload = function () {
+				//console.log('Status:', xhr.status);
+				//console.log('Response headers:', xhr.getAllResponseHeaders());
+				if (xhr.status >= 200 && xhr.status < 300) {
+					var jsonResponse = JSON.parse(xhr.responseText);
+					var audioPath = jsonResponse.previews['preview-lq-ogg'];
+					//console.log(jsonResponse.previews['preview-lq-ogg']);
+					// cargar el audio
+					const request = new XMLHttpRequest();
+					request.open('GET', audioPath, true);
+					request.responseType = 'arraybuffer';
+					// self.buffer = 0; 
+					request.onload = function () {
+						let audioData = request.response;
+						a.audioCtx.decodeAudioData(audioData, function (buffer) {
+							console.log(buffer);
+							// buffer = buffer2;
+							// boolCosa = true;
+							let seqbd = new Sequencer(a.audioCtx, buffer);
+							console.log(seqbd);
+							cosa.set(buffer, Math.random(), 1, 1, 0.05, 0.6);
+							cosa.start();
+							gloop.seqtime = [1000];
+							gloop.seqpointer = [0];
+							// console.log(mainPointer.flat()); 
+							// gloop.seqpointer = [0, 0.5];
+							gloop.seqfreqScale = [0.95, 1, 1.05];
+							gloop.seqwindowSize = [0.5];
+							gloop.seqoverlaps = [0.1];
+							gloop.seqwindowRandRatio = [0.5];
+							gloop.start();
+							boolCosa = true;
+						},
+							function (e) { "Error with decoding audio data" + e.error });
+					}
+					request.send();
+				} else {
+					console.error('Error en la solicitud:', xhr.statusText);
+				}
+			};
+			xhr.onerror = function () {
+				console.error('Error de red o CORS');
+			};
+			xhr.send();
+		})
+		.catch(error => {
+			// Maneja los errores aquí
+			console.error('Error en la solicitud:', error);
+		});
 }
 
 const query = 'elektron sidstation bd' // Query de búsqueda
 buscarEnFreeSound(query, 1, 40, apiKey)
-    .then(resultados => {
-	let res = resultados.resultados[Math.floor(Math.random() * resultados.resultados.length)];
-	let srchURL = 'https://freesound.org/apiv2/sounds/'+res.id; // la opción de obtener similares está muy buena!!!!
-	console.log("liga:"+srchURL);
-	//console.log(freeURL);
-	var xhr = new XMLHttpRequest();
-	xhr.open('GET', srchURL+'?format=json&token='+apiKey, true);	    
-	    xhr.onload = function () {
-		//console.log('Status:', xhr.status);
-		//console.log('Response headers:', xhr.getAllResponseHeaders());
-		if (xhr.status >= 200 && xhr.status < 300) {
-		    var jsonResponse = JSON.parse(xhr.responseText);
-		    var audioPath = jsonResponse.previews['preview-lq-ogg'];
-		   
-		    // console.log("audio path");
-		    // Aquí tiene que ir 
+	.then(resultados => {
+		let res = resultados.resultados[Math.floor(Math.random() * resultados.resultados.length)];
+		let srchURL = 'https://freesound.org/apiv2/sounds/' + res.id; // la opción de obtener similares está muy buena!!!!
+		console.log("liga:" + srchURL);
+		//console.log(freeURL);
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', srchURL + '?format=json&token=' + apiKey, true);
+		xhr.onload = function () {
+			//console.log('Status:', xhr.status);
+			//console.log('Response headers:', xhr.getAllResponseHeaders());
+			if (xhr.status >= 200 && xhr.status < 300) {
+				var jsonResponse = JSON.parse(xhr.responseText);
+				var audioPath = jsonResponse.previews['preview-lq-ogg'];
+				const request = new XMLHttpRequest();
+				request.open('GET', audioPath, true);
+				request.responseType = 'arraybuffer';
+				request.onload = function () {
+					let audioData = request.response;
+					a.audioCtx.decodeAudioData(audioData, function (buffer) {
+						console.log(buffer);
+					},
+						function (e) { "Error with decoding audio data" + e.error });
+				}
+				request.send();
+			}
 		}
-	    }
-	
-	xhr.onerror = function () {
-	    console.error('Error de red o CORS');
-	};
-	xhr.send();
-	
-	// Es necesario al menos dos instrumentos percusivos
-	// Las notas pueden estar divididas temáticamente y cada tema puede corresponder aproximadamente a un capítulo.
-	// Pienso que cada capítulo podría tener un motivo general y ese motivo podría inscribirse en algo así como un prompt con palabras clave que pudieran usarse más adelante para profundizar una selección de samples, una modificación de parámetros independientes del valor de sentiment o de la sonificación y una secuencia o secuencia de sequencias que pudiera dar lugar a una rola. Entonces, de manera general los capítulos podrían reproducirse como piezas completas e integradas y las selecciones fuera de de estos grupos podrían ser versiones mezcladas de las rolas.
-	// Una muy buena idea que mencionó Rossana fue grabar extractos de mi voz para poderlas subir y utilizarlas como recursos. Podrían ser las voces de alguien más (parecido a lo que sucedía en anti) lecturas de extractos selectos que pudieran intervenir en la rola.
-	// return resultados[Math.floor(Math.random()*resultados.length)].name; 
-    })
-    .catch(error => {
-	console.error('Error al buscar en FreeSound:', error);
-    });
+
+		xhr.onerror = function () {
+			console.error('Error de red o CORS');
+		};
+		xhr.send();
+
+		// Es necesario al menos dos instrumentos percusivos
+		// Las notas pueden estar divididas temáticamente y cada tema puede corresponder aproximadamente a un capítulo.
+		// Pienso que cada capítulo podría tener un motivo general y ese motivo podría inscribirse en algo así como un prompt con palabras clave que pudieran usarse más adelante para profundizar una selección de samples, una modificación de parámetros independientes del valor de sentiment o de la sonificación y una secuencia o secuencia de sequencias que pudiera dar lugar a una rola. Entonces, de manera general los capítulos podrían reproducirse como piezas completas e integradas y las selecciones fuera de de estos grupos podrían ser versiones mezcladas de las rolas.
+		// Una muy buena idea que mencionó Rossana fue grabar extractos de mi voz para poderlas subir y utilizarlas como recursos. Podrían ser las voces de alguien más (parecido a lo que sucedía en anti) lecturas de extractos selectos que pudieran intervenir en la rola.
+		// return resultados[Math.floor(Math.random()*resultados.length)].name; 
+	})
+	.catch(error => {
+		console.error('Error al buscar en FreeSound:', error);
+	});
 
 
 // audio request lo hace es sustituir el sinte granular principal

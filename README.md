@@ -45,3 +45,5 @@ Para construir
 ## Referencias
 
 - De Assis, P. (2018). Logic of Experimentation. Leuven University Press. https://doi.org/10.2307/j.ctv6zdcpg
+
+- [Freesound API documentation](https://freesound.org/docs/api/)
