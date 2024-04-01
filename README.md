@@ -18,13 +18,34 @@ Este proyecto utilizó principalmente:
 
 - [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API). Para la el control del audio en el navegador.
 
-- [Hydra](https://hydra.ojack.xyz/). Para la generación de texturas por medio de OpenGL. 
+- [Hydra](https://hydra.ojack.xyz/). Para la generación de texturas por medio de WebGL. 
 
 - [Freesound APIv2](https://freesound.org/docs/api/). Para la búsqueda de sonidos almacenados en un lugar distinto al servidor de la página y para la búsqueda de resultados similares. Para echar a andar la API de Freesound es necesario generar un token. [Más info](https://freesound.org/docs/api/)
 
 - [tween.js](https://tweenjs.github.io/tween.js/). Para la generación de curvas de control y para la gestión de animaciones. 
 
 - [chiltepin](https://github.com/sptm-unam/chiltepin). Como inspiración pero también para gestionar y reflexionar sobre las expresiones regulares. 
+
+## Nota 
+
+Es necesario tener la base de datos (db). El orden de los resultados dependerá de la jerarquía de las etiquetas. Para este caso, fue necesario implementar filtros con notas que no desparecieron del todo de la base de datos. 
+
+También es necesario tener [credenciales de la API de FreeSound](https://freesound.org/apiv2/apply) y generar un archivo config.js dentro de src para poder utilizar la API de FreeSound. El formato del archivo es el siguiente: 
+
+``
+const apiKey = 'CLAVE_DE_API';
+
+const userId = 'ID_DE_USUARIO';
+
+const apiUrl = 'https://freesound.org/apiv2';
+
+const endpoint = `/users/${userId}/sounds/`;
+
+const url = `${apiUrl}${endpoint}?token=${apiKey}`;
+
+export{apiKey, url}
+
+``
 
 ## Ejecución
 
@@ -45,5 +66,3 @@ Para construir
 ## Referencias
 
 - De Assis, P. (2018). Logic of Experimentation. Leuven University Press. https://doi.org/10.2307/j.ctv6zdcpg
-
-- [Freesound API documentation](https://freesound.org/docs/api/)

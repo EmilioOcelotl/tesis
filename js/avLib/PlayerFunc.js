@@ -1,4 +1,88 @@
 
+class Player {
+
+    constructor(aCtx, audioFile, type = 'player'){ // aquí hace falta poner la secuencia, audiofile está en html 
+
+	self = this;
+	this.audioCtx = aCtx;
+	this.audioFile = audioFile;
+	this.futureTickTime = this.audioCtx.currentTime;
+	this.counter = 1;
+	this.tempo = 120;
+	this.secondsPerBeat = 60 / this.tempo,
+	this.counterTimeValue = (this.secondsPerBeat / 4),
+	this.timerID = undefined,
+	this.isPlaying = false;
+	this.seq = [0, 0, 0, 0, 0, 0, 0, 0]; 
+	this.buffer = audioFile; 
+		//self.source.connect(self.audioCtx.destination) // Pregunta: una vez que termina, también se desconecta? 
+	//self.source.start() // no es necesario reproducirlo aqui
+	// console.log("sample");
+    // console.log(self.buffer);
+   
+    // aquí se reproduce la secuencia 
+    
+    // ¿eso es innecesario? No aparece en algún otro lado
+    }
+
+    startSeq = function(){
+	this.counter = 0;
+	this.futureTickTime = this.audioCtx.currentTime;
+	self.scheduler(); 
+    }
+    
+    playSource = function(time){
+	console.log("Inicio"); 
+	this.source = this.audioCtx.createBufferSource();
+	this.source.connect(this.audioCtx.destination);
+	this.source.buffer = this.buffer;
+	this.source.start(this.audioCtx.currentTime + time);
+    }
+
+    schedule = function(time){
+	if(this.seq[this.counter] == 1){ 
+	    this.playSource(time);
+	    console.log("Suena"); 
+	}
+    }
+
+    playTick = function() {
+	console.log(self.counter);
+	this.secondsPerBeat = 60 / this.tempo;
+	this.counterTimeValue = (this.secondsPerBeat / 1);
+	this.counter += 1;
+	this.futureTickTime += this.counterTimeValue;
+	if(this.counter == this.seq.length){
+	    this.counter = 0; 
+	}
+    }
+    
+    scheduler = function() {
+	if (this.futureTickTime < this.audioCtx.currentTime + 0.1) {
+            this.schedule(this.futureTickTime - this.audioCtx.currentTime);
+            this.playTick();
+	}
+
+	this.timerID = setTimeout(self.scheduler.bind(this), 0);
+    }
+
+   sequence = function(seq){
+	this.seq = seq; 
+    }
+
+    stop = function(){
+	clearTimeout(this.timerID);
+    }
+
+    // console.log(self.buffer); 
+    // self.load(); // esto es mandatory 
+   
+}
+
+export { Player }
+
+
+/*
 function Player (aCtx, audioFile){ // aquí hace falta poner la secuencia, audiofile está en html 
 
     self = this; 
@@ -13,7 +97,7 @@ function Player (aCtx, audioFile){ // aquí hace falta poner la secuencia, audio
     // separar load al menos para conceptualmente tener claro que primero se tiene que cargar el archivo. Esto sucede en cada evento
     // self.source;
 
-    self.buffer = 0;
+    //self.buffer = 0;
 
     self.futureTickTime = self.audioCtx.currentTime,
     self.counter = 1,
@@ -23,34 +107,14 @@ function Player (aCtx, audioFile){ // aquí hace falta poner la secuencia, audio
     self.timerID = undefined,
     self.isPlaying = false;
     self.seq = [0, 0, 0, 0, 0, 0, 0, 0]; 
-    
-    self.load = function(){
-
-	self.reader = new FileReader();
-        self.reader.onload = function (ev) {
-	    // self.audioCtx = aCtx;
-	    // console.log(self.audioCtx); 
-	    self.audioCtx.decodeAudioData(ev.target.result).then(function (buffer) {
-		//self.source = self.audioCtx.createBufferSource()
-		//self.source.buffer = buffer; // este estaba antes, ahora solamente queremos que se guarde
-		self.buffer = buffer; 
+    self.buffer = audioFile; 
 		//self.source.connect(self.audioCtx.destination) // Pregunta: una vez que termina, también se desconecta? 
 		//self.source.start() // no es necesario reproducirlo aqui
-		console.log("sample");
-		// console.log(self.buffer);
-		self.counter = 0;
-		self.futureTickTime = self.audioCtx.currentTime;
-		self.scheduler(); 
+    console.log("sample");
+    // console.log(self.buffer);
    
-	    })
-	}
-
-	self.reader.readAsArrayBuffer(self.audioFile.files[0]); 
-	// aquí se reproduce la secuencia 
-    }
-
-    self.load();
-
+    // aquí se reproduce la secuencia 
+    
     // ¿eso es innecesario? No aparece en algún otro lado
     
     self.startSeq = function(){
@@ -92,7 +156,7 @@ function Player (aCtx, audioFile){ // aquí hace falta poner la secuencia, audio
             self.playTick();
 	}
 
-	self.timerID = setTimeout(self.scheduler, 0);
+	self.timerID = setTimeout(self.scheduler.bind(this), 0);
     }
 
     self.sequence = function(seq){
@@ -109,3 +173,4 @@ function Player (aCtx, audioFile){ // aquí hace falta poner la secuencia, audio
 }
 
 export { Player }
+*/
