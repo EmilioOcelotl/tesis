@@ -37,7 +37,7 @@ let sentiment = []; // Pendiente hacer que esto sea un arreglo por oraciones
 
 const print = document.getElementById('print');
 print.addEventListener('click', printPDF);
-root@161.35.239.123
+
 // editorP.style.display = 'none';
 
 const ed = document.getElementById('editor');
