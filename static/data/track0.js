@@ -1,7 +1,7 @@
 
 const track0 = {
     
-    "uno": {
+    "sc0": {
 	"tempo": 120,
 	"degrees": [50, 52, 54],
 	"hydra": "osc(() => cursorY * 0.01, () => cursorX * 0.001, 0).color(0.3, 0.1, 0.5).rotate(0.1, 0.1, 0.5).mult(osc(0.1, 1)).modulateScrollX(o0, 0.99).out(o0);",
@@ -24,7 +24,7 @@ const track0 = {
 	}
     },
     
-    "dos": {
+    "sc1": {
 	"tempo": 120,
 	"degrees": [50, 52, 54],
 	"hydra": "codigo de hydra",
@@ -47,7 +47,7 @@ const track0 = {
 	}
     },
 
-    "tres": {
+    "sc2": {
 	"tempo": 120,
 	"degrees": [50, 52, 54],
 	"hydra": "codigo de hydra",

@@ -22,10 +22,8 @@ import { Player } from '../js/Player.js';
 
 import { track0, track1 } from '../static/data/tracks.js';
 
-console.log(track0.uno.hydra); 
-
+// console.log(track0.uno.hydra); 
 // bd, sn, hi, gr, vc, bs, sm; 
-
 // let pistas = []; 
 
 // Realiza la solicitud GET a la API de Freesound
@@ -254,7 +252,7 @@ function init() {
 	cursorY = e.pageY;
     }
 
-    eval(track0.uno.hydra); 
+    eval(track0.sc0.hydra); 
     
     // osc(() => cursorY * 0.01, () => cursorX * 0.001, 0).color(0.3, 0.1, 0.5).rotate(0.1, 0.1, 0.5).mult(osc(0.1, 1)).modulateScrollX(o0, 0.99).out(o0);
 
@@ -1119,15 +1117,15 @@ function audioRequest(string) { // Aquí tengo que agregar algún tipo de inform
 	});
 }
 
-const query = 'elektron sidstation bd' // Query de búsqueda
+const query = 'track0.sc'+0+'.bd.query' // Query de búsqueda
 
 // la función buscar debería pasar por un arreglo 
-// console.log(track0.uno.bd.query); 
+console.log(query); 
 
-buscarEnFreeSound(track0.uno.bd.query, 1, 40, apiKey)
+buscarEnFreeSound(query, 1, 40, apiKey)
     .then(resultados => {
 	let res = resultados.resultados[Math.floor(Math.random() * resultados.resultados.length)];
-	let srchURL = 'https://freesound.org/apiv2/sounds/' + res.id; // la opción de obtener similares está muy buena!!!!
+	let srchURL = 'https://freesound.org/apiv2/sounds/' + res.id; 
 	// console.log("liga:" + srchURL);
 	//console.log(freeURL);
 	var xhr = new XMLHttpRequest();

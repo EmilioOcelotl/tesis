@@ -32,20 +32,20 @@ Es necesario tener la base de datos (db). El orden de los resultados dependerá 
 
 También es necesario tener [credenciales de la API de FreeSound](https://freesound.org/apiv2/apply) y generar un archivo config.js dentro de src para poder utilizar la API de FreeSound. El formato del archivo es el siguiente: 
 
-``
+```
 const apiKey = 'CLAVE_DE_API';
 
 const userId = 'ID_DE_USUARIO';
 
 const apiUrl = 'https://freesound.org/apiv2';
 
-const endpoint = `/users/${userId}/sounds/`;
+const endpoint = '/users/${userId}/sounds/';
 
-const url = `${apiUrl}${endpoint}?token=${apiKey}`;
+const url = '${apiUrl}${endpoint}?token=${apiKey}';
 
 export{apiKey, url}
 
-``
+```
 
 ## Ejecución
 
