@@ -9,7 +9,7 @@ class Player {
 	this.futureTickTime = this.audioCtx.currentTime;
 	this.counter = 1;
 	this.tempo = 120;
-	this.secondsPerBeat = 60 / this.tempo,
+	this.secondsPerBeat = 120 / this.tempo,
 	this.counterTimeValue = (this.secondsPerBeat / 4),
 	this.timerID = undefined,
 	this.isPlaying = false;
@@ -49,7 +49,7 @@ class Player {
     playTick = function() {
 	console.log(self.counter);
 	this.secondsPerBeat = 60 / this.tempo;
-	this.counterTimeValue = (this.secondsPerBeat / 1);
+	this.counterTimeValue = (this.secondsPerBeat / 4);
 	this.counter += 1;
 	this.futureTickTime += this.counterTimeValue;
 	if(this.counter == this.seq.length){

@@ -22,6 +22,18 @@ import { Player } from '../js/Player.js';
 
 import { track0, track1 } from '../static/data/tracks.js';
 
+// var audioPath = jsonResponse.previews['preview-lq-ogg'];
+
+const seqspush = []; 
+
+for (let key in track0) {
+    if (key.startsWith('sc')) {
+        const seqs = track0[key].bd.seqs.flat();
+        console.log(`Secuencias de ${key}:`, seqs);
+	seqspush.push(seqs); 
+    }
+}
+
 // console.log(track0.uno.hydra); 
 // bd, sn, hi, gr, vc, bs, sm; 
 // let pistas = []; 
@@ -1117,16 +1129,17 @@ function audioRequest(string) { // Aquí tengo que agregar algún tipo de inform
 	});
 }
 
-const query = 'track0.sc'+0+'.bd.query' // Query de búsqueda
+const query = track0.sc0.bd.query // Query de búsqueda
 
 // la función buscar debería pasar por un arreglo 
 console.log(query); 
 
 buscarEnFreeSound(query, 1, 40, apiKey)
     .then(resultados => {
+	console.log(resultados); 
 	let res = resultados.resultados[Math.floor(Math.random() * resultados.resultados.length)];
 	let srchURL = 'https://freesound.org/apiv2/sounds/' + res.id; 
-	// console.log("liga:" + srchURL);
+	console.log("liga:" + srchURL);
 	//console.log(freeURL);
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', srchURL + '?format=json&token=' + apiKey, true);
@@ -1140,9 +1153,11 @@ buscarEnFreeSound(query, 1, 40, apiKey)
 		request.onload = function () {
 		    let audioData = request.response;
 		    a.audioCtx.decodeAudioData(audioData, function (buffer) {
-			console.log(buffer);
+			console.log("query"+buffer);
 			const player = new Player(a.audioCtx, buffer);
-			player.sequence([1, 0, 0, 1, 0, 0, 1, 0]);
+			// player.tempo = 'track0.sc'+0+'.tempo';
+	
+			player.sequence(seqspush[0]);
 			player.startSeq();		
 		    },
 					       function (e) { "Error with decoding audio data" + e.error });
