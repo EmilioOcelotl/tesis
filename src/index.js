@@ -1,21 +1,32 @@
 import * as THREE from 'three';
 import { VideoSetup, GLTFLd, Feedback, UnrealBloom } from "../js/avLib/videoSetup"
 import { HydraTex } from '../js/avLib/hydraSetup'
-import { AudioSetup, Analyser, Grain, UploadFile, Load } from '../js/avLib/audioSetup'
+import { AudioSetup, Analyser, UploadFile, Load } from '../js/avLib/audioSetup'
 //import { ImprovedNoise } from '../static/jsm/math/ImprovedNoise.js'; // esto podría funcionar para el futuro 
 import { EditorParser } from '../js/avLib/editorParser'
 import * as TWEEN from 'tween';
 import { FontLoader } from '../static/jsm/loaders/FontLoader.js';
-import { Sequencer } from '../js/avLib/Sequencer.js';
-import { Player } from '../js/avLib/PlayerFunc.js'; 
-import { buscarEnFreeSound } from '../js/avLib/Search.js';
+// import { Sequencer } from '../js/avLib/Sequencer.js';
+import { buscarEnFreeSound } from '../js/Search.js';
 //import { Post } from '../js/avLib/Post.js';
 import { DbReader, dbParser, createDoc } from '../js/avLib/dbSetup2';
 import { OrbitControls } from '../static/jsm/controls/OrbitControls.js';
 //import { TransformControls } from '../static/jsm/controls/TransformControls.js'; 
 const keyword_extractor = require("keyword-extractor");
-const { map_range } = require('../js/avLib/utils.js');
-const { url, apiKey } = require('./config.js');
+// const { map_range } = require('../js/avLib/utils.js');
+import { url, apiKey } from './config.js';
+import { Grain } from '../js/Grain'; 
+import { GLoop } from '../js/GLoop';
+import { map_range } from '../js/utils.js';
+import { Player } from '../js/Player.js'; 
+
+import { track0 } from '../static/data/template.js';
+
+console.log(track0); 
+
+// bd, sn, hi, gr, vc, bs, sm; 
+
+let pistas = []; 
 
 // Realiza la solicitud GET a la API de Freesound
 
@@ -71,9 +82,6 @@ const db = new DbReader()
 
 a.initAudio();
 
-const { Grain } = require('../js/avLib/Grain')
-const { GLoop } = require('../js/avLib/GLoop');
-import { map_range } from '../js/avLib/utils.js';
 
 db.read("./sql/document.db");
 
@@ -83,7 +91,7 @@ let controls;
 const colors = [
     0x993366, // Dusty Rose
     0x3399CC, // Steel Blue
-    0x996633, // Mocharoot@161.35.239.123
+    0x996633, // Mocha
     0x3399CC, // Steel Blue
     0x996633, // Mocha
     0x669966  // Sage Green
@@ -1173,7 +1181,7 @@ buscarEnFreeSound(query, 1, 40, apiKey)
 		    a.audioCtx.decodeAudioData(audioData, function (buffer) {
 			console.log(buffer);
 			const player = new Player(a.audioCtx, buffer);
-			player.sequence([1, 0, 0, 0]);
+			player.sequence([1, 0, 0, 1, 0, 0, 1, 0]);
 			player.startSeq();
 			
 		    },
