@@ -20,13 +20,13 @@ import { GLoop } from '../js/GLoop';
 import { map_range } from '../js/utils.js';
 import { Player } from '../js/Player.js'; 
 
-import { track0 } from '../static/data/template.js';
+import { track0, track1 } from '../static/data/tracks.js';
 
-console.log(track0); 
+console.log(track0.uno.hydra); 
 
 // bd, sn, hi, gr, vc, bs, sm; 
 
-let pistas = []; 
+// let pistas = []; 
 
 // Realiza la solicitud GET a la API de Freesound
 
@@ -81,7 +81,6 @@ const hy = new HydraTex();
 const db = new DbReader()
 
 a.initAudio();
-
 
 db.read("./sql/document.db");
 
@@ -194,13 +193,6 @@ function printPDF() {
 
 const clock = new THREE.Clock();
 
-//let cubos = [];
-//let geometry; 
-
-//let pX = [], pY = [], pZ = []; 
-
-//let sphere; 
-
 // preguntarse si puede estar de otra manera que como variable global 
 
 let raycaster;
@@ -262,7 +254,9 @@ function init() {
 	cursorY = e.pageY;
     }
 
-    osc(() => cursorY * 0.01, () => cursorX * 0.001, 0).color(0.3, 0.1, 0.5).rotate(0.1, 0.1, 0.5).mult(osc(0.1, 1)).modulateScrollX(o0, 0.99).out(o0);
+    eval(track0.uno.hydra); 
+    
+    // osc(() => cursorY * 0.01, () => cursorX * 0.001, 0).color(0.3, 0.1, 0.5).rotate(0.1, 0.1, 0.5).mult(osc(0.1, 1)).modulateScrollX(o0, 0.99).out(o0);
 
     /*
       osc(6, 0, 0.8)  .color(1, 0.1,.90)
@@ -407,11 +401,10 @@ function animate() {
 			audioRequest("texto");
 			gloop.seqtime = mainDurss;
 			gloop.seqpointer = mainPointer.flat();
-			console.log(INTERSECTED.userdata['dur']); // dur funciona, el asunto es que arroja dos elementos menos que el otro arreglo
-			console.log(mainDurss); // otro arreglo  
+			// console.log(INTERSECTED.userdata['dur']); // dur funciona, el asunto es que arroja dos elementos menos que el otro arreglo
+			//console.log(mainDurss); // otro arreglo  
 			//gloop.seqpointer = INTERSECTED.userdata.pos.flat;
 			// gloop.seqwindowRandRatio = INTERSECTED.userdata.sentiment; 
-
 			// console.log(sentiment); 
 			// console.log(mainPointer.flat());
 			//console.log(mainDurss); 
@@ -419,7 +412,6 @@ function animate() {
 		    // console.log(interStr); 
 		    controls.target = INTERSECTED.position;
 		    document.getElementById("instrucciones").innerHTML = interStr;
-
 		    //if(lcbool){
 		    //positions.push(INTERSECTED.position);
 		    //curve(positions); 
@@ -461,7 +453,6 @@ function animate() {
     un.render2(delta);
 
     requestAnimationFrame(animate);
-
 
 }
 
@@ -685,14 +676,10 @@ function saveNotes() {
 	    const geometry = new THREE.BufferGeometry().setFromPoints(curvePoints);
 	    linecap = new THREE.Line(geometry, material);
 	    contCol++;
-	    // contTotal++; 
-
-
 	}
     }
 
     th.scene.add(linecap);
-
 
     // Asignar notas en relación a capítulos. Primero tendríamos que saber la cantidad de notas por capítulo
     let notesPerChapter = [];
@@ -723,13 +710,13 @@ function saveNotes() {
     contCol = 0
 
     for (let j = 0; j < notesCoords.length; j++) {
+
 	const points2 = [];
 	let linenote = 0;
-
 	points2.push(notesCoords[j]);
+
 	for (let i = 0; i < marksort.length; i++) {
 	    // Solamente se imprimen notas con más de dos caracteres
-
 	    if (marksort[i].length > 2 && marksort[i].slice(6, 7) != "0" && marksort[i].slice(4, 5) == (j + 1).toString() && j < 5) { // y si es distinto al índice de notas
 
 		var posX, posY, posZ;
@@ -775,17 +762,12 @@ function saveNotes() {
 		const material = new THREE.LineBasicMaterial({ color: 0xffffff });
 		points2.push(new THREE.Vector3(nPosX, nPosY, nPosZ));
 
-		console.log(points2);
+		// console.log(points2);
 		const curve = new THREE.CatmullRomCurve3(points2);
 		curve.closed = true;
 		const curvePoints = curve.getPoints(250);
-
-
 		const geometry = new THREE.BufferGeometry().setFromPoints(curvePoints);
 		linenote = new THREE.Line(geometry, material);
-
-		//th.scene.add(line);
-
 		contCol++;
 		// contTotal++; 
 		// falta guardar la posición de notas y a partir de ahi construir el otro arbol
@@ -799,23 +781,14 @@ function saveNotes() {
 	    if (marksort[i].length > 2 && marksort[i].slice(6, 7) != "0" && marksort[i].slice(4, 5) == (j + 2).toString() && j > 4) { // y si es distinto al índice de notas
 
 		var posX, posY, posZ;
-		//var theta1 = Math.random() * (Math.PI*2);
-		//var theta2 = Math.random() * (Math.PI*2); 
-
-		//posX = notesCoords[j].x*(Math.random()*14);
-		//posY = notesCoords[j].y*(Math.random()*14);
-		//posZ = notesCoords[j].z*(Math.random()*14); 
-
 		const phi = Math.acos(-1 + (2 * contCol) / finalNotesPerChapter[j + 1]);
 		const theta = Math.sqrt(finalNotesPerChapter[j + 1] * Math.PI) * phi;
-
 		const posX = Math.cos(theta) * Math.sin(phi);
 		const posY = Math.sin(theta) * Math.sin(phi);
 		const posZ = Math.cos(phi);
 
 		let norm = Math.sqrt(posX * posX + posY * posY + posZ * posZ);
 		let vec = new THREE.Vector3((posX / norm) * 6, (posY / norm) * 6, (posZ / norm) * 6);
-
 		//console.log(marksort[i].length /1000);
 		const geoNotes = new THREE.SphereGeometry(marksort[i].length / 6000, 32, 32);
 		const matNotes = new THREE.MeshStandardMaterial({ color: colors[1], emissive: colors[1], roughness: 0.6 });
@@ -866,21 +839,17 @@ function saveNotes() {
     // console.log(db.postdb[4].split("root",1)[1])
 
     /*
-      
+    // Esto tiene que ver con la asociación de notas. 
     //console.log(db.postdb[93].split("data-note-path=\"root").pop());
     let unosss = db.postdb[4].split('data-note-path=\"root').pop().split('\"')[0];
     let dossss = db.postdb[93].split('data-note-path=\"root').pop().split('\"')[1]; 
-
     console.log(unosss); // returns 'two'
     console.log(dossss); 
-
     */
+    
     //let nwregex = /root(.*)\n/g
-
     //console.log(index); 
-
     //console.log(regexText.test(db.postdb[4])); 
-
     // si dos notas coniciden en lo que está entre root y un espacio entonces hay una conexión entre dos puntos 
 
     let contNota = 0;
@@ -908,7 +877,6 @@ function saveNotes() {
       markdown[i] = markdown[i].split(".").join("\n"); 
       }
       
-
       // queda pendiente eliminar indices 
       console.log(markdown.length);
     */
@@ -917,36 +885,32 @@ function saveNotes() {
     // console.log(sentiment); 
 }
 
-function curve(positions) {
+// Conexión entre nodos en una especie de secuencia. Ya no se usa pero podría funcionar para el futuro. 
 
+/*
+function curve(positions) {
+    
     th.scene.remove(curveObject);
     geometryCurve.dispose();
     materialCurve.dispose();
     //Create a closed wavey loop
     curve1 = new THREE.CatmullRomCurve3(positions);
-
     curve1.closed = true;
-
     const points = curve1.getPoints(50);
-
     geometryCurve = new THREE.BufferGeometry().setFromPoints(points);
-
     // console.log(geometryCurve); 
-
     materialCurve = new THREE.LineBasicMaterial({ color: 0x05ffa1, linewidth: 5 });
     // Create the final object to add to the scene
     curveObject = new THREE.Line(geometryCurve, materialCurve);
-
     curveObject.geometry.attributes.position.needsUpdate = true;
-
     // console.log(geometryCurve);
     th.scene.add(curveObject);
 }
+*/
 
 function codeEditorFunc() {
 
     codeBool = !codeBool;
-
     console.log(codeBool);
     if (codeBool) {
 	ed.style.display = 'block';
@@ -960,7 +924,6 @@ function backgroundFunc() {
 
     backBool = !backBool;
     console.log(backBool);
-
     if (backBool) {
 	//th.scene.background = renderTarget.texture; 
 	th.scene.background = hy.vit;
@@ -992,7 +955,6 @@ function disposeLines() {
 function dur(txt) {
 
     let ab = "abcdefghijklmnñopqrstuvwxyz";
-
     //  Extract the keywords
     const extraction_result =
 	  keyword_extractor.extract(txt, {
@@ -1000,7 +962,6 @@ function dur(txt) {
 	      remove_digits: true,
 	      return_changed_case: true,
 	      remove_duplicates: false
-
 	  });
 
     var result = [];
@@ -1094,12 +1055,12 @@ function txtToSeq(txt) {
 // esto funciona para obtener todas las muestras que tengo en mi perfil. 
 
 function audioRequest(string) { // Aquí tengo que agregar algún tipo de información proveniente de la nota.
-    console.log(string);
+    // console.log(string);
     fetch(url)
 	.then(response => response.json())
 	.then(data => {
 	    let randata = Math.floor(Math.random() * data.results.length);
-	    console.log(randata + " hola");
+	    // console.log(randata + " hola");
 	    // Maneja la respuesta de la API aquí
 	    //console.log(algo.previews);
 	    //freeURL = 'https://freesound.org/apiv2/sounds/'+data.results[0].id+'/similar'; // la opción de obtener similares está muy buena!!!!
@@ -1159,17 +1120,19 @@ function audioRequest(string) { // Aquí tengo que agregar algún tipo de inform
 }
 
 const query = 'elektron sidstation bd' // Query de búsqueda
-buscarEnFreeSound(query, 1, 40, apiKey)
+
+// la función buscar debería pasar por un arreglo 
+// console.log(track0.uno.bd.query); 
+
+buscarEnFreeSound(track0.uno.bd.query, 1, 40, apiKey)
     .then(resultados => {
 	let res = resultados.resultados[Math.floor(Math.random() * resultados.resultados.length)];
 	let srchURL = 'https://freesound.org/apiv2/sounds/' + res.id; // la opción de obtener similares está muy buena!!!!
-	console.log("liga:" + srchURL);
+	// console.log("liga:" + srchURL);
 	//console.log(freeURL);
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', srchURL + '?format=json&token=' + apiKey, true);
 	xhr.onload = function () {
-	    //console.log('Status:', xhr.status);
-	    //console.log('Response headers:', xhr.getAllResponseHeaders());
 	    if (xhr.status >= 200 && xhr.status < 300) {
 		var jsonResponse = JSON.parse(xhr.responseText);
 		var audioPath = jsonResponse.previews['preview-lq-ogg'];
@@ -1182,35 +1145,31 @@ buscarEnFreeSound(query, 1, 40, apiKey)
 			console.log(buffer);
 			const player = new Player(a.audioCtx, buffer);
 			player.sequence([1, 0, 0, 1, 0, 0, 1, 0]);
-			player.startSeq();
-			
+			player.startSeq();		
 		    },
 					       function (e) { "Error with decoding audio data" + e.error });
 		}
 		request.send();
 	    }
 	}
-
 	xhr.onerror = function () {
 	    console.error('Error de red o CORS');
 	};
 	xhr.send();
 
-	// Es necesario al menos dos instrumentos percusivos
-	// Las notas pueden estar divididas temáticamente y cada tema puede corresponder aproximadamente a un capítulo.
-	// Pienso que cada capítulo podría tener un motivo general y ese motivo podría inscribirse en algo así como un prompt con palabras clave que pudieran usarse más adelante para profundizar una selección de samples, una modificación de parámetros independientes del valor de sentiment o de la sonificación y una secuencia o secuencia de sequencias que pudiera dar lugar a una rola. Entonces, de manera general los capítulos podrían reproducirse como piezas completas e integradas y las selecciones fuera de de estos grupos podrían ser versiones mezcladas de las rolas.
-	// Una muy buena idea que mencionó Rossana fue grabar extractos de mi voz para poderlas subir y utilizarlas como recursos. Podrían ser las voces de alguien más (parecido a lo que sucedía en anti) lecturas de extractos selectos que pudieran intervenir en la rola.
-	// return resultados[Math.floor(Math.random()*resultados.length)].name; 
     })
     .catch(error => {
 	console.error('Error al buscar en FreeSound:', error);
     });
 
-
+	// Es necesario al menos dos instrumentos percusivos
+	// Las notas pueden estar divididas temáticamente y cada tema puede corresponder aproximadamente a un capítulo.
+	// Pienso que cada capítulo podría tener un motivo general y ese motivo podría inscribirse en algo así como un prompt con palabras clave que pudieran usarse más adelante para profundizar una selección de samples, una modificación de parámetros independientes del valor de sentiment o de la sonificación y una secuencia o secuencia de sequencias que pudiera dar lugar a una rola. Entonces, de manera general los capítulos podrían reproducirse como piezas completas e integradas y las selecciones fuera de de estos grupos podrían ser versiones mezcladas de las rolas.
+	// Una muy buena idea que mencionó Rossana fue grabar extractos de mi voz para poderlas subir y utilizarlas como recursos. Podrían ser las voces de alguien más (parecido a lo que sucedía en anti) lecturas de extractos selectos que pudieran intervenir en la rola.
+	// return resultados[Math.floor(Math.random()*resultados.length)].name;
+	
 // audio request lo hace es sustituir el sinte granular principal
-
 // Necesito otro bloque de código para un bd, snare y hi 
-
 /* la pregunta es si deberé generar tracks para cada uno de los grupos de notas (capítulos) de forma tal que estos puedan ser "audioReactivos). En total son 7 sin referencias.
 
    1. bd 
@@ -1221,6 +1180,6 @@ buscarEnFreeSound(query, 1, 40, apiKey)
    6. bs
    7. sm
 
-   Esto quiere decir además que tal vez voy a tener 7 rolas abiertas- 
+   Esto quiere decir además que tal vez voy a tener 7 rolas abiertas
 
 */

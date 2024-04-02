@@ -71,4 +71,4 @@ const track0 = {
     }
 }
 
-export{ track0 } 
+export default track0 
