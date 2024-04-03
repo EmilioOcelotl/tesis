@@ -106,6 +106,7 @@ const colors = [
 
 ///////////////////////////////////////////////////
 // splines 
+
 // Parece que todo lo que está abajo hace referencia a las trayectorias. Esto se podría retomar después para las versiones remixeadas entre rolas. 
 
 let positions = [];
@@ -416,12 +417,13 @@ function animate() {
 			// gloop.seqwindowRandRatio = INTERSECTED.userdata.sentiment; 
 			// console.log(sentiment); 
 			// console.log(mainPointer.flat());
-			//console.log(mainDurss); 
+			//console.log(mainDurss);
+			globalCh(INTERSECTED.userdata.track);
+	
 		    }
 		    // console.log(interStr); 
 		    controls.target = INTERSECTED.position;
 		    document.getElementById("instrucciones").innerHTML = interStr;
-		    console.log(INTERSECTED.userdata.track); 
 		    //if(lcbool){
 		    //positions.push(INTERSECTED.position);
 		    //curve(positions); 
@@ -1138,8 +1140,8 @@ const query = track0.sc0.bd.query // Query de búsqueda
 // la función buscar debería pasar por un arreglo 
 console.log(query); 
 
-function globalCh(){
-    
+function globalCh(track){
+    console.log(track); 
 }
 
 buscarEnFreeSound(query, 1, 40, apiKey)
@@ -1164,9 +1166,8 @@ buscarEnFreeSound(query, 1, 40, apiKey)
 			console.log("query"+buffer);
 			const player = new Player(a.audioCtx, buffer);
 			// player.tempo = 'track0.sc'+0+'.tempo';
-	
-			player.sequence(seqspush[0]);
-			player.startSeq();		
+			player.sequence(seqspush[0]); 
+			player.startSeq();	
 		    },
 					       function (e) { "Error with decoding audio data" + e.error });
 		}
