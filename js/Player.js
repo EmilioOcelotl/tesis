@@ -1,11 +1,12 @@
 
 class Player {
 
-    constructor(aCtx, audioFile, type = 'player'){ // aquí hace falta poner la secuencia, audiofile está en html 
+    constructor(aCtx, type = 'player'){ // aquí hace falta poner la secuencia, audiofile está en html 
 
+	this.buffer = 0; 
 	self = this;
 	this.audioCtx = aCtx;
-	this.audioFile = audioFile;
+	this.audioFile = 0;
 	this.futureTickTime = this.audioCtx.currentTime;
 	this.counter = 1;
 	this.tempo = 120;
@@ -14,7 +15,7 @@ class Player {
 	this.timerID = undefined,
 	this.isPlaying = false;
 	this.seq = [0, 0, 0, 0, 0, 0, 0, 0]; 
-	this.buffer = audioFile; 
+	// this.buffer = audioFile; 
 		//self.source.connect(self.audioCtx.destination) // Pregunta: una vez que termina, también se desconecta? 
 	//self.source.start() // no es necesario reproducirlo aqui
 	// console.log("sample");
@@ -25,10 +26,14 @@ class Player {
     // ¿eso es innecesario? No aparece en algún otro lado
     }
 
+    load = function(audioFile){
+	this.buffer = audioFile; 
+    }
+
     startSeq = function(){
 	this.counter = 0;
 	this.futureTickTime = this.audioCtx.currentTime;
-	self.scheduler(); 
+	this.scheduler(); 
     }
     
     playSource = function(time){
@@ -63,7 +68,7 @@ class Player {
             this.playTick();
 	}
 
-	this.timerID = setTimeout(self.scheduler.bind(this), 0);
+	this.timerID = setTimeout(this.scheduler.bind(this), 0);
     }
 
    sequence = function(seq){
