@@ -11,12 +11,12 @@ const track0 = {
 	    "noteseq": true
 	},
 	"bd": {
-	    "query": "elektron sidstation bd",
+	    "query": "kick percussion electronic",
 	    "noteseq": false,
-	    "seqs": [[1, 0, 0, 1, 0, 0, 1, 0],
+	    "seqs": [[1, 0, 0, 0, 0, 0, 1, 0],
 		     [0, 1, 0, 0, 1, 0, 0, 1],
-		     [0, 0, 1, 0, 0, 1, 0, 0],
-		     [1, 0, 0, 1, 1, 0, 1, 1]]
+		     [1, 0, 1, 0, 1, 1, 0, 0],
+		     [1, 0, 0, 0, 1, 0, 1, 0]]
 	},
 	"sn": {
 	    "query": "snare",

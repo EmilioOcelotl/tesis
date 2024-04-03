@@ -22,8 +22,6 @@ import { Player } from '../js/Player.js';
 
 import { track0, track1 } from '../static/data/tracks.js';
 
-// var audioPath = jsonResponse.previews['preview-lq-ogg'];
-
 const seqspush = []; 
 
 for (let key in track0) {
@@ -411,6 +409,7 @@ function animate() {
 			audioRequest("texto");
 			gloop.seqtime = mainDurss;
 			gloop.seqpointer = mainPointer.flat();
+			//console.log(mainPointer.flat()); 
 			// console.log(INTERSECTED.userdata['dur']); // dur funciona, el asunto es que arroja dos elementos menos que el otro arreglo
 			//console.log(mainDurss); // otro arreglo  
 			//gloop.seqpointer = INTERSECTED.userdata.pos.flat;
@@ -422,6 +421,7 @@ function animate() {
 		    // console.log(interStr); 
 		    controls.target = INTERSECTED.position;
 		    document.getElementById("instrucciones").innerHTML = interStr;
+		    console.log(INTERSECTED.userdata.track); 
 		    //if(lcbool){
 		    //positions.push(INTERSECTED.position);
 		    //curve(positions); 
@@ -667,7 +667,7 @@ function saveNotes() {
 	    var localdur = dur(marksort[i].slice(4));
 	    var localpos = pos(marksort[i].slice(4));
 	    // sphCap[i].userdata = {sentiment: analyzer.getSentiment(test)};
-	    sphCap[i].userdata = { id: marksort[i].slice(4), sentiment: analyzer.getSentiment(test), dur: localdur, pos: localpos };
+	    sphCap[i].userdata = { track: contCol, id: marksort[i].slice(4), sentiment: analyzer.getSentiment(test), dur: localdur, pos: localpos };
 	    // sphCap[i].userdata = {num: contTotal};
 	    // console.log(sphCap[i].userdata.pos); 
 	    sphCap[i].position.x = vec.x;
@@ -718,6 +718,7 @@ function saveNotes() {
     // console.log(finalNotesPerChapter);
 
     contCol = 0
+    let contCapituloNota = 0; 
 
     for (let j = 0; j < notesCoords.length; j++) {
 
@@ -756,7 +757,7 @@ function saveNotes() {
 		var localdur = dur(marksort[i].slice(4));
 		var localpos = pos(marksort[i].slice(4));
 		// sphCap[i].userdata = {sentiment: analyzer.getSentiment(test)};
-		sphNotes[i].userdata = { id: marksort[i].slice(4), sentiment: analyzer.getSentiment(test), dur: localdur, pos: localpos };
+		sphNotes[i].userdata = { track: contCapituloNota, id: marksort[i].slice(4), sentiment: analyzer.getSentiment(test), dur: localdur, pos: localpos };
 		// console.log(sphNotes[i].userdata);
 		// console.log(sphNotes[i].userdata.sentiment); 
 		let nPosX = vec.x + notesCoords[j].x;
@@ -804,7 +805,8 @@ function saveNotes() {
 		const matNotes = new THREE.MeshStandardMaterial({ color: colors[1], emissive: colors[1], roughness: 0.6 });
 		sphNotes[i] = new THREE.Mesh(geoNotes, matNotes);
 		// rTarget.setText();
-		sphNotes[i].userdata = { id: marksort[i].slice(4) };
+		//sphNotes[i].userdata = { track: noteCapituloNota, id: marksort[i].slice(4) };
+		sphNotes[i].userdata = { track: contCapituloNota, id: marksort[i].slice(4), sentiment: analyzer.getSentiment(test), dur: localdur, pos: localpos };
 		//console.log(marksort[i].slice(4)); 
 		let nPosX = vec.x + notesCoords[j].x;
 		let nPosY = vec.y + notesCoords[j].y;
@@ -843,6 +845,8 @@ function saveNotes() {
 	}
 
 	th.scene.add(linenote);
+	contCapituloNota++; 
+	
     }
 
     //my_string="hello python world , i'm a beginner"
@@ -1100,14 +1104,14 @@ function audioRequest(string) { // Aquí tengo que agregar algún tipo de inform
 			    // console.log(seqbd);
 			    cosa.set(buffer, Math.random(), 1, 1, 0.05, 0.6);
 			    cosa.start();
-			    gloop.seqtime = [1000];
-			    gloop.seqpointer = [0];
+			    //gloop.seqtime = [1000];
+			    //gloop.seqpointer = [0];
 			    // console.log(mainPointer.flat()); 
 			    // gloop.seqpointer = [0, 0.5];
-			    gloop.seqfreqScale = [0.95, 1, 1.05];
+			    gloop.seqfreqScale = [0.5];
 			    gloop.seqwindowSize = [0.5];
 			    gloop.seqoverlaps = [0.1];
-			    gloop.seqwindowRandRatio = [0.5];
+			    gloop.seqwindowRandRatio = [0];
 			    gloop.start();
 			    boolCosa = true;
 			},
@@ -1133,6 +1137,10 @@ const query = track0.sc0.bd.query // Query de búsqueda
 
 // la función buscar debería pasar por un arreglo 
 console.log(query); 
+
+function globalCh(){
+    
+}
 
 buscarEnFreeSound(query, 1, 40, apiKey)
     .then(resultados => {
@@ -1174,6 +1182,49 @@ buscarEnFreeSound(query, 1, 40, apiKey)
     .catch(error => {
 	console.error('Error al buscar en FreeSound:', error);
     });
+
+
+buscarEnFreeSound("wood percussion short", 1, 40, apiKey)
+    .then(resultados => {
+	console.log(resultados); 
+	let res = resultados.resultados[Math.floor(Math.random() * resultados.resultados.length)];
+	let srchURL = 'https://freesound.org/apiv2/sounds/' + res.id; 
+	console.log("liga:" + srchURL);
+	//console.log(freeURL);
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', srchURL + '?format=json&token=' + apiKey, true);
+	xhr.onload = function () {
+	    if (xhr.status >= 200 && xhr.status < 300) {
+		var jsonResponse = JSON.parse(xhr.responseText);
+		var audioPath = jsonResponse.previews['preview-lq-ogg'];
+		const request = new XMLHttpRequest();
+		request.open('GET', audioPath, true);
+		request.responseType = 'arraybuffer';
+		request.onload = function () {
+		    let audioData = request.response;
+		    a.audioCtx.decodeAudioData(audioData, function (buffer) {
+			console.log("query"+buffer);
+			const player2 = new Player(a.audioCtx, buffer);
+			// player.tempo = 'track0.sc'+0+'.tempo';
+	
+			player2.sequence([0, 0, 0, 0, 1, 0, 0, 0]);
+			player2.startSeq();		
+		    },
+					       function (e) { "Error with decoding audio data" + e.error });
+		}
+		request.send();
+	    }
+	}
+	xhr.onerror = function () {
+	    console.error('Error de red o CORS');
+	};
+	xhr.send();
+
+    })
+    .catch(error => {
+	console.error('Error al buscar en FreeSound:', error);
+    });
+
 
 	// Es necesario al menos dos instrumentos percusivos
 	// Las notas pueden estar divididas temáticamente y cada tema puede corresponder aproximadamente a un capítulo.

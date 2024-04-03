@@ -81,7 +81,7 @@ class GLoop {
 	// Ejecución de la curva. Estaría bueno configurar el tipo de suavizado 
 	
 	const tween = new TWEEN.Tween(this.paramsInit, false)
-	      .to(paramsEnd, this.paramsInit.time) 
+	      .to(paramsEnd, (70/60) * 4000) 
 	      .easing(TWEEN.Easing.Quadratic.InOut)
 
 	      .onUpdate(() => { // Cambio del estado inicial al estado final 
@@ -95,11 +95,12 @@ class GLoop {
 	      })
 	
 	      .onComplete(() => { // cuando termina, el estado final se convierte en el estado inicial y se recorren las posiciones en los arreglos, si es que hay más de un elemento. 
-		 
+
+		  // console.log(this.grain.grain.pointer); 
 		  console.log("cambio"); 
 
 		  // Para reiniciar
-		  if(this.tweenloop){
+		  if(true){
 		      this.start();
 		  }
 

@@ -32,7 +32,7 @@ class Player {
     }
     
     playSource = function(time){
-	console.log("Inicio"); 
+	//console.log("Inicio"); 
 	this.source = this.audioCtx.createBufferSource();
 	this.source.connect(this.audioCtx.destination);
 	this.source.buffer = this.buffer;
@@ -42,14 +42,14 @@ class Player {
     schedule = function(time){
 	if(this.seq[this.counter] == 1){ 
 	    this.playSource(time);
-	    console.log("Suena"); 
+	    //console.log("Suena"); 
 	}
     }
 
     playTick = function() {
-	console.log(self.counter);
-	this.secondsPerBeat = 60 / this.tempo;
-	this.counterTimeValue = (this.secondsPerBeat / 4);
+	// console.log(self.counter);
+	this.secondsPerBeat = 70 / this.tempo;
+	this.counterTimeValue = (this.secondsPerBeat / 2);
 	this.counter += 1;
 	this.futureTickTime += this.counterTimeValue;
 	if(this.counter == this.seq.length){

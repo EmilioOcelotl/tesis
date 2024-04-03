@@ -20,7 +20,7 @@ class Grain {
 	// En el futuro esto podría conectarse a una cadena de efectos para darle un poco de profundidad y brillo.
 	// Es posible usar este nodo de ganancia para darle una envolvente a cada grano, 
 	this.gainNode.connect(this.audioCtx.destination);
-	this.gainNode.value = 0.25
+	this.gainNode.value = 1
 	this.overlap = 1;
 	this.counter = 0; 
     }
@@ -91,7 +91,7 @@ class Grain {
 	// Pensando que el sonido puede estar muy alto
 	// La ganancia podría ser una ponderación de la cantidad de overlaps que se suman
 	// calcular un tiempo de ataque que corresponda con la duración de la ventana
-	this.gainNode.gain.linearRampToValueAtTime(0.5, time + ((this.windowSize+algo)/8)); // Parece que la envolvente funciona 
+	this.gainNode.gain.linearRampToValueAtTime(1, time + ((this.windowSize+algo)/8)); // Parece que la envolvente funciona 
 	// self.gainNode.gain.linearRampToValueAtTime(0, time+self.windowSize+algo); 
 	//self.gainNode.gain.setValueAtTime(0.75, self.audioCtx.currentTime);
 	// Mientras tanto la reproducción podría ser en loop.
@@ -137,7 +137,7 @@ class Grain {
 
     playTick = function() {
 	// console.log(self.counter);
-	this.secondsPerBeat = this.overlaps; // se pone locuaz cuando son valores muy altos pero funciona
+	this.secondsPerBeat =  this.overlaps; // se pone locuaz cuando son valores muy altos pero funciona
 	// self.secondsPerBeat = self.overlap; // a ver si funciona pasando oberlap 
 	this.counterTimeValue = (this.secondsPerBeat / 1);
 	// self.counter += 1; // Creo que ya no es necesario tener un contador
