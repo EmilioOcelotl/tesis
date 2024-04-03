@@ -22,19 +22,7 @@ import { Player } from '../js/Player.js';
 
 import { track0, track1 } from '../static/data/tracks.js';
 
-const seqspush = []; 
-let globalBool  = false; 
-
-for (let key in track0) {
-    if (key.startsWith('sc')) {
-        const seqs = track0[key].bd.seqs.flat();
-        console.log(`Secuencias de ${key}:`, seqs);
-	seqspush.push(seqs); 
-    }
-}
-
-
-// console.log(track0.uno.hydra); 
+let scCount = 0; 
 // bd, sn, hi, gr, vc, bs, sm; 
 // let pistas = []; 
 
@@ -90,8 +78,13 @@ const hy = new HydraTex();
 const db = new DbReader()
 
 a.initAudio();
-let player = new Player(a.audioCtx);
+//let player = new Player(a.audioCtx);
 
+let players = []; 
+
+for(let i = 0; i < 2; i++){
+	players.push(new Player(a.audioCtx))
+}
 
 db.read("./sql/document.db");
 
@@ -1141,102 +1134,80 @@ function audioRequest(string) { // Aquí tengo que agregar algún tipo de inform
 
 function globalCh(track){
 
-    // yer.dispose();
-   
-    //player = null;
-    //delete player; 
-    const query = track0.sc0.bd.query // Query de búsqueda
+    // Obtener el índice de la escena actual
+    let sceneIndex = "sc" + scCount ; // Esto supone que solo hay sc0 y sc1
 
-    // la función buscar debería pasar por un arreglo 
-    console.log(query); 
-    console.log(track);
+    let bdQueryValue = track0[sceneIndex].instruments.bd.query;
+	let bdSeqsValue = track0[sceneIndex].instruments.bd.seqs;
+  
+    // let scIndex = track0[sceneIndex];
+
+	console.log(bdSeqsValue, bdQueryValue)
+
+	let instrumentIndices = Object.keys(track0[sceneIndex].instruments);
+
+		instrumentIndices.forEach((instrumentIndex) => {
+
+		let numericIndex = instrumentIndices.indexOf(instrumentIndex);
+        let queryValue = track0[sceneIndex].instruments[instrumentIndex].query;
+		let seqsValue = track0[sceneIndex].instruments[instrumentIndex].seqs.flat();
+		console.log(queryValue)
+		// console.log(instrumentIndex)
+
+		buscarEnFreeSound(queryValue, 1, 40, apiKey)
+		.then(resultados => {
+			console.log(numericIndex); 
+			let res = resultados.resultados[Math.floor(Math.random() * resultados.resultados.length)];
+			let srchURL = 'https://freesound.org/apiv2/sounds/' + res.id; 
+			console.log("liga:" + srchURL);
+			//console.log(freeURL);
+			var xhr = new XMLHttpRequest();
+			xhr.open('GET', srchURL + '?format=json&token=' + apiKey, true);
+			xhr.onload = function () {
+			if (xhr.status >= 200 && xhr.status < 300) {
+				var jsonResponse = JSON.parse(xhr.responseText);
+				var audioPath = jsonResponse.previews['preview-lq-ogg'];
+				const request = new XMLHttpRequest();
+				request.open('GET', audioPath, true);
+				request.responseType = 'arraybuffer';
+				request.onload = function () {
+				let audioData = request.response;
+				a.audioCtx.decodeAudioData(audioData, function (buffer) {
+						console.log(buffer);
+					// player.tempo = 'track0.sc'+0+'.tempo'
+					// players[numericIndex].stop(); 
+					players[numericIndex].load(buffer); 
+					players[numericIndex].sequence(seqsValue);
+					players[numericIndex].startSeq();    
+				},
+							   function (e) { "Error with decoding audio data" + e.error });
+				}
+				request.send();
+			}
+			}
+			xhr.onerror = function () {
+			console.error('Error de red o CORS');
+			};
+			xhr.send();
+			
+		})
+		.catch(error => {
+			console.error('Error al buscar en FreeSound:', error);
+		});   
 
 
-    buscarEnFreeSound(query, 1, 40, apiKey)
-	.then(resultados => {
-	    console.log(resultados); 
-	    let res = resultados.resultados[Math.floor(Math.random() * resultados.resultados.length)];
-	    let srchURL = 'https://freesound.org/apiv2/sounds/' + res.id; 
-	    console.log("liga:" + srchURL);
-	    //console.log(freeURL);
-	    var xhr = new XMLHttpRequest();
-	    xhr.open('GET', srchURL + '?format=json&token=' + apiKey, true);
-	    xhr.onload = function () {
-		if (xhr.status >= 200 && xhr.status < 300) {
-		    var jsonResponse = JSON.parse(xhr.responseText);
-		    var audioPath = jsonResponse.previews['preview-lq-ogg'];
-		    const request = new XMLHttpRequest();
-		    request.open('GET', audioPath, true);
-		    request.responseType = 'arraybuffer';
-		    request.onload = function () {
-			let audioData = request.response;
-			a.audioCtx.decodeAudioData(audioData, function (buffer) {
-			    // console.log("query"+buffer);
-			    // player.tempo = 'track0.sc'+0+'.tempo'
-			    player.stop(); 
-			    player.load(buffer); 
-			    // player.load(buffer);
-			    player.sequence(seqspush[0]);
-				player.startSeq();    
-			},
-						   function (e) { "Error with decoding audio data" + e.error });
-		    }
-		    request.send();
-		}
-	    }
-	    xhr.onerror = function () {
-		console.error('Error de red o CORS');
-	    };
-	    xhr.send();
-	    
-	})
-	.catch(error => {
-	    console.error('Error al buscar en FreeSound:', error);
-	});    
+
+    });
+	
+	scCount++; 
+
+
+	if(scCount == Object.keys(track0).length){
+		scCount = 0; 
+	}
+     
 }
 
-/*
-buscarEnFreeSound("wood percussion short", 1, 40, apiKey)
-    .then(resultados => {
-	console.log(resultados); 
-	let res = resultados.resultados[Math.floor(Math.random() * resultados.resultados.length)];
-	let srchURL = 'https://freesound.org/apiv2/sounds/' + res.id; 
-	console.log("liga:" + srchURL);
-	//console.log(freeURL);
-	var xhr = new XMLHttpRequest();
-	xhr.open('GET', srchURL + '?format=json&token=' + apiKey, true);
-	xhr.onload = function () {
-	    if (xhr.status >= 200 && xhr.status < 300) {
-		var jsonResponse = JSON.parse(xhr.responseText);
-		var audioPath = jsonResponse.previews['preview-lq-ogg'];
-		const request = new XMLHttpRequest();
-		request.open('GET', audioPath, true);
-		request.responseType = 'arraybuffer';
-		request.onload = function () {
-		    let audioData = request.response;
-		    a.audioCtx.decodeAudioData(audioData, function (buffer) {
-			console.log("query"+buffer);
-			const player2 = new Player(a.audioCtx, buffer);
-			// player.tempo = 'track0.sc'+0+'.tempo';
-	
-			player2.sequence([0, 0, 0, 0, 1, 0, 0, 0]);
-			player2.startSeq();		
-		    },
-					       function (e) { "Error with decoding audio data" + e.error });
-		}
-		request.send();
-	    }
-	}
-	xhr.onerror = function () {
-	    console.error('Error de red o CORS');
-	};
-	xhr.send();
-
-    })
-    .catch(error => {
-	console.error('Error al buscar en FreeSound:', error);
-    });
-*/
 
 	// Es necesario al menos dos instrumentos percusivos
 	// Las notas pueden estar divididas temáticamente y cada tema puede corresponder aproximadamente a un capítulo.

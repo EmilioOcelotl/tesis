@@ -54,7 +54,7 @@ class Player {
     playTick = function() {
 	// console.log(self.counter);
 	this.secondsPerBeat = 70 / this.tempo;
-	this.counterTimeValue = (this.secondsPerBeat / 2);
+	this.counterTimeValue = (this.secondsPerBeat / 4);
 	this.counter += 1;
 	this.futureTickTime += this.counterTimeValue;
 	if(this.counter == this.seq.length){
