@@ -1137,12 +1137,12 @@ function globalCh(track){
     // Obtener el índice de la escena actual
     let sceneIndex = "sc" + scCount ; // Esto supone que solo hay sc0 y sc1
 
-    let bdQueryValue = track0[sceneIndex].instruments.bd.query;
-	let bdSeqsValue = track0[sceneIndex].instruments.bd.seqs;
+    //let bdQueryValue = track0[sceneIndex].instruments.bd.query;
+	//let bdSeqsValue = track0[sceneIndex].instruments.bd.seqs;
   
     // let scIndex = track0[sceneIndex];
 
-	console.log(bdSeqsValue, bdQueryValue)
+	//console.log(bdSeqsValue, bdQueryValue)
 
 	let instrumentIndices = Object.keys(track0[sceneIndex].instruments);
 
@@ -1151,7 +1151,8 @@ function globalCh(track){
 		let numericIndex = instrumentIndices.indexOf(instrumentIndex);
         let queryValue = track0[sceneIndex].instruments[instrumentIndex].query;
 		let seqsValue = track0[sceneIndex].instruments[instrumentIndex].seqs.flat();
-		console.log(queryValue)
+		let grainValue = track0[sceneIndex].instruments[instrumentIndex].grain; 
+		console.log(grainValue);
 		// console.log(instrumentIndex)
 
 		buscarEnFreeSound(queryValue, 1, 40, apiKey)

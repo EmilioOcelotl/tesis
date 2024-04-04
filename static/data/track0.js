@@ -9,6 +9,7 @@ const track0 = {
 			"bd": {
 				"query": "kick percussion electronic",
 				"noteseq": true,
+				"grain": false, 
 				"seqs":
 					[[1, 0, 0, 0, 0, 0, 1, 0],
 					[0, 1, 0, 0, 1, 0, 0, 1],
@@ -18,11 +19,22 @@ const track0 = {
 			"sn": {
 				"query": "hit clap short",
 				"noteseq": true,
+				"grain": false, 
 				"seqs":
 					[[0, 0, 0, 0, 1, 1, 0, 0],
 					[0, 0, 0, 0, 1, 0, 1, 0],
 					[0, 0, 0, 0, 1, 0, 1, 0],
 					[1, 0, 0, 0, 1, 0, 1, 0]]
+			},
+			"wp": {
+				"query": "cdmx field recording",
+				"noteseq": true, 
+				"grain": true, 
+				"seqs": [1, 0, 1, 0, 1], 
+				"seqfreqScale": [0.1, 0.12, 0.13, 0.14, 0.15],
+				"seqwindowSize": [1, 1.1, 1, 1.4, 1],
+				"seqoverlaps": [0.1, 0.5, 0.01, 0.5, 0.1],
+				"seqwindowRandRatio": [0, 0.3, 1, 0.3, 0]
 			}
 		}
 	},
@@ -35,6 +47,7 @@ const track0 = {
 			"bd": {
 				"query": "kick percussion electronic",
 				"noteseq": true,
+				"grain": false, 
 				"seqs":
 					[[1, 0, 0, 0, 0, 0, 1, 0],
 					[0, 1, 0, 0, 1, 0, 0, 1],
@@ -42,13 +55,24 @@ const track0 = {
 					[1, 0, 0, 0, 1, 0, 1, 0]]
 			},
 			"sn": {
-				"query": "hit wood",
+				"query": "hit clap short",
 				"noteseq": true,
+				"grain": false, 
 				"seqs":
 					[[0, 0, 0, 0, 1, 1, 0, 0],
 					[0, 0, 0, 0, 1, 0, 1, 0],
 					[0, 0, 0, 0, 1, 0, 1, 0],
 					[1, 0, 0, 0, 1, 0, 1, 0]]
+			},
+			"wp": {
+				"query": "cdmx field recording",
+				"noteseq": true, 
+				"grain": true, 
+				"seqs": [1, 0, 1, 0, 1], 
+				"seqfreqScale": [0.1, 0.12, 0.13, 0.14, 0.15],
+				"seqwindowSize": [1, 1.1, 1, 1.4, 1],
+				"seqoverlaps": [0.1, 0.5, 0.01, 0.5, 0.1],
+				"seqwindowRandRatio": [0, 0.3, 1, 0.3, 0]
 			}
 		}
 	}
