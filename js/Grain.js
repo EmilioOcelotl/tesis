@@ -2,7 +2,7 @@ const { map_range } = require('./utils.js');
 
 class Grain {
 
-    constructor(aCtx, type = 'grain'){
+    constructor(aCtx, pointer = 0, freqScale = 1, windowSize=0.1, overlaps=0.1, windowRandRatio=0, type = 'grain'){ // Determinar unos valores iniciales en el constructor 
 	// Player2(aCtx){ // audiocontext y el archivo a cargar
 	self = this;
 	// se pueden pasar sin ser objetos independientes? Recuerdo que para algo se necesitaban 
@@ -23,6 +23,15 @@ class Grain {
 	this.gain = 0.25; 
 	this.overlap = 1;
 	this.counter = 0; 
+	this.buffer = 0; // Primero definir el buffer
+	this.pointer = pointer; // punto de inicio
+	// console.log(self.pointer); 
+	this.freqScale = freqScale; // Problema con valores negativos
+	// self.detune = detune; // se realiza en relación a los valores de freqScale y está dado en cents, donde 0 es el valor original
+	this.windowSize = windowSize; // punto final en el codigo tendria que ser pointer punto de inicio y pointer + wS como final
+	this.overlaps = overlaps; // cantidad de ventanas. Seguramente esto funciona en una tasa de ventanas/s, en SC es posible usar numeros de punto flotante. Esto necesariamente implicaría que tenemos conocimiento del tiempo. 
+	this.windowRandRatio = windowRandRatio; // 
+	
     }
     // para reproducir la muestra provisionalmente 
 
@@ -100,9 +109,8 @@ class Grain {
 	//self.gainNode.gain.setValueAtTime(0.75, self.audioCtx.currentTime);
 	// Mientras tanto la reproducción podría ser en loop.
 	
-	this.source = self.audioCtx.createBufferSource();
+	this.source = this.audioCtx.createBufferSource();
 	this.source.connect(this.gainNode);
-
 	this.source.buffer = this.buffer;
 
 	// Esto realmente tendría que estar como en espejo
@@ -117,8 +125,10 @@ class Grain {
 	// importante: si la duración es muy baja, la multiplicación puede alcanzar valores negativos y el programa se traba
 	// agregar una envolvente para que el sonido no se escuche tan crudo 
 	//----------------------------------------------
-	
-	this.source.start(self.audioCtx.currentTime+time, this.pointer+algo, this.windowSize+algo);
+	console.log(this.audioCtx.currentTime+time, this.pointer+algo, this.windowSize+algo);
+
+	this.source.start(this.audioCtx.currentTime+time, this.pointer+algo, this.windowSize+algo);
+
 	// de inmediato, los otros dos parámetros indican inicio y final de la reproducción de la muestra. Hay que ver qué sucede si el inicio y el final no dan un resultado deseado.
 	// source.start también podría tener algún tipo de compensación de windowRandRatio
 	// solo se reproduce una vez, como no está en loop desaparece cada verz que termina. Entonces tenemos que implementar algo parecido al reloj de player
@@ -128,13 +138,13 @@ class Grain {
     // Mientras van a dentro, en el futuro determinar cómo pueden ir afuera
 
     scheduler = function() {
-	if (this.futureTickTime < self.audioCtx.currentTime + 0.1) {
-            this.schedule(this.futureTickTime - self.audioCtx.currentTime);
+	if (this.futureTickTime < this.audioCtx.currentTime + 0.1) {
+            this.schedule(this.futureTickTime - this.audioCtx.currentTime);
             this.playTick();
 	}
 	
 	//self.timerID = setTimeout(function(){self.scheduler()}, 0);
-	this.timerID = setTimeout(self.scheduler.bind(this), 0); 
+	this.timerID = setTimeout(this.scheduler.bind(this), 0); 
 	//requestAnimationFrame(this.scheduler());
 	
     }

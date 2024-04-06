@@ -409,10 +409,10 @@ function animate() {
 		    // Hay una contradicción de bool cosa encontrar algún audio que sea placeholder 
 		    if (boolCosa) {
 			//llamadas al cambio de audio
-			audioRequest("texto");
+			//audioRequest("texto");
 			// Esto tiene que filtrarse para cuando son gloops 
-			players[2].seqtime = mainDurss;
-			players[2].seqpointer = mainPointer.flat();
+				players[2].seqtime = mainDurss;
+				players[2].seqpointer = mainPointer.flat();
 			//console.log(mainPointer.flat()); 
 			// console.log(INTERSECTED.userdata['dur']); // dur funciona, el asunto es que arroja dos elementos menos que el otro arreglo
 			//console.log(mainDurss); // otro arreglo  
@@ -1074,6 +1074,7 @@ function txtToSeq(txt) {
 
 // esto funciona para obtener todas las muestras que tengo en mi perfil. 
 
+
 function audioRequest(string) { // Aquí tengo que agregar algún tipo de información proveniente de la nota.
     // console.log(string);
     fetch(url)
@@ -1138,6 +1139,7 @@ function audioRequest(string) { // Aquí tengo que agregar algún tipo de inform
 	    console.error('Error en la solicitud:', error);
 	});
 }
+
 
 function globalCh(track){
 
