@@ -4,7 +4,6 @@ class Grain {
 
     constructor(aCtx, type = 'grain'){
 	// Player2(aCtx){ // audiocontext y el archivo a cargar
-	
 	self = this;
 	// se pueden pasar sin ser objetos independientes? Recuerdo que para algo se necesitaban 
 	this.audioCtx = aCtx;
@@ -20,7 +19,8 @@ class Grain {
 	// En el futuro esto podría conectarse a una cadena de efectos para darle un poco de profundidad y brillo.
 	// Es posible usar este nodo de ganancia para darle una envolvente a cada grano, 
 	this.gainNode.connect(this.audioCtx.destination);
-	this.gainNode.value = 1
+	this.gainNode.value = 1; // creo que este valor no hace nada, eliminarlo en el futuro 
+	this.gain = 0.25; 
 	this.overlap = 1;
 	this.counter = 0; 
     }
@@ -79,6 +79,10 @@ class Grain {
 	// console.log(self.pointer); 	
 	
     }
+
+	load = function(audioFile){
+		this.buffer = audioFile; 
+	}
    
     // Iniciar y detener 
     // No se va a poder con  audioWorklets
@@ -91,7 +95,7 @@ class Grain {
 	// Pensando que el sonido puede estar muy alto
 	// La ganancia podría ser una ponderación de la cantidad de overlaps que se suman
 	// calcular un tiempo de ataque que corresponda con la duración de la ventana
-	this.gainNode.gain.linearRampToValueAtTime(1, time + ((this.windowSize+algo)/8)); // Parece que la envolvente funciona 
+	this.gainNode.gain.linearRampToValueAtTime(this.gain, time + ((this.windowSize+algo)/8)); // Parece que la envolvente funciona 
 	// self.gainNode.gain.linearRampToValueAtTime(0, time+self.windowSize+algo); 
 	//self.gainNode.gain.setValueAtTime(0.75, self.audioCtx.currentTime);
 	// Mientras tanto la reproducción podría ser en loop.
@@ -114,7 +118,7 @@ class Grain {
 	// agregar una envolvente para que el sonido no se escuche tan crudo 
 	//----------------------------------------------
 	
-	this.source.start(self.audioCtx.currentTime+time, this.pointer+algo,this.windowSize+algo);
+	this.source.start(self.audioCtx.currentTime+time, this.pointer+algo, this.windowSize+algo);
 	// de inmediato, los otros dos parámetros indican inicio y final de la reproducción de la muestra. Hay que ver qué sucede si el inicio y el final no dan un resultado deseado.
 	// source.start también podría tener algún tipo de compensación de windowRandRatio
 	// solo se reproduce una vez, como no está en loop desaparece cada verz que termina. Entonces tenemos que implementar algo parecido al reloj de player
@@ -173,7 +177,5 @@ class Grain {
     }
     
 }
-
-
 
 module.exports = { Grain } 

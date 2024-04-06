@@ -26,7 +26,7 @@ Este proyecto utilizó principalmente:
 
 - [chiltepin](https://github.com/sptm-unam/chiltepin). Como inspiración pero también para gestionar y reflexionar sobre las expresiones regulares. 
 
-## Nota 
+## Requerimientos adicionales  
 
 Es necesario tener la base de datos (db). El orden de los resultados dependerá de la jerarquía de las etiquetas. Para este caso, fue necesario implementar filtros con notas que no desparecieron del todo de la base de datos. 
 
@@ -44,7 +44,6 @@ const endpoint = '/users/${userId}/sounds/';
 const url = '${apiUrl}${endpoint}?token=${apiKey}';
 
 export{apiKey, url}
-
 ```
 
 ## Ejecución

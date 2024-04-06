@@ -11,9 +11,9 @@ class Player {
 		this.counter = 1;
 		this.tempo = 120;
 		this.secondsPerBeat = 120 / this.tempo,
-			this.counterTimeValue = (this.secondsPerBeat / 4),
-			this.timerID = undefined,
-			this.isPlaying = false;
+		this.counterTimeValue = (this.secondsPerBeat / 4),
+		this.timerID = undefined,
+		this.isPlaying = false;
 		this.seq = [0, 0, 0, 0, 0, 0, 0, 0];
 		// this.buffer = audioFile; 
 		//self.source.connect(self.audioCtx.destination) // Pregunta: una vez que termina, también se desconecta? 
@@ -30,7 +30,7 @@ class Player {
 		this.buffer = audioFile;
 	}
 
-	startSeq = function () {
+	start = function () {
 		this.counter = 0;
 		this.futureTickTime = this.audioCtx.currentTime;
 		this.scheduler();

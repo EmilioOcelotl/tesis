@@ -21,13 +21,14 @@ import { map_range } from '../js/utils.js';
 import { Player } from '../js/Player.js'; 
 
 import { track0, track1 } from '../static/data/tracks.js';
+//console.log(Object.keys(track0).length)
 
 let scCount = 0; 
 // bd, sn, hi, gr, vc, bs, sm; 
 // let pistas = []; 
 
 // Realiza la solicitud GET a la API de Freesound
-audioRequest("texto");
+// audioRequest("texto");
 //const apiUrl = 'https://freesound.org/apiv2';
 
 let freeURL;
@@ -82,9 +83,16 @@ a.initAudio();
 
 let players = []; 
 
-for(let i = 0; i < 2; i++){
+for(let i = 0; i < 2; i++){ // cantidad total de players, diferenciar entre grains y players
 	players.push(new Player(a.audioCtx))
 }
+
+let cosa = new Grain(a.audioCtx);
+players.push(new GLoop( {grain: cosa}))
+
+// const gloop = new GLoop({ grain: cosa });
+
+let boolCosa;
 
 db.read("./sql/document.db");
 
@@ -160,10 +168,7 @@ let lcbool = false;
 // const rTarget = new RTarget(); 
 // rTarget.setText(); 
 
-let cosa = new Grain(a.audioCtx);
-const gloop = new GLoop({ grain: cosa });
 
-let boolCosa;
 
 // let twC; 
 //let tween;
@@ -362,7 +367,8 @@ function animate() {
     if (boolCosa) {
 	//cosa.pointer = cursorX / 20;
 	//cosa.freqScale =  (cursorY/100)-2.2;
-	gloop.update();
+	// gloop.update();
+	players[2].update(); // esto es esclusivo de los loops. Hay que revisar esto en el futuro 
     }
 
     raycaster.setFromCamera(pointer, th.camera);
@@ -404,8 +410,9 @@ function animate() {
 		    if (boolCosa) {
 			//llamadas al cambio de audio
 			audioRequest("texto");
-			gloop.seqtime = mainDurss;
-			gloop.seqpointer = mainPointer.flat();
+			// Esto tiene que filtrarse para cuando son gloops 
+			players[2].seqtime = mainDurss;
+			players[2].seqpointer = mainPointer.flat();
 			//console.log(mainPointer.flat()); 
 			// console.log(INTERSECTED.userdata['dur']); // dur funciona, el asunto es que arroja dos elementos menos que el otro arreglo
 			//console.log(mainDurss); // otro arreglo  
@@ -1102,16 +1109,16 @@ function audioRequest(string) { // Aquí tengo que agregar algún tipo de inform
 			    //let seqbd = new Sequencer(a.audioCtx, buffer);
 			    // console.log(seqbd);
 			    cosa.set(buffer, Math.random(), 1, 1, 0.05, 0.6);
-			    cosa.start();
+			    //cosa.start();
 			    //gloop.seqtime = [1000];
 			    //gloop.seqpointer = [0];
 			    // console.log(mainPointer.flat()); 
 			    // gloop.seqpointer = [0, 0.5];
-			    gloop.seqfreqScale = [0.5];
-			    gloop.seqwindowSize = [0.5];
-			    gloop.seqoverlaps = [0.1];
-			    gloop.seqwindowRandRatio = [0];
-			    gloop.start();
+			    //gloop.seqfreqScale = [0.5];
+			    //gloop.seqwindowSize = [0.5];
+			   // gloop.seqoverlaps = [0.1];
+			    //gloop.seqwindowRandRatio = [0];
+			   // gloop.start();
 			    boolCosa = true;
 			},
 						   function (e) { "Error with decoding audio data" + e.error });
@@ -1139,9 +1146,7 @@ function globalCh(track){
 
     //let bdQueryValue = track0[sceneIndex].instruments.bd.query;
 	//let bdSeqsValue = track0[sceneIndex].instruments.bd.seqs;
-  
     // let scIndex = track0[sceneIndex];
-
 	//console.log(bdSeqsValue, bdQueryValue)
 
 	let instrumentIndices = Object.keys(track0[sceneIndex].instruments);
@@ -1152,12 +1157,12 @@ function globalCh(track){
         let queryValue = track0[sceneIndex].instruments[instrumentIndex].query;
 		let seqsValue = track0[sceneIndex].instruments[instrumentIndex].seqs.flat();
 		let grainValue = track0[sceneIndex].instruments[instrumentIndex].grain; 
-		console.log(grainValue);
-		// console.log(instrumentIndex)
+		console.log(queryValue)
 
 		buscarEnFreeSound(queryValue, 1, 40, apiKey)
 		.then(resultados => {
-			console.log(numericIndex); 
+
+			console.log(resultados); 
 			let res = resultados.resultados[Math.floor(Math.random() * resultados.resultados.length)];
 			let srchURL = 'https://freesound.org/apiv2/sounds/' + res.id; 
 			console.log("liga:" + srchURL);
@@ -1174,12 +1179,20 @@ function globalCh(track){
 				request.onload = function () {
 				let audioData = request.response;
 				a.audioCtx.decodeAudioData(audioData, function (buffer) {
-						console.log(buffer);
 					// player.tempo = 'track0.sc'+0+'.tempo'
-					// players[numericIndex].stop(); 
-					players[numericIndex].load(buffer); 
-					players[numericIndex].sequence(seqsValue);
-					players[numericIndex].startSeq();    
+					// players[numericIndex].stop();
+					console.log(grainValue);
+					// console.log(buffer)
+					// Todo funciona el problema es que si aumentamos la cantidad de players todo se vuelve loco
+					// Hay que filtrar, el otro problema es que si no hay un player con los métodos de un player no lo logra 
+					// Diferenciar entre lo que modifica grain y lo que modifica gloop 
+					players[numericIndex].load(buffer); // Esto solo compete a grain. Se podría determinar desde gloop 
+					players[numericIndex].sequence(seqsValue); // gloop 
+					players[numericIndex].start(); // // gloop y grains podría ir desde gloop    
+					//cosa.buffer = buffer; 
+					//console.log("hola")
+					boolCosa = true;
+
 				},
 							   function (e) { "Error with decoding audio data" + e.error });
 				}
@@ -1196,19 +1209,16 @@ function globalCh(track){
 			console.error('Error al buscar en FreeSound:', error);
 		});   
 
-
-
     });
 	
 	scCount++; 
 
-
-	if(scCount == Object.keys(track0).length){
+	//--------------------------------------------------------------------------------------
+	if(scCount == Object.keys(track0).length){ // este cambio no es sobre escenas sino sobre instrumentos
 		scCount = 0; 
 	}
      
 }
-
 
 	// Es necesario al menos dos instrumentos percusivos
 	// Las notas pueden estar divididas temáticamente y cada tema puede corresponder aproximadamente a un capítulo.

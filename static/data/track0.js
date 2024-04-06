@@ -27,7 +27,7 @@ const track0 = {
 					[1, 0, 0, 0, 1, 0, 1, 0]]
 			},
 			"wp": {
-				"query": "cdmx field recording",
+				"query": "cdmx",
 				"noteseq": true, 
 				"grain": true, 
 				"seqs": [1, 0, 1, 0, 1], 
@@ -59,10 +59,10 @@ const track0 = {
 				"noteseq": true,
 				"grain": false, 
 				"seqs":
-					[[0, 0, 0, 0, 1, 1, 0, 0],
-					[0, 0, 0, 0, 1, 0, 1, 0],
-					[0, 0, 0, 0, 1, 0, 1, 0],
-					[1, 0, 0, 0, 1, 0, 1, 0]]
+					[[1],
+					[1],
+					[1],
+					[1]]
 			},
 			"wp": {
 				"query": "cdmx field recording",
