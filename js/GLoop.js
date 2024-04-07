@@ -10,7 +10,7 @@ import * as TWEEN from 'tween';
 
 class GLoop {
     
-    constructor(grain, seqpointer = [0.5], seqfreqscale = [1], seqwindowsize = [0.1], seqoverlaps = [0.25], seqwindowrandratio = [0.5], seqtime = [8000], grainsequence = [0.5], tweenloop = true, type='gloop'){
+    constructor(grain, seqpointer = [0.5], seqfreqscale = [1], seqwindowsize = [0.5], seqoverlaps = [0.01], seqwindowrandratio = [0.5], seqtime = [8000], grainsequence = [0.5], tweenloop = true, type='gloop'){
 
 		self = this;
 		// self.grain = grain;
@@ -30,7 +30,7 @@ class GLoop {
 
     // es posible modificar sobre la marcha los valores de Grain. Valdría la pena quitar los parámetros definidos y definir todos de una vez o como una lista. 
 
-    set = function(seqpointer = [0.5], seqfreqscale = [1], seqwindowsize = [0.1], seqoverlaps = [0.25], seqwindowrandratio = [0.5], seqtime = [1000], sequence = [0.5], tweenloop = true){
+    set = function(seqpointer = [0.5], seqfreqscale = [1], seqwindowsize = [0.5], seqoverlaps = [0.75], seqwindowrandratio = [0.5], seqtime = [1000], grainsequence = [0.5], tweenloop = true){
 	
 		this.seqpointer = seqpointer;
 		this.seqfreqScale = seqfreqscale;
@@ -106,7 +106,7 @@ class GLoop {
 	// Ejecución de la curva. Estaría bueno configurar el tipo de suavizado 
 	
 	const tween = new TWEEN.Tween(this.paramsInit, false)
-	      .to(paramsEnd, (70/60) * 4000) // El tiempo no está siendo secuenciado. Revisar esto en el futuro 
+	      .to(paramsEnd, 8000) // El tiempo no está siendo secuenciado. Revisar esto en el futuro 
 	      .easing(TWEEN.Easing.Quadratic.InOut)
 
 	      .onUpdate(() => { // Cambio del estado inicial al estado final 

@@ -30,7 +30,7 @@ const track0 = {
 				"query": "cdmx",
 				"noteseq": true, 
 				"grain": true, 
-				"seqs": [1, 0, 1, 0, 1], 
+				"seqs": [1], 
 				"seqfreqScale": [0.1, 0.12, 0.13, 0.14, 0.15],
 				"seqwindowSize": [1, 1.1, 1, 1.4, 1],
 				"seqoverlaps": [0.1, 0.5, 0.01, 0.5, 0.1],
@@ -55,20 +55,20 @@ const track0 = {
 					[1, 0, 0, 0, 1, 0, 1, 0]]
 			},
 			"sn": {
-				"query": "hit clap short",
+				"query": "hit hihat short",
 				"noteseq": true,
 				"grain": false, 
 				"seqs":
-					[[1],
-					[1],
-					[1],
-					[1]]
+					[[0, 1, 0],
+					[0, 1, 1],
+					[0, 1, 0],
+					[1, 0, 1]]
 			},
 			"wp": {
 				"query": "cdmx field recording",
 				"noteseq": true, 
 				"grain": true, 
-				"seqs": [1, 0, 1, 0, 1], 
+				"seqs": [0.01, 0.01, 0], 
 				"seqfreqScale": [0.1, 0.12, 0.13, 0.14, 0.15],
 				"seqwindowSize": [1, 1.1, 1, 1.4, 1],
 				"seqoverlaps": [0.1, 0.5, 0.01, 0.5, 0.1],

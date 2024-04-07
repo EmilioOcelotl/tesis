@@ -20,7 +20,7 @@ class Grain {
 	// Es posible usar este nodo de ganancia para darle una envolvente a cada grano, 
 	this.gainNode.connect(this.audioCtx.destination);
 	this.gainNode.value = 1; // creo que este valor no hace nada, eliminarlo en el futuro 
-	this.gain = 0.25; 
+	this.gain = 0.125; 
 	this.overlap = 1;
 	this.counter = 0; 
 	this.buffer = 0; // Primero definir el buffer
@@ -125,7 +125,7 @@ class Grain {
 	// importante: si la duración es muy baja, la multiplicación puede alcanzar valores negativos y el programa se traba
 	// agregar una envolvente para que el sonido no se escuche tan crudo 
 	//----------------------------------------------
-	console.log(this.audioCtx.currentTime+time, this.pointer+algo, this.windowSize+algo);
+	// console.log(this.audioCtx.currentTime+time, this.pointer+algo, this.windowSize+algo);
 
 	this.source.start(this.audioCtx.currentTime+time, this.pointer+algo, this.windowSize+algo);
 
