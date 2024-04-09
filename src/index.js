@@ -24,6 +24,7 @@ import { track0, track1 } from '../static/data/tracks.js';
 //console.log(Object.keys(track0).length)
 
 let scCount = 0; 
+let primeraAnimacion = false; 
 // bd, sn, hi, gr, vc, bs, sm; 
 // let pistas = []; 
 
@@ -245,7 +246,8 @@ function init() {
     sphere44 = new THREE.Mesh(geometry44, material44);
 
     // rTarget.setText(); 
-    sphere44.userdata = { id: 'iniciar' };
+    sphere44.userdata = { id: 'Tres Estudios Abiertos</br></br>Escritura de código en Javascript para el performance audiovisual y la investigación artística </br></br>ESC para cerrar esta ventana y recuperar el control del punto de vista'};
+
 
     th.scene.add(sphere44);
     // sphere44.position.z = -20;
@@ -255,7 +257,7 @@ function init() {
     sphTres = new THREE.Mesh(geoTres, matTres);
 
     // rTarget.setText(); 
-    sphTres.userdata = { id: 'Tres Estudios Abiertos</br>Explicar controles' };
+    sphTres.userdata = { id: 'Tres Estudios Abiertos</br></br>Escritura de código en Javascript para el performance audiovisual y la investigación artística </br></br>ESC para cerrar esta ventana y recuperar el control del punto de vista'};
 
     th.scene.add(sphTres);
 
@@ -479,7 +481,7 @@ function change() {
 	printPDF();
     }
 
-    if (interStr == 'iniciar') {
+    if (!primeraAnimacion) {
 	saveNotes();
 	const coords = {
 	    x: th.camera.position.x,
@@ -488,7 +490,7 @@ function change() {
 	} // Start at (0, 0)
 
 	tween = new TWEEN.Tween(coords, false) // Create a new tween that modifies 'coords'.
-	    .to({ x: 0, y: 0, z: 20 }, 2000) // Move to (300, 200) in 1 second.
+	    .to({ x: 0, y: 0, z: 20 }, 4000) // Move to (300, 200) in 1 second.
 	    .easing(TWEEN.Easing.Quadratic.InOut)
 	    .onUpdate(() => {
 		th.camera.position.z = coords.z;
@@ -501,6 +503,7 @@ function change() {
 	    .onComplete(() => {
 		// Pasar los datos de txtToSeq 
 		livecodeame();
+		primeraAnimacion = true; 
 		// audioRequest("texto"); 
 	    })
 	    .start()
