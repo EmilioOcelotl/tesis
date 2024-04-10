@@ -122,9 +122,17 @@ class GLoop {
 	
 	      .onComplete(() => { // cuando termina, el estado final se convierte en el estado inicial y se recorren las posiciones en los arreglos, si es que hay más de un elemento. 
 
+			/*	
 		  // console.log(this.grain.grain.pointer); 
 		  console.log("cambio"); 
+         document.getElementById("mensajes").innerHTML += "<p>pointer: "+this.grain.grain.pointer+"</p>";
+         document.getElementById("mensajes").innerHTML += "<p>freqScale: "+this.grain.grain.freqScale+"</p>";
+         document.getElementById("mensajes").innerHTML += "<p>windowSize: "+this.grain.grain.windowSize+"</p>";
+         document.getElementById("mensajes").innerHTML += "<p>overlaps: "+this.grain.grain.overlaps+"</p>";
+         document.getElementById("mensajes").innerHTML += "<p>windowRandRatio: "+this.grain.grain.windowRandRatio+"</p>";
 
+		document.getElementById("mensajes").scrollTop = document.getElementById("mensajes").scrollHeight;
+		*/
 		  // Para reiniciar
 		  if(true){
 		      this.start();

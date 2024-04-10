@@ -2,16 +2,19 @@ body {
     margin: 0;
     background-color: black;
     overflow-y: hidden;
-    font-family: jgs;
-    font-size: 18px; 
+    font-family: Source Code Pro;
+    font-size: 16px; 
     color: #f7f8f9;
-    line-height: 15px;
+    line-height: 16px;
+
 }
 
 #info {
     position: absolute; 
     margin-top: 100px;
     width: 100%;
+    height: 100%;
+
     float: center; 
     padding: 0px;
     text-align: center; 
@@ -42,11 +45,11 @@ body {
     scrollbar-color: black gray;   /* scroll thumb and track */
     
     position: absolute; 
-    margin-top: 10%;
-    margin-left: 10%; 
+    top: 30%;
+    left: 10%; 
    
-    width: 40vw;
-    height: 30vh;
+    width: 40%;
+    height: 60%;
     
     overflow-x: auto; 
     overflow-y: auto;  /*Agrega la barra de desplazamiento vertical cuando sea necesario */
@@ -67,7 +70,7 @@ body {
     pointer-events: none;
     z-index: 1;
 
-    background: rgba(0,0,0,0.6); /* Fondo semi-transparente */
+    background: rgba(0,0,0,0.8); /* Fondo semi-transparente */
     color: white; /* Color del texto */
     padding: 0px; /* Espacio entre el borde del contenedor y su contenido */
 }
@@ -75,17 +78,18 @@ body {
 #mensajes {
 
     /*border: 1px solid #ccc;*/ /* Borde para mayor claridad */
+    margin-bottom: 0px; /* Ajusta este valor según el espacio que desees entre párrafos */
 
-    display: block;
+    display: none;
     scrollbar-width: thin;          /* "auto" or "thin" */
     scrollbar-color: black gray;   /* scroll thumb and track */
     
     position: absolute; 
-    margin-top: 25%;
-    margin-left: 10%; 
+    top: 10%;
+    left: 10%; 
    
-    width: 40vw;
-    height: 30vh;
+    width: 80%;
+    height: 20%;
     
     overflow-x: auto; 
     overflow-y: auto;  /*Agrega la barra de desplazamiento vertical cuando sea necesario */
@@ -106,8 +110,8 @@ body {
     pointer-events: none;
     z-index: 1;
 
-    background: rgba(0,0,0,0.6); /* Fondo semi-transparente */
-    color: white; /* Color del texto */
+    background: rgba(0,0,0,0.8); /* Fondo semi-transparente */
+    color: gray; /* Color del texto */
     padding: 0px; /* Espacio entre el borde del contenedor y su contenido */
 }
 
@@ -122,8 +126,8 @@ body {
 #clickableAwesomeFont {
     cursor: pointer;
     position:absolute;
-    right: 0px;
-    top: 25px;
+    right: 0%;
+    top: 5%;
     margin-right: 10%; 
       
 }
@@ -136,3 +140,24 @@ a {
   font-family: 'jgs';
   src: url('../static/fonts/jgs_Font.ttf');
 }
+
+.image-container {
+    display: none; 
+    position: absolute;
+    top: 30%;
+    left: 50%; 
+   
+    width: 40%;
+    height: 30%;
+    z-index: 1; 
+  }
+  
+  /* Estilo para la imagen dentro del contenedor */
+  .image-container img {
+    width: 100%;
+    
+  }
+
+  p {
+    margin-bottom: 1px !important /* Ajusta este valor según el espacio que desees entre párrafos */
+  }

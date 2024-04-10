@@ -19,7 +19,8 @@ import { Grain } from '../js/Grain';
 import { GLoop } from '../js/GLoop';
 import { map_range } from '../js/utils.js';
 import { Player } from '../js/Player.js'; 
-
+const data = require('./../static/json/imgs.js');
+// console.log(data.default.imgs[0].img)
 import { track0, track1 } from '../static/data/tracks.js';
 //console.log(Object.keys(track0).length)
 
@@ -45,6 +46,7 @@ let sentiment = []; // Pendiente hacer que esto sea un arreglo por oraciones
 
 // addEventListener("click", (event) => { click = !click });
 // document.getElementById("instrucciones").innerHTML = interStr;
+const imageContainer = document.querySelector('.image-container');
 
 const print = document.getElementById('print');
 print.addEventListener('click', printPDF);
@@ -59,7 +61,7 @@ let codeBool = false;
 const backHy = document.getElementById('backgroundHy');
 backHy.addEventListener('click', backgroundFunc);
 
-let backBool = false;
+let backBool = false; // para activar o desactivar el fondo
 
 const infoButton = document.getElementById('information');
 infoButton.addEventListener('click', informationFunc);
@@ -72,7 +74,7 @@ disposeButton.addEventListener('click', disposeLines);
 let notas = [];
 let sphCap = [];
 //let noteBool = false; 
-
+let mensajes = []; 
 //const par = new EditorParser();     
 const a = new AudioSetup();
 const th = new VideoSetup();
@@ -130,7 +132,7 @@ const sphereP1 = new THREE.Mesh(geometryP1, materialP1);
 // render target
 // demasiado costoso de mantener. Podría servir para impermanent otros proyectos pero mientras tanto se puede deshechar 
 
-const rtWidth = 1920 * 2;
+const rtWidth = 1920 * 2;true
 const rtHeight = 1080 * 2;
 const renderTarget = new THREE.WebGLRenderTarget(rtWidth, rtHeight, { format: THREE.RGBAFormat });
 const rtFov = 75;
@@ -295,6 +297,9 @@ function init() {
 	    // document.getElementById("instrucciones").pointer-events = none;
 	    document.getElementById("instrucciones").style.pointerEvents = "none";
 	    document.getElementById("instrucciones").style.display = "none";
+		document.getElementById("mensajes").style.display = "none";
+		imageContainer.style.display = 'none';
+
 	}
     }
 
@@ -392,6 +397,7 @@ function animate() {
 	    
 	    if (fBool) {
 		onclick = function () {
+		    globalCh(INTERSECTED.userdata.track);
 
 		    const TurndownService = require('turndown').default;
 		    var turndownService = new TurndownService()
@@ -404,6 +410,29 @@ function animate() {
 		    controls.enabled = false;
 		    document.getElementById("instrucciones").style.pointerEvents = "auto";
 		    document.getElementById("instrucciones").style.display = "block";
+			imageContainer.style.display = 'block';
+			
+			var numAleatorio = Math.floor(Math.random() * data.imgs.length)
+			var imagenSeleccionada = data.imgs[numAleatorio].img; 
+			var rutaImagenCompleta = './' + imagenSeleccionada;
+			var descripcionImagen = data.imgs[numAleatorio].nota; 
+			console.log(data)
+
+			var imagenElemento = imageContainer.querySelector('img');
+			imagenElemento.src = rutaImagenCompleta;
+			// imagenElemento.style.filter = 'grayscale(100%)';
+
+			document.getElementById("mensajes").style.display = "block";
+			document.getElementById("mensajes").innerHTML += "---------------</br>";
+
+		    document.getElementById("mensajes").innerHTML += "Imagen seleccionada: "+rutaImagenCompleta+"</br>";
+		    document.getElementById("mensajes").innerHTML += "Descripción: "+descripcionImagen+"</br>";
+
+			document.getElementById("mensajes").scrollTop = document.getElementById("mensajes").scrollHeight;
+		    document.getElementById("mensajes").style.pointerEvents = "auto";
+
+			//var imagenSeleccionada = data.default.imgs[Math.floor(Math.random() * data.default.imgs.length)];
+			//console.log(rutaImagenCompleta)
 
 		    salir = true;
 		    // console.log(markNote);
@@ -426,10 +455,13 @@ function animate() {
 	
 		    }
 
-		    globalCh(INTERSECTED.userdata.track);
 		    // console.log(interStr); 
 		    controls.target = INTERSECTED.position;
 		    document.getElementById("instrucciones").innerHTML = interStr;
+
+			//var imageContainer = document.getElementById('image-container');
+			//imageContainer.style.display = 'block';
+
 		    //if(lcbool){
 		    //positions.push(INTERSECTED.position);
 		    //curve(positions); 
@@ -1153,6 +1185,7 @@ function globalCh(track){
 	//let bdSeqsValue = track0[sceneIndex].instruments.bd.seqs;
     // let scIndex = track0[sceneIndex];
 	//console.log(bdSeqsValue, bdQueryValue)
+	document.getElementById("mensajes").innerHTML += "---------------</br>";
 
 	let instrumentIndices = Object.keys(track0[sceneIndex].instruments);
 
@@ -1162,7 +1195,10 @@ function globalCh(track){
         let queryValue = track0[sceneIndex].instruments[instrumentIndex].query;
 		let seqsValue = track0[sceneIndex].instruments[instrumentIndex].seqs.flat();
 		let grainValue = track0[sceneIndex].instruments[instrumentIndex].grain; 
-		console.log(queryValue)
+		// console.log(queryValue)
+
+		document.getElementById("mensajes").innerHTML += "Búsqueda: "+queryValue+"</br>";
+		document.getElementById("mensajes").scrollTop = document.getElementById("mensajes").scrollHeight;
 
 		buscarEnFreeSound(queryValue, 1, 40, apiKey)
 		.then(resultados => {
@@ -1172,6 +1208,10 @@ function globalCh(track){
 			let srchURL = 'https://freesound.org/apiv2/sounds/' + res.id; 
 			console.log("liga:" + srchURL);
 			//console.log(freeURL);
+
+			document.getElementById("mensajes").innerHTML += "Liga del archivo en Freesound: "+srchURL+"</br>";
+			document.getElementById("mensajes").scrollTop = document.getElementById("mensajes").scrollHeight;
+
 			var xhr = new XMLHttpRequest();
 			xhr.open('GET', srchURL + '?format=json&token=' + apiKey, true);
 			xhr.onload = function () {

@@ -3,7 +3,7 @@ const track0 = {
 	"sc0": {
 		"tempo": 160,
 		"degrees": [50, 52, 54],
-		"hydra": "osc(() => cursorY * 0.01, () => cursorX * 0.001, 0).color(0.3, 0.1, 0.5).rotate(0.1, 0.1, 0.5).mult(osc(0.1, 1)).modulateScrollX(o0, 0.99).out(o0);",
+		"hydra": "osc(() => cursorY * 0.01, () => cursorX * 0.001, 0).color(0.4, 0.4, 0.4).rotate(0.1, 0.1, 0.5).mult(osc(0.1, 1)).modulateScrollX(o0, 0.99).out(o0);",
 		"randomness": 0.5,
 		"instruments": {
 			"bd": {

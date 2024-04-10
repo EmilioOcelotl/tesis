@@ -1,4 +1,4 @@
-export default {
+module.exports = {
 
     "title":[
 	{
@@ -10,235 +10,189 @@ export default {
     "imgs":[
 	{
 	    "img": "img/col2.jpg",
-	    "pie": "Coloquio",
-	    "url": "https://hydra.ojack.xyz/?sketch_id=ritchse_3",
-	    "nota": "Presentación en el coloquio de estudiantes",
-	    "w": "19.2",
-	    "h": "10.8"
+	    "titulo": "Concierto de clausura.",
+	    "url": "https://www.youtube.com/watch?v=HwBTRQKr9Ps",
+	    "nota": "XVI Coloquio de alumnas del posgrado en música UNAM. Libertad Figueroa, Dorian Sotomayor, Marianne Teixido, Diego Villaseñor, Aaron Escobar, Hernani Villaseñor y Emilio Ocelotl. 2021"
 	},
 	{
 	    "img": "img/of13.jpg",
-	    "pie": "OF",
-	    "url": "https://hydra.ojack.xyz/?sketch_id=ritchse_3",
-	    "nota": "Retroalimentación, texto impreso y mesh. Estudio en OF",
-	    "w": "19.2",
-	    "h": "10.8"
+	    "titulo": "Estudio realizado en OpenFrameworks.", 
+	    "url": "",
+	    "nota": "Retroalimentación y texto proveniente de ejecuciones en SuperCollider."
+	},
+	{
+	    "img": "img/processing-000559.jpg",
+	    "titulo": "Estudio realizado en Processing.", 
+	    "url": "",
+	    "nota": "Modificación de una imagen con copias y desplazamientos."
 	},
 	{
 	    "img": "img/hydrarit.jpg",
-	    "pie": "Hydra de Olivia Jack con un sketch de Ritsche",
+	    "titulo": "Hydra.",
 	    "url": "https://hydra.ojack.xyz/?sketch_id=ritchse_3",
-	    "nota": "Ejemplo de Hydra",
-	    "w": "19.2",
-	    "h": "10.8"
+	    "nota": "Hydra es un sintetizador de gráficos que puede ejecutarse en el navegador. Captura de un sketch realizado por Ritchse."
 	},
 	{ 
 	    "img": "img/notas.jpg",
-	    "pie": "Notas de Ausencia - Marianne Teixido",
+	    "titulo": "Notas de Ausencia de Marianne Teixido.", 
 	    "url": "https://notasdeausencia.cc/",
-	    "nota": "Referencia a Notas de Ausencia como un antecedente",
-	    "w": "19.02",
-	    "h": "9.96"
+	    "nota": "Pieza realizada con Three.js en el contexto de las desapariciones en México."
 	},
 	{
 	    "img": "img/plabccd.jpg",
-	    "pie": "Ciclo de Talleres PiranhaLab - CCD",
+	    "titulo": "Ciclo de talleres organizado por PiranhaLab",
 	    "url": "https://piranhalab.github.io/proyectos.html#CCD-PADID",
-	    "nota": "Ciclo de talleres",
-	    "w": "9.6",
-	    "h": "6.39"
+	    "nota": "Ciclo de talleres sobre interfaces de código realizado en el Centro de Cultura Digital en colaboración con el laboratorio de Tecnologías Libres. De izquierda a derecha: José Carlos Hasbún, Hernani Villaseñor, Diego Villaseñor, Celeste Betancour, Marianne Teixido y Rodrigo Frenk. Ciudad de México 2019."
 	},
-
-
-	  // Ajustar imágenes verticales 
-	  
 	{
-	    "img": "img/algoritmos.jpg",
-	    "pie": "Portada del libro Algoritmos Arruinados",
+	    "img": "img/esfera.jpg",
+	    "titulo": "Sketch tentativo. Hydra y Three.js",
 	    "url": "https://www.repositorio.fam.unam.mx/handle/123456789/139",
-	    "nota": "Portada Algoritmos arruinados",
-	    "w": "6.63",
-	    "h": "9.05"
-	    },
-		
+	    "nota": "Sketch tentativo para la portada del libro Algoritmos Arruinados realizado por Marianne Teixido y por mí en Hydra y Three.js."
+	},
 	{
 	    "img": "img/three.jpg",
-	    "pie": "Primeros intentos",
-	    "url": "", // revisar si es posible activar este sitio 
-	    "nota": "Three.js, primeras exploraciones audiovisuales",
-	    "w": "19.2",
-	    "h": "10.8"
-	},
-
-		
+	    "titulo": "THREE.studies",
+	    "url": "",  
+	    "nota": "Pruebas iniciales para establecer relaciones audiovisuales en el navegador realizadas en Three.js"
+	},	
 	{
 	    "img": "img/iracema.jpg",
-	    "pie": "Primeros intentos",
-	    "url": "", // revisar si es posible activar este sitio 
-	    "nota": "Three.js, exploraciones audiovisuales a distancia",
-	    "w": "19.2",
-	    "h": "10.8"
+	    "titulo": "THREE.studies 2", 
+	    "url": "",  
+	    "nota": "Primeras pruebas de colaboración a distancia con Iracema de Andrade. Al fondo: una transmisión bidireccional de audio y al frente, un editor de texto (emacs) con la ejecución de SuperCollider."
 	},
-
 	{
 	    "img": "img/iracema2.jpg",
-	    "pie": "Primeros intentos",
+	    "titulo": "THREE.studies 3",
 	    "url": "https://three.ocelotl.cc/",
-	    "nota": "Three.js, exploraciones audiovisuales a distancia",
-	    "w": "19.2",
-	    "h": "10.8"
+	    "nota": "Sitio web con la visualización y la grabación de las primeras pruebas de colaboración a distancia con Iracema de Andrade."
 	},
-	
+	/*
+	{
+	    "img": "img/threeunam.jpg",
+	    "titulo": "THREE.studies 4",
+	    "url": "",
+	    "nota": "THREE.studies. Programa Música de Cámara Música UNAM. Para esta ocasión, la pieza contó con Ana Karen Rodríguez como co-creadora."
+	    },
+	*/
 	{
 	    "img": "img/felicidades.jpg",
-	    "pie": "Anti",
+	    "titulo": "Anti 1", 
 	    "url": "",
-	    "nota": "Three.js y SuperCollider. Cusco",
-	    "w": "12.85",
-	    "h": "8.08"
+	    "nota": "Calibración de Anti con algoritmo de detección de rostros de los servicios de Google. En esta ocasión, no encontro rostro alguno."
 	},
-
 	{
 	    "img": "img/anti2.jpg",
-	    "pie": "Anti2",
-	    "url": "",
-	    "nota": "Three.js y SuperCollider. Cusco",
-	    "w": "19.2",
-	    "h": "10.8"
+	    "titulo": "Anti 2",
+	    "url": "https://anti.ocelotl.cc/",
+	    "nota": "Títulos iniciales de Anti. Al principio de cada escena surge un texto escrito a la par del código."
 	},
-
-	
 	{
 	    "img": "img/anti1.jpg",
-	    "pie": "Anti2",
-	    "url": "",
-	    "nota": "Three.js y SuperCollider. Cusco",
-	    "w": "19.2",
-	    "h": "10.8"
+	    "titulo": "Anti 3",
+	    "url": "https://anti.ocelotl.cc/",
+	    "nota": "El sistema de detección de referencias faciales construye un mesh sobre el rostro para ofuscarlo."
 	},
+	
+	// Aquí hace falta la foto de la muestra. Preguntar a Marianne 
 
 	{
 	    "img": "img/circulos.jpg",
-	    "pie": "Primeros intentos",
-	    "url": "",
-	    "nota": "Estudio audiovisual. Hydra, Three.js y Web Audio API",
-	    "w": "15.3",
-	    "h": "10.71"
+	    "titulo": "Estudio audiovisual", 
+	    "url": "", 
+	    "nota": "Exploraciones audiovisuales con Three.js y Hydra."
 	},
-	
-	
 	{
 	    "img": "img/cusco.jpg",
-	    "pie": "Cusco",
+	    "titulo": "Presentación en Cusco",
 	    "url": "",
-	    "nota": "Three.js y SuperCollider. Cusco",
-	    "w": "51.84",
-	    "h": "34.56"
+	    "nota": "Prersentación audiovisual en Cusco, Perú. Los visuales fueron generados desde el navegador con Three.js."
 	},
 
 	{
 	    "img": "img/error2.jpg",
-	    "pie": "Primeros intentos",
+	    "titulo": "Estudio audiovisual 2",
 	    "url": "",
-	    "nota": "Estudio audiovisual. Hydra, Three.js y Web Audio API",
-	    "w": "14.7",
-	    "h": "10.8"
+	    "nota": "Estudio audiovisual. Hydra, Three.js y Web Audio API"
 	},
-	
-	
 	{
 	    "img": "img/thhydra.jpg",
-	    "pie": "Primeros intentos",
+	    "titulo": "Estudio audiovisual 3",
 	    "url": "",
-	    "nota": "Estudio audiovisual. Hydra, Three.js y Web Audio API",
-	    "w": "10.8",
-	    "h": "10.8"
+	    "nota": "Estudio audiovisual. Hydra, Three.js y Web Audio API"
 	},
-	
+	{
+	    "img": "img/hydra.jpg",
+	    "titulo": "Estudio audiovisual 4", 
+	    "url": "",
+	    "nota": "Estudio audiovisual. Hydra, Three.js y Web Audio API"
+	},
 	{
 	    "img": "img/fonts.jpg",
-	    "pie": "Exploración tipográfica",
+	    "titulo": "Exploración tipográfica",
 	    "url": "",
-	    "nota": "Exploración tipográfica",
-	    "w": "20.48",
-	    "h": "20.48"
+	    "nota": "La tipografía y su integración con los gráficos generados por la computadora fue una capa importante de la realización. "
 	},
-
-	
 	{
 	    "img": "img/nime.jpg",
-	    "pie": "Primeros intentos",
-	    "url": "https://three.ocelotl.cc/",
-	    "nota": "Deep Structures. Presentado en NIME por Marianne Teixido y Emilio Ocelotl ",
-	    "w": "19.2",
-	    "h": "10.8"
+	    "titulo": "Deep Structures en NIME", 
+	    "url": "https://drive.google.com/file/d/1HUZmMiRpqmsrhajCk9VtLhiGLlwTizcd/view",
+	    "nota": "Deep Structures. Presentado en NIME por Marianne Teixido y Emilio Ocelotl, "
 	},
-
-		
+	{
+	    "img": "img/nime1.jpg",
+	    "titulo": "Deep Structures en NIME 2", 
+	    "url": "https://drive.google.com/file/d/1HUZmMiRpqmsrhajCk9VtLhiGLlwTizcd/view",
+	    "nota": "Deep Structures. Presentado en NIME por Marianne Teixido y Emilio Ocelotl ",
+	},
 	{
 	    "img": "img/algorave.jpg",
-	    "pie": "Primeros intentos",
-	    "url": "https://three.ocelotl.cc/",
-	    "nota": "Deep Structures. Presentado en NIME por Marianne Teixido y Emilio Ocelotl ",
-	    "w": "19.2",
-	    "h": "10.8"
+	    "titulo": "Algorave", 
+	    "url": "https://www.youtube.com/watch?v=-2E_Hc4lCBw",
+	    "nota": "Algorave 2023 en CDMX. El sistema de visuales fue programado por Dorian Sotomayor en THREE.js",
 	},
-
-
 	{
 	    "img": "img/tesisGlitch.jpg",
-	    "pie": "errores",
-	    "url": "https://three.ocelotl.cc/",
-	    "nota": "Errores en la lectura e impresión de este documento",
-	    "w": "10.8",
-	    "h": "19.2"
+	    "titulo": "Errores", 
+	    "url": "",
+	    "nota": "Errores en la lectura e impresión de este documento"
 	},
-
 	{
 	    "img": "img/map.jpg",
-	    "pie": "errores",
-	    "url": "https://three.ocelotl.cc/",
-	    "nota": "Errores en la lectura e impresión de este documento",
-	    "w": "6.55",
-	    "h": "7.44"
+	    "titulo": "Note Map", 
+	    "url": "",
+	    "nota": "Captura del mapa de relaciones que construye Trilium a partir de relaciones entre hipervínculos escritos en las notas"
 	},
-	
 	{
 	    "img": "img/tesisGlitch2.jpg",
-	    "pie": "errores",
-	    "url": "https://three.ocelotl.cc/",
-	    "nota": "Errores en la lectura e impresión de este documento",
-	    "w": "10.8",
-	    "h": "19.2"
+	    "titulo": "Errores 2", 
+	    "url": "",
+	    "nota": "Errores en la lectura e impresión de este documento"
 	},
-
 	{
 	    "img": "img/tres2023.jpg",
-	    "pie": "errores",
+	    "titulo": "Modo Navegable", 
 	    "url": "https://three.ocelotl.cc/",
-	    "nota": "Errores en la lectura e impresión de este documento",
-	    "w": "18.95",
-	    "h": "9.6"
+	    "nota": "Prototipo visual del modo navegable"
 	},
-
+	{
+	    "img": "img/menu.jpg",
+	    "titulo": "Menú", 
+	    "url": "https://three.ocelotl.cc/",
+	    "nota": "Propuesta tentativa de menú interactivo realizado con Three.js"
+	},
 	{
 	    "img": "img/tesis.jpg",
-	    "pie": "tesis",
+	    "titulo": "Modo Navegable 2", 
 	    "url": "https://tres.ocelotl.cc/",
-	    "nota": "Prototipo de visualización de la información en un espacio triimensional",
-	    "w": "18.95",
-	    "h": "9.6"
+	    "nota": "Prototipo visual de interacción con notas en espacio tridimensional"
 	}
-
-
 	/*
 	{
 	    "img": "",
-	    "pie": "",
 	    "url": "",
-	    "nota": "Para la distribución, buscar una mejor forma",
-	    "w": "10.8",
-	    "h": "19.2"
+	    "nota": ""
 	    }
 	*/
     ] 

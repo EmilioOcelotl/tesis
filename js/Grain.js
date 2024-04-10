@@ -125,10 +125,12 @@ class Grain {
 	// importante: si la duración es muy baja, la multiplicación puede alcanzar valores negativos y el programa se traba
 	// agregar una envolvente para que el sonido no se escuche tan crudo 
 	//----------------------------------------------
-	// console.log(this.audioCtx.currentTime+time, this.pointer+algo, this.windowSize+algo);
+	
+	//let valores = (this.pointer+algo); 
+	//  this.pointer+algo, this.windowSize+algo;
 
 	this.source.start(this.audioCtx.currentTime+time, this.pointer+algo, this.windowSize+algo);
-
+	
 	// de inmediato, los otros dos parámetros indican inicio y final de la reproducción de la muestra. Hay que ver qué sucede si el inicio y el final no dan un resultado deseado.
 	// source.start también podría tener algún tipo de compensación de windowRandRatio
 	// solo se reproduce una vez, como no está en loop desaparece cada verz que termina. Entonces tenemos que implementar algo parecido al reloj de player
