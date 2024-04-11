@@ -104,6 +104,7 @@ for(let i = 0; i < 2; i++){ // cantidad total de players, diferenciar entre grai
 let cosa = new Grain(a.audioCtx);
 players.push(new GLoop( {grain: cosa}))
 
+console.log(players)
 // const gloop = new GLoop({ grain: cosa });
 
 let boolCosa;
@@ -380,12 +381,12 @@ function animate() {
     */
 
     // Esto se tiene que convertir en otra cosa
-    if (boolCosa) {
+    //if (boolCosa) {
 	//cosa.pointer = cursorX / 20;
 	//cosa.freqScale =  (cursorY/100)-2.2;
 	// gloop.update();
 	players[2].update(); // esto es esclusivo de los loops. Hay que revisar esto en el futuro 
-    }
+    //}
 
     raycaster.setFromCamera(pointer, th.camera);
     const intersects = raycaster.intersectObjects(th.scene.children, true);

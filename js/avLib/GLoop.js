@@ -5,7 +5,7 @@ import * as TWEEN from 'tween';
 
 class GLoop {
     
-    constructor(grain, seqpointer = [0.5], seqfreqscale = [1], seqwindowsize = [0.1], seqoverlaps = [0.125], seqwindowrandratio = [0.5], seqtime = [8000], tweenloop = true, type='gloop'){
+    constructor(grain, seqpointer = [0.5], seqfreqscale = [0.5], seqwindowsize = [0.1], seqoverlaps = [0.125], seqwindowrandratio = [0.5], seqtime = [8000], tweenloop = true, type='gloop'){
 
 	self = this;
 	// self.grain = grain;
@@ -81,7 +81,7 @@ class GLoop {
 	// Ejecución de la curva. Estaría bueno configurar el tipo de suavizado 
 	
 	const tween = new TWEEN.Tween(this.paramsInit, false)
-	      .to(paramsEnd, this.paramsInit.time) 
+	      .to(paramsEnd, 1000) // arreglar el tiempo 
 	      .easing(TWEEN.Easing.Quadratic.InOut)
 
 	      .onUpdate(() => { // Cambio del estado inicial al estado final 

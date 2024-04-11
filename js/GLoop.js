@@ -10,7 +10,7 @@ import * as TWEEN from 'tween';
 
 class GLoop {
     
-    constructor(grain, seqpointer = [0.5], seqfreqscale = [1], seqwindowsize = [0.5], seqoverlaps = [0.01], seqwindowrandratio = [0.5], seqtime = [8000], grainsequence = [0.5], tweenloop = true, type='gloop'){
+    constructor(grain, seqpointer = [0.5], seqfreqscale = [1], seqwindowsize = [0.15], seqoverlaps = [0.01], seqwindowrandratio = [0.5], seqtime = [8000], grainsequence = [0.5], tweenloop = true, type='gloop'){
 
 		self = this;
 		// self.grain = grain;
@@ -106,7 +106,7 @@ class GLoop {
 	// Ejecución de la curva. Estaría bueno configurar el tipo de suavizado 
 	
 	const tween = new TWEEN.Tween(this.paramsInit, false)
-	      .to(paramsEnd, 8000) // El tiempo no está siendo secuenciado. Revisar esto en el futuro 
+	      .to(paramsEnd, 2000) // El tiempo no está siendo secuenciado. Revisar esto en el futuro 
 	      .easing(TWEEN.Easing.Quadratic.InOut)
 
 	      .onUpdate(() => { // Cambio del estado inicial al estado final 
@@ -122,6 +122,7 @@ class GLoop {
 	
 	      .onComplete(() => { // cuando termina, el estado final se convierte en el estado inicial y se recorren las posiciones en los arreglos, si es que hay más de un elemento. 
 
+			console.log("cambio")
 			/*	
 		  // console.log(this.grain.grain.pointer); 
 		  console.log("cambio"); 

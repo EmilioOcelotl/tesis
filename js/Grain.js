@@ -2,7 +2,7 @@ const { map_range } = require('./utils.js');
 
 class Grain {
 
-    constructor(aCtx, pointer = 0, freqScale = 1, windowSize=0.1, overlaps=0.1, windowRandRatio=0, type = 'grain'){ // Determinar unos valores iniciales en el constructor 
+    constructor(aCtx, pointer = 0, freqScale = 0.5, windowSize=0.1, overlaps=0.1, windowRandRatio=0, type = 'grain'){ // Determinar unos valores iniciales en el constructor 
 	// Player2(aCtx){ // audiocontext y el archivo a cargar
 	self = this;
 	// se pueden pasar sin ser objetos independientes? Recuerdo que para algo se necesitaban 
@@ -104,7 +104,7 @@ class Grain {
 	// Pensando que el sonido puede estar muy alto
 	// La ganancia podría ser una ponderación de la cantidad de overlaps que se suman
 	// calcular un tiempo de ataque que corresponda con la duración de la ventana
-	this.gainNode.gain.linearRampToValueAtTime(this.gain*0.5, time + ((this.windowSize+algo)/8)); // Parece que la envolvente funciona 
+	this.gainNode.gain.linearRampToValueAtTime(this.gain*0.5, Math.abs(time + ((this.windowSize+algo)/8))); // Arreglar esto 
 	// self.gainNode.gain.linearRampToValueAtTime(0, time+self.windowSize+algo); 
 	//self.gainNode.gain.setValueAtTime(0.75, self.audioCtx.currentTime);
 	// Mientras tanto la reproducción podría ser en loop.
