@@ -91,7 +91,7 @@ class Grain {
 	// Pensando que el sonido puede estar muy alto
 	// La ganancia podría ser una ponderación de la cantidad de overlaps que se suman
 	// calcular un tiempo de ataque que corresponda con la duración de la ventana
-	this.gainNode.gain.linearRampToValueAtTime(0.5, time + ((this.windowSize+algo)/8)); // Parece que la envolvente funciona 
+	this.gainNode.gain.linearRampToValueAtTime(8, time + Math.abs(((this.windowSize+algo)/8))); // Parece que la envolvente funciona 
 	// self.gainNode.gain.linearRampToValueAtTime(0, time+self.windowSize+algo); 
 	//self.gainNode.gain.setValueAtTime(0.75, self.audioCtx.currentTime);
 	// Mientras tanto la reproducción podría ser en loop.

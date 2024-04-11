@@ -5,7 +5,7 @@ import * as TWEEN from 'tween';
 
 class GLoop {
     
-    constructor(grain, seqpointer = [0.5], seqfreqscale = [1], seqwindowsize = [0.1], seqoverlaps = [0.25], seqwindowrandratio = [0.5], seqtime = [8000], tweenloop = true, type='gloop'){
+    constructor(grain, seqpointer = [0.5], seqfreqscale = [1], seqwindowsize = [0.1], seqoverlaps = [0.125], seqwindowrandratio = [0.5], seqtime = [8000], tweenloop = true, type='gloop'){
 
 	self = this;
 	// self.grain = grain;

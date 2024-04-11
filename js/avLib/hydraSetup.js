@@ -13,6 +13,8 @@ function HydraTex(){
     
     let elCanvas = document.getElementById("myCanvas");
     self.vit = new THREE.CanvasTexture(elCanvas);
+	elCanvas.style.filter = 'grayscale(100%)';
+
     // self.materialVit 
     //}
 

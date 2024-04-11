@@ -3,9 +3,9 @@ body {
     background-color: black;
     overflow-y: hidden;
     font-family: Source Code Pro;
-    font-size: 16px; 
+    font-size: 18px; 
     color: #f7f8f9;
-    line-height: 16px;
+    line-height: 18px;
 
 }
 
@@ -45,16 +45,14 @@ body {
     scrollbar-color: black gray;   /* scroll thumb and track */
     
     position: absolute; 
-    top: 30%;
+    top: 34%;
     left: 10%; 
    
-    width: 40%;
+    width: 39%;
     height: 60%;
     
     overflow-x: auto; 
     overflow-y: auto;  /*Agrega la barra de desplazamiento vertical cuando sea necesario */
-
-    padding: 0px;
 
     text-align: left; 
     box-sizing: border-box;
@@ -70,9 +68,9 @@ body {
     pointer-events: none;
     z-index: 1;
 
-    background: rgba(0,0,0,0.8); /* Fondo semi-transparente */
+    background: rgba(0,0,0,0.9); /* Fondo semi-transparente */
     color: white; /* Color del texto */
-    padding: 0px; /* Espacio entre el borde del contenedor y su contenido */
+    padding: 40px; /* Espacio entre el borde del contenedor y su contenido */
 }
 
 #mensajes {
@@ -85,17 +83,15 @@ body {
     scrollbar-color: black gray;   /* scroll thumb and track */
     
     position: absolute; 
-    top: 10%;
+    top: 12%;
     left: 10%; 
    
     width: 80%;
     height: 20%;
     
+    overflow-y: auto;  /*Agrega la barra de desplazamiento vertical cuando sea necesario */
     overflow-x: auto; 
     overflow-y: auto;  /*Agrega la barra de desplazamiento vertical cuando sea necesario */
-
-    padding: 0px;
-
     text-align: left; 
     box-sizing: border-box;
 
@@ -110,9 +106,9 @@ body {
     pointer-events: none;
     z-index: 1;
 
-    background: rgba(0,0,0,0.8); /* Fondo semi-transparente */
+    background: rgba(0,0,0,0.9); /* Fondo semi-transparente */
     color: gray; /* Color del texto */
-    padding: 0px; /* Espacio entre el borde del contenedor y su contenido */
+    padding: 40px; /* Espacio entre el borde del contenedor y su contenido */
 }
 
 #container {
@@ -144,7 +140,7 @@ a {
 .image-container {
     display: none; 
     position: absolute;
-    top: 30%;
+    top: 34%;
     left: 50%; 
    
     width: 40%;

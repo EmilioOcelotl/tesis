@@ -21,7 +21,18 @@ import { map_range } from '../js/utils.js';
 import { Player } from '../js/Player.js'; 
 const data = require('./../static/json/imgs.js');
 // console.log(data.default.imgs[0].img)
-import { track0, track1 } from '../static/data/tracks.js';
+import {track0} from '../static/data/tracks.js';
+
+// para el futuro
+// const trackKeys = Object.keys(tracks);
+
+/*
+trackKeys.forEach(key => {
+    const track = tracks[key];
+    console.log(`Track ${key}:`, track);
+});
+*/
+
 //console.log(Object.keys(track0).length)
 
 let scCount = 0; 
@@ -267,10 +278,8 @@ function init() {
 	cursorX = e.pageX;
 	cursorY = e.pageY;
     }
-
-    eval(track0.sc0.hydra); 
     
-    // osc(() => cursorY * 0.01, () => cursorX * 0.001, 0).color(0.3, 0.1, 0.5).rotate(0.1, 0.1, 0.5).mult(osc(0.1, 1)).modulateScrollX(o0, 0.99).out(o0);
+    // osc(() => cursorY * 0.01, () => cursorX * 0.001, 0).color(0.4, 0.4, 0.4).rotate(0.1, 0.1, 0.5).mult(osc(0.1, 1)).modulateScrollX(o0, 0.99).out(o0);
 
     /*
       osc(6, 0, 0.8)  .color(1, 0.1,.90)
@@ -394,6 +403,7 @@ function animate() {
 	    infoBool = false;
 	    //controls.autoRotate = false; 
 	    interStr = INTERSECTED.userdata.id;
+		// console.log(INTERSECTED.userdata)
 	    
 	    if (fBool) {
 		onclick = function () {
@@ -416,17 +426,21 @@ function animate() {
 			var imagenSeleccionada = data.imgs[numAleatorio].img; 
 			var rutaImagenCompleta = './' + imagenSeleccionada;
 			var descripcionImagen = data.imgs[numAleatorio].nota; 
-			console.log(data)
+			// console.log(data)
 
 			var imagenElemento = imageContainer.querySelector('img');
 			imagenElemento.src = rutaImagenCompleta;
-			// imagenElemento.style.filter = 'grayscale(100%)';
 
 			document.getElementById("mensajes").style.display = "block";
-			document.getElementById("mensajes").innerHTML += "---------------</br>";
-
+			//document.getElementById("mensajes").innerHTML += "---------------</br>";
+			document.getElementById("mensajes").innerHTML += "Sentimiento de la nota: "+INTERSECTED.userdata.sentiment+"</br>";
+			document.getElementById("mensajes").innerHTML += "Bloque: "+INTERSECTED.userdata.track+"</br>";
+			// document.getElementById("mensajes").innerHTML += "Duraciones: "+INTERSECTED.userdata.dur+"</br>";
 		    document.getElementById("mensajes").innerHTML += "Imagen seleccionada: "+rutaImagenCompleta+"</br>";
 		    document.getElementById("mensajes").innerHTML += "Descripción: "+descripcionImagen+"</br>";
+
+			document.getElementById("mensajes").innerHTML += "---------------</br>";
+			document.getElementById("mensajes").innerHTML += "ESC para recuperar el puntero</br>";
 
 			document.getElementById("mensajes").scrollTop = document.getElementById("mensajes").scrollHeight;
 		    document.getElementById("mensajes").style.pointerEvents = "auto";
@@ -1178,6 +1192,9 @@ function audioRequest(string) { // Aquí tengo que agregar algún tipo de inform
 
 function globalCh(track){
 
+	console.log(track); 
+	let trackIndex = track; // Cambia este valor según tu lógica de selección
+
     // Obtener el índice de la escena actual
     let sceneIndex = "sc" + scCount ; // Esto supone que solo hay sc0 y sc1
 
@@ -1185,6 +1202,9 @@ function globalCh(track){
 	//let bdSeqsValue = track0[sceneIndex].instruments.bd.seqs;
     // let scIndex = track0[sceneIndex];
 	//console.log(bdSeqsValue, bdQueryValue)
+
+	eval(track0[sceneIndex].hydra)
+
 	document.getElementById("mensajes").innerHTML += "---------------</br>";
 
 	let instrumentIndices = Object.keys(track0[sceneIndex].instruments);
@@ -1197,20 +1217,19 @@ function globalCh(track){
 		let grainValue = track0[sceneIndex].instruments[instrumentIndex].grain; 
 		// console.log(queryValue)
 
-		document.getElementById("mensajes").innerHTML += "Búsqueda: "+queryValue+"</br>";
-		document.getElementById("mensajes").scrollTop = document.getElementById("mensajes").scrollHeight;
+		document.getElementById("mensajes").innerHTML += "Búsqueda en freesound.org: "+queryValue+"</br>";
+		//document.getElementById("mensajes").scrollTop = document.getElementById("mensajes").scrollHeight;
 
 		buscarEnFreeSound(queryValue, 1, 40, apiKey)
 		.then(resultados => {
 
-			console.log(resultados); 
+			// console.log(resultados); 
 			let res = resultados.resultados[Math.floor(Math.random() * resultados.resultados.length)];
 			let srchURL = 'https://freesound.org/apiv2/sounds/' + res.id; 
 			console.log("liga:" + srchURL);
 			//console.log(freeURL);
 
-			document.getElementById("mensajes").innerHTML += "Liga del archivo en Freesound: "+srchURL+"</br>";
-			document.getElementById("mensajes").scrollTop = document.getElementById("mensajes").scrollHeight;
+			// document.getElementById("mensajes").innerHTML += "Liga del archivo en Freesound: "+srchURL+"</br>";
 
 			var xhr = new XMLHttpRequest();
 			xhr.open('GET', srchURL + '?format=json&token=' + apiKey, true);
@@ -1237,6 +1256,8 @@ function globalCh(track){
 					//cosa.buffer = buffer; 
 					//console.log("hola")
 					boolCosa = true;
+					// document.getElementById("mensajes").innerHTML += "---------------</br>";
+					//document.getElementById("mensajes").scrollTop = document.getElementById("mensajes").scrollHeight;
 
 				},
 							   function (e) { "Error with decoding audio data" + e.error });
@@ -1262,7 +1283,8 @@ function globalCh(track){
 	if(scCount == Object.keys(track0).length){ // este cambio no es sobre escenas sino sobre instrumentos
 		scCount = 0; 
 	}
-     
+
+
 }
 
 	// Es necesario al menos dos instrumentos percusivos

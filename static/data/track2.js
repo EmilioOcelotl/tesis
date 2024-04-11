@@ -1,4 +1,4 @@
-const track1 = {
+const track2 = {
 	"sc0": {
 		"tempo": 160,
 		"degrees": [50, 52, 54],
@@ -20,7 +20,7 @@ const track1 = {
 					[0]
 			},
 			"wp": {
-				"query": "dust wind",
+				"query": "cdmx",
 				"noteseq": true, 
 				"grain": true, 
 				"seqs": [0.1], 
@@ -52,7 +52,7 @@ const track1 = {
 					[0]
 			},
 			"wp": {
-				"query": "dust wind",
+				"query": "cdmx",
 				"noteseq": true, 
 				"grain": true, 
 				"seqs": [0.1, 0.1, 0], 
@@ -65,4 +65,4 @@ const track1 = {
 	}
 }
 
-export default track1
+export default track2
