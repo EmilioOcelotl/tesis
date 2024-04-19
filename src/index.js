@@ -22,7 +22,9 @@ import { Player } from '../js/Player.js';
 const data = require('./../static/json/imgs.js');
 // console.log(data.default.imgs[0].img)
 import {track0} from '../static/data/tracks.js';
+import { CSS2DRenderer, CSS2DObject } from '../js/CSS2DRenderer.js';
 
+let labelRenderer; 
 // para el futuro
 // const trackKeys = Object.keys(tracks);
 
@@ -34,6 +36,8 @@ trackKeys.forEach(key => {
 */
 
 //console.log(Object.keys(track0).length)
+
+
 
 let scCount = 0; 
 let primeraAnimacion = false; 
@@ -259,6 +263,8 @@ function init() {
     const material44 = new THREE.MeshStandardMaterial({ color: 0xffffff, map: renderTarget.texture, roughness: 0.6 });
     sphere44 = new THREE.Mesh(geometry44, material44);
 
+
+
     // rTarget.setText(); 
     sphere44.userdata = { id: 'Tres Estudios Abiertos</br></br>Escritura de código en Javascript para el performance audiovisual y la investigación artística </br></br>ESC para cerrar esta ventana y recuperar el control del punto de vista'};
 
@@ -290,6 +296,15 @@ function init() {
 
     container = document.getElementById('container');
     container.appendChild(th.renderer2.domElement);
+
+	labelRenderer = new CSS2DRenderer();
+	labelRenderer.setSize( window.innerWidth, window.innerHeight );
+	labelRenderer.domElement.style.position = 'absolute';
+	labelRenderer.domElement.style.top = '0px';
+	labelRenderer.domElement.style.pointerEvents = 'none';
+	document.getElementById( 'container' ).appendChild( labelRenderer.domElement );
+
+
     cubeCount = 0;
     // las siguientes variables se usaban en el contexto de la fragmentación 
     //let ox, oy, geometryTex;
@@ -515,6 +530,8 @@ function animate() {
     th.renderer2.setRenderTarget(null);
 
     th.renderer2.render(th.scene, th.camera);
+	labelRenderer.render( th.scene, th.camera );
+
     un.render2(delta);
 
     requestAnimationFrame(animate);
@@ -677,6 +694,8 @@ function saveNotes() {
 
     points.push(new THREE.Vector3(0, 0, 0));
     // Filtrar capítulos 
+	let labels =[];
+	let labelstext = []
 
     for (let i = 0; i < marksort.length; i++) {
 	// Solamente se imprimen notas con más de dos caracteres
@@ -724,6 +743,8 @@ function saveNotes() {
 	    var localpos = pos(marksort[i].slice(4));
 	    // sphCap[i].userdata = {sentiment: analyzer.getSentiment(test)};
 	    sphCap[i].userdata = { track: contCol, id: marksort[i].slice(4), sentiment: analyzer.getSentiment(test), dur: localdur, pos: localpos };
+
+
 	    // sphCap[i].userdata = {num: contTotal};
 	    // console.log(sphCap[i].userdata.pos); 
 	    sphCap[i].position.x = vec.x;
@@ -731,6 +752,18 @@ function saveNotes() {
 	    sphCap[i].position.z = vec.z;
 
 	    th.scene.add(sphCap[i]);
+
+		labelstext[i] = document.createElement( 'div' );
+		labelstext[i].className = 'label';
+		labelstext[i].style.color = 'rgb( 255, 255, 255 )';
+		labelstext[i].style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; // Negro con transparencia
+		var titulo = marksort[i].slice(8, marksort[i].indexOf('</h2>'));
+
+		labelstext[i].textContent = titulo;
+	
+		labels[i] = new CSS2DObject( labelstext[i] );
+		labels[i].position.copy( sphCap[i].position );
+		th.scene.add( labels[i] );
 
 	    const material = new THREE.LineBasicMaterial({ color: 0xffffff });
 	    points.push(new THREE.Vector3(posX / norm * 10, posY / norm * 10, posZ / norm * 10));
@@ -775,6 +808,8 @@ function saveNotes() {
 
     contCol = 0
     let contCapituloNota = 0; 
+	labels = [];
+	labelstext = []; 
 
     for (let j = 0; j < notesCoords.length; j++) {
 
@@ -826,6 +861,18 @@ function saveNotes() {
 
 		th.scene.add(sphNotes[i]);
 
+		labelstext[i] = document.createElement( 'div' );
+		labelstext[i].className = 'label';
+		labelstext[i].style.color = 'rgb( 255, 255, 255 )';
+		labelstext[i].style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; // Negro con transparencia
+		var titulo = marksort[i].slice(8, marksort[i].indexOf('</h2>'));
+
+		labelstext[i].textContent = titulo;
+	
+		labels[i] = new CSS2DObject( labelstext[i] );
+		labels[i].position.copy( sphNotes[i].position );
+		th.scene.add( labels[i] );
+
 		const material = new THREE.LineBasicMaterial({ color: 0xffffff });
 		points2.push(new THREE.Vector3(nPosX, nPosY, nPosZ));
 
@@ -873,6 +920,18 @@ function saveNotes() {
 		sphNotes[i].position.z = nPosZ;
 
 		th.scene.add(sphNotes[i]);
+
+		labelstext[i] = document.createElement( 'div' );
+		labelstext[i].className = 'label';
+		labelstext[i].style.color = 'rgb( 255, 255, 255 )';
+		labelstext[i].style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; // Negro con transparencia
+		var titulo = marksort[i].slice(8, marksort[i].indexOf('</h2>'));
+
+		labelstext[i].textContent = titulo;
+	
+		labels[i] = new CSS2DObject( labelstext[i] );
+		labels[i].position.copy( sphNotes[i].position );
+		th.scene.add( labels[i] );
 
 		const material = new THREE.LineBasicMaterial({ color: 0xffffff });
 		//const points = [];
