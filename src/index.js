@@ -70,6 +70,25 @@ print.addEventListener('click', printPDF);
 const ed = document.getElementById('editor');
 ed.style.display = 'none';
 
+const volume = document.getElementById('volume');
+volume.addEventListener('click', volFunc)
+
+let volBool = false; 
+
+function volFunc(){
+	volBool = !volBool; 
+	console.log("volumen");
+	if(volBool){
+		a.audioCtx.resume(); // Para detener la reproducción de audio 
+		volume.classList.remove('fa-volume-xmark');
+		volume.classList.add('fa-volume-up');
+	}else {
+		a.audioCtx.suspend();
+		volume.classList.remove('fa-volume-up');
+		volume.classList.add('fa-volume-xmark');
+	}
+}
+
 let codeBool = false;
 
 const backHy = document.getElementById('backgroundHy');
