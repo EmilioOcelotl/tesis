@@ -38,7 +38,6 @@ trackKeys.forEach(key => {
 //console.log(Object.keys(track0).length)
 
 
-
 let scCount = 0; 
 let primeraAnimacion = false; 
 // bd, sn, hi, gr, vc, bs, sm; 
@@ -92,6 +91,8 @@ let sphCap = [];
 let mensajes = []; 
 //const par = new EditorParser();     
 const a = new AudioSetup();
+
+
 const th = new VideoSetup();
 const hy = new HydraTex();
 const db = new DbReader()
@@ -238,6 +239,9 @@ let fBool = false;
 
 init(); // los elementos particulares de este init podrían ir en otro lado. En todo caso podría delimitar la escena que antes se detonaba con esta función.     
 function init() {
+
+    console.log(a.audioCtx); 
+    a.audioCtx.suspend(); // Para detener la reproducción de audio 
 
     loadFont();
 
@@ -758,7 +762,9 @@ function saveNotes() {
 		labelstext[i].style.color = 'rgb( 255, 255, 255 )';
 		labelstext[i].style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; // Negro con transparencia
 		var titulo = marksort[i].slice(8, marksort[i].indexOf('</h2>'));
-
+		labelstext[i].style.padding = '10px'; 
+		labelstext[i].style.borderRadius = '10px';
+		
 		labelstext[i].textContent = titulo;
 	
 		labels[i] = new CSS2DObject( labelstext[i] );
@@ -866,6 +872,8 @@ function saveNotes() {
 		labelstext[i].style.color = 'rgb( 255, 255, 255 )';
 		labelstext[i].style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; // Negro con transparencia
 		var titulo = marksort[i].slice(8, marksort[i].indexOf('</h2>'));
+		labelstext[i].style.padding = '10px'; 
+		labelstext[i].style.borderRadius = '10px';
 
 		labelstext[i].textContent = titulo;
 	
@@ -925,6 +933,9 @@ function saveNotes() {
 		labelstext[i].className = 'label';
 		labelstext[i].style.color = 'rgb( 255, 255, 255 )';
 		labelstext[i].style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; // Negro con transparencia
+		labelstext[i].style.padding = '10px'; 
+		labelstext[i].style.borderRadius = '10px';
+
 		var titulo = marksort[i].slice(8, marksort[i].indexOf('</h2>'));
 
 		labelstext[i].textContent = titulo;

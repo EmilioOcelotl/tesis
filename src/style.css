@@ -1,11 +1,13 @@
 body {
-    margin: 0;
+    font-family: "Exo 2", sans-serif;
     background-color: black;
     overflow-y: hidden;
-    font-family: Source Code Pro;
-    font-size: 14px; 
+    overflow-x: hidden;
+
+    font-optical-sizing: auto;
+    font-size: 16px; 
     color: #f7f8f9;
-    line-height: 14px;
+    line-height: 16px;
 
 }
 
